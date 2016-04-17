@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  width: 960px;
+  height: 500px;
+  position: relative;
+}
+
+p {
+  display: inline;
+}
+
+#canvas {
+}
+
+#canvas-svg {
+}
+
+
+.land {
+  fill: #222;
+}
+
+.boundary {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 1px;
+}
+
+#tooltip-container {
+  position: absolute;
+  background-color: #fff;
+  color: #000;
+  padding: 10px;
+  border: 1px solid;
+  display: none;
+}
+
+.tooltip_key {
+  font-weight: bold;
+}
+
+.tooltip_value {
+  margin-left: 20px;
+  float: right;
+}
+
+</style>
+<h2>World Energy Measurements</h2>
+
+<p id="toggleEPI">EPI</p> | <p id="toggleCons">Energy Consumption</p> | <p id="toggleProd">Energy Production</p>
+
+<div id="tooltip-container"></div>
+
+<div id="canvas-svg"></div>
+<div id="circle-graph"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.1.0/topojson.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+
+<script>
+
+function ToggleMap(file, input) {
+
+  d3.csv(file, function(err, data) {
+
+  var config = {"country":"Country", "score":input};
+
+  var width = 720, height = 720;
+
+  // Color scale
+  var getColor = d3.scale.linear().domain([0,100]).range(["#d6f5d6","#145214"]);
+
+  var country_key = config.country;
+  var score_value = config.score;
+
+  // d3 projection of world map
+  var projection = d3.geo.mercator()
+    .scale((width + 1) / 2 / Math.PI)
+    .translate([width / 2, height / 2])
+    .precision(.1);
+
+  var path = d3.geo.path()
+    .projection(projection);
+
+  var graticule = d3.geo.graticule();
+
+  var svg = d3.select("#canvas-svg").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+  svg.append("path")
+    .datum(graticule)
+    .attr("class", "graticule")
+    .attr("d", path);
+
+// Create hashmap with country and value
+  var valueHash = {};
+    data.forEach(function(d) {
+    valueHash[d[country_key]] = +d[score_value];
+  });
+
+  var quantize = d3.scale.quantize()
+    .domain([0, 1.0])
+    .range(d3.range(100).map(function(i) { return i; }));
+
+  quantize.domain([d3.min(data, function(d){
+    return (+d[score_value]) }),
+  d3.max(data, function(d){
+    return (+d[score_value]) })]);
+
+  // Source: Vida world json file
+  d3.json("https://s3-us-west-2.amazonaws.com/vida-public/geo/world-topo-min.json", function(error, world) {
+  var countries = topojson.feature(world, world.objects.countries).features;
+
+  svg.append("path")
+     .datum(graticule)
+     .attr("class", "choropleth")
+     .attr("d", path);
+
+  var g = svg.append("g");
+
+  g.append("path")
+   .datum({type: "LineString", coordinates: [[-180, 0], [-90, 0], [0, 0], [90, 0], [180, 0]]})
+   .attr("class", "equator")
+   .attr("d", path);
+
+  var country = g.selectAll(".country").data(countries);
+
+  country.enter().insert("path")
+      .attr("class", "country")
+      .attr("d", path)
+      .attr("id", function(d,i) { return d.id; })
+      .attr("title", function(d) { return d.properties.name; })
+      .style("fill", function(d) {
+        if (valueHash[d.properties.name]) {
+            var c = quantize((valueHash[d.properties.name]));
+            return getColor(c);
+    } else {
+            return "#ccc";
+        }
+      })
+
+    // Dynamic part: mouseover to see country name and energy info
+    .on("mousemove", function(d) {
+      var html = "";
+
+      html += "<div class=\"tooltip_kv\">";
+      html += "<span class=\"tooltip_key\">";
+      html += d.properties.name;
+      html += "</span>";
+      html += "<span class=\"tooltip_value\">";
+      html += (valueHash[d.properties.name] ? valueHash[d.properties.name] : "");
+      html += "";
+      html += "</span>";
+      html += "</div>";
+      
+      $("#tooltip-container").html(html);
+      $(this).attr("fill-opacity", "0.8");
+      $("#tooltip-container").show();
+      
+      var coordinates = d3.mouse(this);
+      
+      var map_width = $('.choropleth')[0].getBoundingClientRect().width;
+      
+      if (d3.event.pageX < map_width / 2) {
+        d3.select("#tooltip-container")
+          .style("top", (d3.event.layerY + 15) + "px")
+          .style("left", (d3.event.layerX + 15) + "px");
+      } else {
+        var tooltip_width = $("#tooltip-container").width();
+        d3.select("#tooltip-container")
+          .style("top", (d3.event.layerY + 15) + "px")
+          .style("left", (d3.event.layerX - tooltip_width - 30) + "px");
+      }
+    })
+
+  .on("mouseout", function() {
+            $(this).attr("fill-opacity", "1.0");
+            $("#tooltip-container").hide();
+        });
+    
+  g.append("path")
+      .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; }))
+      .attr("class", "boundary")
+      .attr("d", path);
+  
+  svg.attr("height", height * 2.2 / 3);
+  });
+  
+  d3.select(self.frameElement).style("height", (height * 2.3 / 3) + "px");
+  
+
+// Circle graphs
+/* var svgContainer = d3.select("#circle-graph").append("svg")
+  .attr("width", 200)
+  .attr("height", 200);
+ 
+ countries.forEach(function(d) {
+  console.log("hi");
+  svgContainer.append("circle")
+    .attr("cx", 100)
+    .attr("cy", 100)
+    .attr("r", function(d) { 
+      console.log(valueHash[countries]);
+    });
+
+ })*/
+
+});
+
+}
+
+// Default on EPI
+ToggleMap("epi.csv", "Score");
+document.getElementById('toggleEPI').style.fontWeight = "bold";
+
+// Toggles between the multiple graphs
+$("#toggleEPI").on('click', function() {
+  document.getElementById('toggleCons').style.fontWeight = "normal";
+  document.getElementById('toggleProd').style.fontWeight = "normal";
+  $("#canvas-svg").empty();
+
+  document.getElementById('toggleEPI').style.fontWeight = "bold";
+  ToggleMap("epi.csv", "Score");
+});
+
+$("#toggleCons").on('click', function() {
+  document.getElementById('toggleEPI').style.fontWeight = "normal";
+  document.getElementById('toggleProd').style.fontWeight = "normal";
+  $("#canvas-svg").empty();
+
+  document.getElementById('toggleCons').style.fontWeight = "bold";
+  ToggleMap("consumption.csv", "2013");
+});
+
+
+$("#toggleProd").on('click', function() {
+  document.getElementById('toggleEPI').style.fontWeight = "normal";
+  document.getElementById('toggleCons').style.fontWeight = "normal";
+  $("#canvas-svg").empty();
+
+  document.getElementById('toggleProd').style.fontWeight = "bold";
+  ToggleMap("production.csv", "2013");
+});
+
+</script>
+
