@@ -1,27 +1,37 @@
 <!DOCTYPE html>
+<html>
 <meta charset="utf-8">
 
+<head>
 <!-- Stylesheets -->
 <link rel="stylesheet" href="css/style.css" />
 <link rel="stylesheet" href="css/d3.slider.css" />
 
-<h2>World Energy Measurements</h2>
-
-<p id="toggleEPI">EPI</p> | <p id="toggleCons">Energy Consumption</p> | <p id="toggleProd">Energy Production</p>
-
-<div id="tooltip-container"></div>
-
-<div id="canvas-svg"></div>
-<div id="circle-graph"></div>
-<div id="slider" style="width: 1000px;"></div>
+<!-- Fonts -->
+<link href='https://fonts.googleapis.com/css?family=Raleway' rel='stylesheet' type='text/css'>
 
 <!-- Scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.1.0/topojson.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="js/d3.slider.js"></script>
+<head>
 
+<body>
 
+  <h2>World Energy Measurements</h2>
+
+  <div id ="buttons">
+    <button id="toggleEPI">EPI</button> | <button id="toggleCons">Energy Consumption</button> | <button id="toggleProd">Energy Production</button>
+  </div>
+
+  <div id="tooltip-container"></div>
+  <div id = "viz">
+    <div id="canvas-svg"></div>
+    <div id="canvas-svg"></div>
+    <div id="slider"></div>
+    <div id="dataZoom"></div>
+  </div>
 <script>
 // Color scale
 var getColor = d3.scale.linear().domain([0,100]).range(["#d6f5d6","#145214"]);
@@ -34,9 +44,6 @@ function ToggleMap(file, input) {
   var config = {"country":"Country", "score":input};
 
   var width = 720, height = 720;
-
-  // Color scale
-  var getColor = d3.scale.linear().domain([0,100]).range(["#d6f5d6","#145214"]);
 
   var country_key = config.country;
   var score_value = config.score;
@@ -66,6 +73,7 @@ function ToggleMap(file, input) {
     data.forEach(function(d) {
     valueHash[d[country_key]] = +d[score_value];
   });
+    console.log(valueHash);
 
   quantize = d3.scale.quantize()
     .domain([0, 1.0])
@@ -94,7 +102,8 @@ function ToggleMap(file, input) {
 
   var country = g.selectAll(".country").data(countries);
 
-  country.enter().insert("path")
+
+      country.enter().insert("path")
       .attr("class", "country")
       .attr("d", path)
       .attr("id", function(d,i) { return d.id; })
@@ -103,7 +112,7 @@ function ToggleMap(file, input) {
         if (valueHash[d.properties.name]) {
             var c = quantize((valueHash[d.properties.name]));
             return getColor(c);
-    } else {
+        } else {
             return "#ccc";
         }
       })
@@ -140,8 +149,68 @@ function ToggleMap(file, input) {
           .style("top", (d3.event.layerY + 15) + "px")
           .style("left", (d3.event.layerX - tooltip_width - 30) + "px");
       }
+
+
+
+
     })
 
+
+
+  .on("click", function(d) {
+    d3.select("#dataZoom").remove();
+    d3.select("#viz").append("svg").attr("id", "dataZoom").attr("width", "440").attr("height","320");
+    var dataZoom = d3.select("#dataZoom");
+
+
+
+  //var dataZoomXScale = d3.scale.log()
+      // .base(Math.E)
+      // .domain([Math.exp(0), Math.exp(9)])
+      // .range([0, 440]);
+
+    var dataZoomXScale = d3.scale.linear().domain([0,120]).range([0,440]);
+    var xAxis = d3.svg.axis().scale(dataZoomXScale).orient("bottom").ticks(6);
+    dataZoom.append("g").attr("class", "axis").attr("transform", "translate(0, 200)").call(xAxis);
+
+      var rectHeight = 30;
+      dataZoom.append("rect")
+      .transition()
+    .attr("x", "10")
+    .attr("y", "10")
+    .attr("height", rectHeight)
+    .attr("width", dataZoomXScale(valueHash["China"]));
+      
+        dataZoom.append("rect")
+        .transition()
+        .delay(250)
+    .attr("x", "10")
+    .attr("y", "50")
+    .attr("height", rectHeight)
+    .attr("width", dataZoomXScale(valueHash["United States"]));
+       
+        dataZoom.append("rect")
+        .transition()
+        .delay(500)
+    .attr("x", "10")
+    .attr("y", "90")
+    .attr("height", rectHeight)
+    .attr("width", dataZoomXScale(valueHash["Russian Federation"]));
+    
+    dataZoom.append("rect")
+    .transition()
+    .delay(750)
+    .attr("x", "10")
+    .attr("y", "130")
+    .attr("height",rectHeight)
+    .attr("width", dataZoomXScale(valueHash[d.properties.name]));
+
+
+    dataZoom.append("text").attr("x","20").attr("y","30").attr("fill", "#fff").text("China");
+    dataZoom.append("text").attr("x","20").attr("y","70").attr("fill", "#fff").text("United States");
+    dataZoom.append("text").attr("x","20").attr("y","110").attr("fill", "#fff").text("Russian Federation");
+    dataZoom.append("text").attr("x","20").attr("y","150").attr("fill", "#fff").text(d.properties.name);
+  })
   .on("mouseout", function() {
             $(this).attr("fill-opacity", "1.0");
             $("#tooltip-container").hide();
@@ -283,3 +352,5 @@ var yearList = ["1993", "1994", "1995", "1996", "1997", "1998","1999", "2000", "
 
 </script>
 
+</body>
+</html>
