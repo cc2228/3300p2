@@ -190,74 +190,45 @@ function ToggleMap(file, input) {
 
 
   .on("click", function(d) {
+
+    //clear current bar graph
     d3.select("#dataZoom").remove();
+
+    //recreate bar graph
     d3.select("#viz").append("svg").attr("id", "dataZoom").attr("width", "440").attr("height","320");
     var dataZoom = d3.select("#dataZoom");
-
-
-
-  //var dataZoomXScale = d3.scale.log()
-      // .base(Math.E)
-      // .domain([Math.exp(0), Math.exp(9)])
-      // .range([0, 440]);
 
     var dataZoomXScale = d3.scale.linear().domain([0,120]).range([0,440]);
     var xAxis = d3.svg.axis().scale(dataZoomXScale).orient("bottom").ticks(6);
     dataZoom.append("g").attr("class", "axis").attr("transform", "translate(0, 200)").call(xAxis);
 
-    valueHash = sortobj(valueHash); 
-    var x = 0;
-    var topThree = [];
-    for (var countryName in valueHash) {
-      if(x < 3) {
-        var countryToPush = {};
-        countryToPush.countryName = countryName;
-        countryToPush.value = valueHash[countryName];
-        topThree.push(countryToPush);
 
-      }
-       x++;
+    var topThree = getTopThree(valueHash);
+
+    var rectHeight = 30;
+    var transitionDuration = 750;
+
+    for(var i = 0; i < 4; i++) {
+
+      var barWidth = valueHash[d.properties.name];
+      var barTitle = d.properties.name;
+      if(i < 3) {
+
+        barWidth = topThree[i]["value"];
+        barTitle = topThree[i]["countryName"];
+     }
+      dataZoom.append("rect")
+      .attr("x", "10")
+      .attr("y", i*40+10)
+      .attr("height", rectHeight)
+      .attr("width", 0)
+      .transition(transitionDuration)
+      .attr("width", dataZoomXScale(barWidth));
+
+      dataZoom.append("text").attr("x","20").attr("y", i*40+30).attr("fill", "#fff").text(barTitle);
+
     }
 
-
-      var rectHeight = 30;
-      dataZoom.append("rect")
-    .attr("x", "10")
-    .attr("y", "10")
-    .attr("height", rectHeight)
-    .attr("width", 0)
-    .transition(750)
-    .attr("width", dataZoomXScale(topThree[0]["value"]));
-      
-        dataZoom.append("rect")
-    .attr("x", "10")
-    .attr("y", "50")
-    .attr("height", rectHeight)
-    .attr("width", 0)
-    .transition(750)
-    .attr("width", dataZoomXScale(topThree[1]["value"]));
-       
-        dataZoom.append("rect")
-    .attr("x", "10")
-    .attr("y", "90")
-    .attr("height", rectHeight)
-    .attr("width", 0)
-    .transition(750)
-    .attr("width", dataZoomXScale(topThree[2]["value"]));
-    
-    dataZoom.append("rect")
-    .attr("x", "10")
-    .attr("y", "130")
-    .attr("height",rectHeight)
-    .attr("width", 0)
-    .transition(750)
-    .attr("width", dataZoomXScale(valueHash[d.properties.name]));
-
-
-    dataZoom.append("text").attr("x","20").attr("y","30").attr("fill", "#fff").text(topThree[0]["countryName"]);
-    dataZoom.append("text").attr("x","20").attr("y","70").attr("fill", "#fff").text(topThree[1]["countryName"]);
-    dataZoom.append("text").attr("x","20").attr("y","110").attr("fill", "#fff").text(topThree[2]["countryName"]);
-    dataZoom.append("text").attr("x","20").attr("y","150").attr("fill", "#fff").text(d.properties.name);
 
     // Energy consumed (in million btu) per person
     var popValue = valueHash[d.properties.name]/popHash[d.properties.name] * 1000;
@@ -283,6 +254,26 @@ function ToggleMap(file, input) {
   svg.attr("height", height * 2.2 / 3);
   });
   
+
+  function getTopThree(arrayToSort) {
+
+    arrayToSort = sortobj(arrayToSort); 
+    var x = 0;
+    var topThree = [];
+    for (var countryName in arrayToSort) {
+      if(x < 3) {
+        var countryToPush = {};
+        countryToPush.countryName = countryName;
+        countryToPush.value = arrayToSort[countryName];
+        topThree.push(countryToPush);
+
+      }
+       x++;
+    }
+    return topThree;
+
+  }
+
   d3.select(self.frameElement).style("height", (height * 2.3 / 3) + "px");
   
 
