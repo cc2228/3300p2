@@ -191,7 +191,6 @@ function ToggleMap(file, input) {
 
   .on("click", function(d) {
 
-    //clear current bar graph    
     draw(d, valueHash);
 
 
@@ -210,54 +209,54 @@ function ToggleMap(file, input) {
   });
   
 
-    function draw(objj, values) {
+  function draw(objj, values) {
 
-      d3.select("#dataZoom").remove();
+    d3.select("#dataZoom").remove();
 
-      //recreate bar graph
-      d3.select("#viz").append("svg").attr("id", "dataZoom").attr("width", "440").attr("height","320");
-      var dataZoom = d3.select("#dataZoom");
+    //recreate bar graph
+    d3.select("#viz").append("svg").attr("id", "dataZoom").attr("width", "440").attr("height","320");
+    var dataZoom = d3.select("#dataZoom");
 
-      var dataZoomXScale = d3.scale.linear().domain([0,120]).range([0,440]);
-      var xAxis = d3.svg.axis().scale(dataZoomXScale).orient("bottom").ticks(6);
-      dataZoom.append("g").attr("class", "axis").attr("transform", "translate(0, 200)").call(xAxis);
+    var dataZoomXScale = d3.scale.linear().domain([0,120]).range([0,440]);
+    var xAxis = d3.svg.axis().scale(dataZoomXScale).orient("bottom").ticks(6);
+    dataZoom.append("g").attr("class", "axis").attr("transform", "translate(0, 200)").call(xAxis);
 
-      var topThree = getTopThree(values);
+    var topThree = getTopThree(values);
 
-      var rectHeight = 30;
-      var transitionDuration = 750;
+    var rectHeight = 30;
+    var transitionDuration = 750;
 
-      for(var i = 0; i < 4; i++) {
+    for(var i = 0; i < 4; i++) {
 
-        var barWidth = values[objj.properties.name];
-        var barTitle = objj.properties.name;
-        if(i < 3) {
+      var barWidth = values[objj.properties.name];
+      var barTitle = objj.properties.name;
+      if(i < 3) {
 
-          barWidth = topThree[i]["value"];
-          barTitle = topThree[i]["countryName"];
-        }
-        dataZoom.append("rect")
-        .attr("x", "10")
-        .attr("y", i*40+10)
-        .attr("height", rectHeight)
-        .attr("width", 0)
-        .transition(transitionDuration)
-        .attr("width", dataZoomXScale(barWidth));
-
-        dataZoom.append("text").attr("x","20").attr("y", i*40+30).attr("fill", "#fff").text(barTitle);
-
+        barWidth = topThree[i]["value"];
+        barTitle = topThree[i]["countryName"];
       }
-    
+      dataZoom.append("rect")
+      .attr("x", "10")
+      .attr("y", i*40+10)
+      .attr("height", rectHeight)
+      .attr("width", 0)
+      .transition(transitionDuration)
+      .attr("width", dataZoomXScale(barWidth));
 
-    // Energy consumed (in million btu) per person
-      var popValue = values[objj.properties.name]/popHash[objj.properties.name] * 1000;
-      dataZoom.append("text").attr("x","20").attr("y","250")
-        .attr("fill", "#00000")
-        .attr("font-size", "20px")
-        .text("Every person in " + objj.properties.name + " spends/consumes " + Math.round(popValue) + " million btu of energy");
-
+      dataZoom.append("text").attr("x","20").attr("y", i*40+30).attr("fill", "#fff").text(barTitle);
 
     }
+  
+
+  // Energy consumed (in million btu) per person
+    var popValue = values[objj.properties.name]/popHash[objj.properties.name] * 1000;
+    dataZoom.append("text").attr("x","20").attr("y","250")
+      .attr("fill", "#00000")
+      .attr("font-size", "20px")
+      .text("Every person in " + objj.properties.name + " spends/consumes " + Math.round(popValue) + " million btu of energy");
+
+
+  }
   function getTopThree(arrayToSort) {
 
     arrayToSort = sortobj(arrayToSort); 
