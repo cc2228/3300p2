@@ -95,6 +95,11 @@ path:hover {
   fill: #647F54;
   height: 720px;
 }
+#dataZoom rect {
+  fill: #96CC75;
+ -webkit-transition: width 1s;
+ transition: width 1s;
+}
 path {
   transition: .5s;
 }
