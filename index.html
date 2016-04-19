@@ -17,6 +17,10 @@
 <script src="js/d3.slider.js"></script>
 <head>
 
+<!-- TODO
+Update tooltips
+ -->
+
 <body>
 
   <h2>World Energy Measurements</h2>
@@ -28,9 +32,10 @@
   <div id="tooltip-container"></div>
   <div id = "viz">
     <div id="canvas-svg"></div>
-    <div id="canvas-svg"></div>
-    <div id="slider"></div>
     <div id="dataZoom"></div>
+  </div>
+      <div class="container">
+      <div id="slider"></div>
   </div>
 <script>
 // Color scale
@@ -149,10 +154,6 @@ function ToggleMap(file, input) {
           .style("top", (d3.event.layerY + 15) + "px")
           .style("left", (d3.event.layerX - tooltip_width - 30) + "px");
       }
-
-
-
-
     })
 
 
@@ -175,34 +176,35 @@ function ToggleMap(file, input) {
 
       var rectHeight = 30;
       dataZoom.append("rect")
-      .transition()
     .attr("x", "10")
     .attr("y", "10")
     .attr("height", rectHeight)
+    .attr("width", 0)
+    .transition(750)
     .attr("width", dataZoomXScale(valueHash["China"]));
       
         dataZoom.append("rect")
-        .transition()
-        .delay(250)
     .attr("x", "10")
     .attr("y", "50")
     .attr("height", rectHeight)
+    .attr("width", 0)
+    .transition(750)
     .attr("width", dataZoomXScale(valueHash["United States"]));
        
         dataZoom.append("rect")
-        .transition()
-        .delay(500)
     .attr("x", "10")
     .attr("y", "90")
     .attr("height", rectHeight)
+    .attr("width", 0)
+    .transition(750)
     .attr("width", dataZoomXScale(valueHash["Russian Federation"]));
     
     dataZoom.append("rect")
-    .transition()
-    .delay(750)
     .attr("x", "10")
     .attr("y", "130")
     .attr("height",rectHeight)
+    .attr("width", 0)
+    .transition(750)
     .attr("width", dataZoomXScale(valueHash[d.properties.name]));
 
 
