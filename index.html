@@ -27,7 +27,7 @@ Update when clicking to different
   <h2>World Energy Measurements</h2>
 
   <div id ="buttons">
-    <button id="toggleEPI">EPI</button> | <button id="toggleCons">Energy Consumption</button> | <button id="toggleProd">Energy Production</button>
+    <!-- <button id="toggleEPI">EPI</button> |  --><button id="toggleCons">Energy Consumption</button> | <button id="toggleProd">Energy Production</button>
   </div>
 
   <div id="tooltip-container"></div>
@@ -81,6 +81,20 @@ function ToggleMap(file, input) {
     valueHash[d[country_key]] = +d[score_value];
   });
     console.log(valueHash);
+
+// hashmap for population data
+  var popHash = {};
+
+  // Import data for population, create hash value that can later be used to compare with consumption/prod
+  d3.csv("population.csv", function(err, popData) {
+    // Lillyan: Can you make the slider work for this part too? This is the population
+    var configPop = {"country":"Country", "score": "1993"};
+
+    var country_key_pop = configPop.country;
+    var score_value_pop = configPop.score;
+      popData.forEach(function(d) {
+      popHash[d[country_key_pop]] = +d[score_value_pop];
+    });
 
   quantize = d3.scale.quantize()
     .domain([0, 1.0])
@@ -214,6 +228,18 @@ function ToggleMap(file, input) {
     dataZoom.append("text").attr("x","20").attr("y","70").attr("fill", "#fff").text("United States");
     dataZoom.append("text").attr("x","20").attr("y","110").attr("fill", "#fff").text("Russian Federation");
     dataZoom.append("text").attr("x","20").attr("y","150").attr("fill", "#fff").text(d.properties.name);
+
+    // Energy consumed (in million btu) per person
+    var popValue = valueHash[d.properties.name]/popHash[d.properties.name] * 1000;
+    console.log(popValue);
+    dataZoom.append("text").attr("x","20").attr("y","250")
+      .attr("fill", "#00000")
+      .attr("font-size", "20px")
+      .text("Every person in " + d.properties.name + " spends/consumes " + Math.round(popValue) + " million btu of energy");
+
+
+
+
   })
   .on("mouseout", function() {
             $(this).attr("fill-opacity", "1.0");
@@ -252,25 +278,28 @@ function ToggleMap(file, input) {
 //   var time = value;
 
 // }));
-}
+}) // population data function
 
-// Default on EPI
-ToggleMap("epi.csv", "Score");
-document.getElementById('toggleEPI').style.fontWeight = "bold";
+} 
+
+// Default on Consumption
+ToggleMap("consumption.csv", "2013");
+document.getElementById('toggleCons').style.fontWeight = "bold";
 
 // Toggles between the multiple graphs
-// EPI only has data avaliable for 2013
-$("#toggleEPI").on('click', function() {
+// EPI only has data avaliable for 2016
+
+/*$("#toggleEPI").on('click', function() {
   document.getElementById('toggleCons').style.fontWeight = "normal";
   document.getElementById('toggleProd').style.fontWeight = "normal";
   $("#canvas-svg").empty();
 
   document.getElementById('toggleEPI').style.fontWeight = "bold";
   ToggleMap("epi.csv", "Score");
-});
+});*/
 
 $("#toggleCons").on('click', function() {
-  document.getElementById('toggleEPI').style.fontWeight = "normal";
+  //document.getElementById('toggleEPI').style.fontWeight = "normal";
   document.getElementById('toggleProd').style.fontWeight = "normal";
   $("#canvas-svg").empty();
 
@@ -283,7 +312,7 @@ $("#toggleCons").on('click', function() {
 
 
 $("#toggleProd").on('click', function() {
-  document.getElementById('toggleEPI').style.fontWeight = "normal";
+  //document.getElementById('toggleEPI').style.fontWeight = "normal";
   document.getElementById('toggleCons').style.fontWeight = "normal";
   $("#canvas-svg").empty();
 
@@ -334,6 +363,7 @@ function refillMap(file, input) {
     //   $(this).attr("fill-opacity", "0.8");
     //   $("#tooltip-container").show();
     // })
+
 
   });
 
