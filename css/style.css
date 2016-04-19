@@ -80,6 +80,7 @@ path:hover {
 * Slider
 ******************/
 .container {
+  width: 720px;
   padding: 20px;
 }
 
