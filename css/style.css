@@ -40,6 +40,29 @@ h2 {
   stroke: #fff;
   stroke-width: 1px;
 }
+.yearAxis {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: #fff;
+}
+#sliderAxis {
+  width: 750px;
+  display: inline-block;
+}
+#rightSideTitle {
+  display: inline-block;
+  color: #fff;
+  width: 400px;
+  text-align: center;
+}
+#tick1 {
+  margin-right: 320px;
+}
+#tick2 {
+  margin-right: 320px;
+}
+#tick3 {
+}
 
 /******************
 * Buttons

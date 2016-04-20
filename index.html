@@ -14,7 +14,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.1.0/topojson.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-<script src="js/d3.slider.js"></script>
 
 <head>
 
@@ -26,13 +25,19 @@ Update when clicking to different
 <body>
 
   <h2>World Energy Measurements</h2>
-
+  <hr>
   <div id ="buttons">
     <button id="toggleCons">Energy Consumption</button> | <button id="toggleProd">Energy Production</button>
   </div>
 
-  <input id="slider2" class = "slider" type="range" min="1993" max="2013" value = "1993" step="1" />
+  <input id="slider2" class = "slider" type="range" min="1993" max="2013" value = "1993" step="1" /><br>
+  <div id = "sliderAxis">
+    <div class = "yearAxis" id = "tick1">1993</div><div class = "yearAxis" id = "tick2">2003</div><div class = "yearAxis" id = "tick3">2013</diV>
+  </div>
+  <div id = "rightSideTitle">
+    Top 3 countries vs. user selection
 
+  </div>
   <div id="tooltip-container"></div>
 
   <div id = "viz">
@@ -122,10 +127,6 @@ function ToggleMap(file, input) {
          .datum({type: "LineString", coordinates: [[-180, 0], [-90, 0], [0, 0], [90, 0], [180, 0]]})
          .attr("class", "equator")
          .attr("d", path);
-
-        d3.select("#slider").on("input", function() {
-          console.log("heloo");
-        }); 
 
         var country = g.selectAll(".country").data(countries);
 
