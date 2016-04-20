@@ -50,233 +50,205 @@ function ToggleMap(file, input) {
 
   d3.csv(file, function(err, data) {
 
-  var config = {"country":"Country", "score":input};
+    var config = {"country":"Country", "score":input};
 
-  var width = 720, height = 720;
+    var width = 720, height = 720;
 
-  var country_key = config.country;
-  var score_value = config.score;
+    var country_key = config.country;
+    var score_value = config.score;
 
-  // d3 projection of world map
-  var projection = d3.geo.mercator()
-    .scale((width + 1) / 2 / Math.PI)
-    .translate([width / 2, height / 2])
-    .precision(.1);
+    // d3 projection of world map
+    var projection = d3.geo.mercator().scale((width + 1) / 2 / Math.PI).translate([width / 2, height / 2]).precision(.1);
 
-  var path = d3.geo.path()
-    .projection(projection);
+    var path = d3.geo.path().projection(projection);
 
-  var graticule = d3.geo.graticule();
+    var graticule = d3.geo.graticule();
 
-  var svg = d3.select("#canvas-svg").append("svg")
-    .attr("width", width)
-    .attr("height", height);
+    var svg = d3.select("#canvas-svg").append("svg")
+      .attr("width", width)
+      .attr("height", height);
 
-  svg.append("path")
-    .datum(graticule)
-    .attr("class", "graticule")
-    .attr("d", path);
+    svg.append("path").datum(graticule).attr("class", "graticule").attr("d", path);
 
-// Create hashmap with country and value
-  valueHash = {};
+      // Create hashmap with country and value
+    valueHash = {};
     data.forEach(function(d) {
-    valueHash[d[country_key]] = +d[score_value];
-  });
+      valueHash[d[country_key]] = +d[score_value];
+    });
 
 
 
-// hashmap for population data
-  var popHash = {};
+    // hashmap for population data
+    var popHash = {};
 
-  // Import data for population, create hash value that can later be used to compare with consumption/prod
-  d3.csv("population.csv", function(err, popData) {
-    // Lillyan: Can you make the slider work for this part too? This is the population
-    var configPop = {"country":"Country", "score": "1993"};
+    // Import data for population, create hash value that can later be used to compare with consumption/prod
+    d3.csv("population.csv", function(err, popData) {
+      // Lillyan: Can you make the slider work for this part too? This is the population
+      var configPop = {"country":"Country", "score": "1993"};
 
-    var country_key_pop = configPop.country;
-    var score_value_pop = configPop.score;
+      var country_key_pop = configPop.country;
+      var score_value_pop = configPop.score;
       popData.forEach(function(d) {
-      popHash[d[country_key_pop]] = +d[score_value_pop];
-    });
+          popHash[d[country_key_pop]] = +d[score_value_pop];
+      });
 
-  quantize = d3.scale.quantize()
-    .domain([0, 1.0])
-    .range(d3.range(100).map(function(i) { return i; }));
+      quantize = d3.scale.quantize().domain([0, 1.0]).range(d3.range(100).map(function(i) { return i; }));
 
-  quantize.domain([d3.min(data, function(d){
-    return (+d[score_value]) }),
-  d3.max(data, function(d){
-    return (+d[score_value]) })]);
+      quantize.domain([d3.min(data, function(d){
+        return (+d[score_value]) }),
+      d3.max(data, function(d){
+        return (+d[score_value]) })]);
 
-  // Source: Vida world json file
-  d3.json("https://s3-us-west-2.amazonaws.com/vida-public/geo/world-topo-min.json", function(error, world) {
-  countries = topojson.feature(world, world.objects.countries).features;
+      // Source: Vida world json file
+      d3.json("https://s3-us-west-2.amazonaws.com/vida-public/geo/world-topo-min.json", function(error, world) {
+        countries = topojson.feature(world, world.objects.countries).features;
 
-  svg.append("path")
-     .datum(graticule)
-     .attr("class", "choropleth")
-     .attr("d", path);
+        svg.append("path")
+           .datum(graticule)
+           .attr("class", "choropleth")
+           .attr("d", path);
 
-  var g = svg.append("g");
+        var g = svg.append("g");
 
-  g.append("path")
-   .datum({type: "LineString", coordinates: [[-180, 0], [-90, 0], [0, 0], [90, 0], [180, 0]]})
-   .attr("class", "equator")
-   .attr("d", path);
+        g.append("path")
+         .datum({type: "LineString", coordinates: [[-180, 0], [-90, 0], [0, 0], [90, 0], [180, 0]]})
+         .attr("class", "equator")
+         .attr("d", path);
 
-  d3.select("#slider").on("input", function() {
-    console.log("heloo");
-  }); 
+        d3.select("#slider").on("input", function() {
+          console.log("heloo");
+        }); 
 
-  var country = g.selectAll(".country").data(countries);
+        var country = g.selectAll(".country").data(countries);
+
+        ////------------------------------------------------------------------
+        country.enter().insert("path")
+        .attr("class", "country")
+        .attr("d", path)
+        .attr("id", function(d,i) { return d.id; })
+        .attr("title", function(d) { return d.properties.name; })
+        .style("fill", function(d) {
+          if (valueHash[d.properties.name]) {
+              var c = quantize((valueHash[d.properties.name]));
+              return getColor(c);
+          } else {
+              return "#ccc";
+          }
+        })
+
+        // Dynamic part: mouseover to see country name and energy info
+        .on("mousemove", function(d) {
+          var html = "";
+
+          html += "<div class=\"tooltip_kv\">";
+          html += "<span class=\"tooltip_key\">";
+          html += d.properties.name;
+          html += "</span>";
+          html += "<span class=\"tooltip_value\">";
+          html += (valueHash[d.properties.name] ? valueHash[d.properties.name] : "");
+          html += "";
+          html += "</span>";
+          html += "</div>";
+          
+          $("#tooltip-container").html(html);
+          $(this).attr("fill-opacity", "0.8");
+          $("#tooltip-container").show();
+          
+          var coordinates = d3.mouse(this);
+          
+          var map_width = $('.choropleth')[0].getBoundingClientRect().width;
+          
+          if (d3.event.pageX < map_width / 2) {
+            d3.select("#tooltip-container")
+              .style("top", (d3.event.layerY + 15) + "px")
+              .style("left", (d3.event.layerX + 15) + "px");
+          } else {
+            var tooltip_width = $("#tooltip-container").width();
+            d3.select("#tooltip-container")
+              .style("top", (d3.event.layerY + 15) + "px")
+              .style("left", (d3.event.layerX - tooltip_width - 30) + "px");
+          }
+        })
 
 
-      country.enter().insert("path")
-      .attr("class", "country")
-      .attr("d", path)
-      .attr("id", function(d,i) { return d.id; })
-      .attr("title", function(d) { return d.properties.name; })
-      .style("fill", function(d) {
-        if (valueHash[d.properties.name]) {
-            var c = quantize((valueHash[d.properties.name]));
-            return getColor(c);
-        } else {
-            return "#ccc";
+        .on("click", function(d) {
+          sliderD = d
+          draw(d, valueHash);
+
+        })
+
+        .on("mouseout", function() {
+                  $(this).attr("fill-opacity", "1.0");
+                  $("#tooltip-container").hide();
+        }); //end of country line
+          
+        g.append("path")
+            .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; }))
+            .attr("class", "boundary")
+            .attr("d", path);
+        
+        svg.attr("height", height * 2.2 / 3);
+
+      }); //end of json map function
+      
+        //-----------------------------------------------------------------
+      function draw(objj, values) {
+
+        d3.select("#dataZoom").remove();
+
+        //recreate bar graph
+        d3.select("#viz").append("svg").attr("id", "dataZoom").attr("width", "440").attr("height","320");
+        var dataZoom = d3.select("#dataZoom");
+
+        var dataZoomXScale = d3.scale.linear().domain([0,120]).range([0,440]);
+        var xAxis = d3.svg.axis().scale(dataZoomXScale).orient("bottom").ticks(6);
+        dataZoom.append("g").attr("class", "axis").attr("transform", "translate(0, 200)").call(xAxis);
+
+        var topThree = getTopThree(values);
+
+        var rectHeight = 30;
+        var transitionDuration = 750;
+
+        for(var i = 0; i < 4; i++) {
+
+          var barWidth = values[objj.properties.name];
+          var barTitle = objj.properties.name;
+          if(i < 3) {
+
+            barWidth = topThree[i]["value"];
+            barTitle = topThree[i]["countryName"];
+          }
+          dataZoom.append("rect")
+          .attr("x", "10")
+          .attr("y", i*40+10)
+          .attr("height", rectHeight)
+          .attr("width", 0)
+          .transition(transitionDuration)
+          .attr("width", dataZoomXScale(barWidth));
+
+          dataZoom.append("text").attr("x","20").attr("y", i*40+30).attr("fill", "#fff").text(barTitle);
+
         }
-      })
+        
 
-    // Dynamic part: mouseover to see country name and energy info
-    .on("mousemove", function(d) {
-      var html = "";
+        // Energy consumed (in million btu) per person
+        var popValue = values[objj.properties.name]/popHash[objj.properties.name] * 1000;
+        dataZoom.append("text").attr("x","20").attr("y","250")
+          .attr("fill", "#00000")
+          .attr("font-size", "20px")
+          .text("Every person in " + objj.properties.name + " spends/consumes " + Math.round(popValue) + " million btu of energy");
 
-      html += "<div class=\"tooltip_kv\">";
-      html += "<span class=\"tooltip_key\">";
-      html += d.properties.name;
-      html += "</span>";
-      html += "<span class=\"tooltip_value\">";
-      html += (valueHash[d.properties.name] ? valueHash[d.properties.name] : "");
-      html += "";
-      html += "</span>";
-      html += "</div>";
-      
-      $("#tooltip-container").html(html);
-      $(this).attr("fill-opacity", "0.8");
-      $("#tooltip-container").show();
-      
-      var coordinates = d3.mouse(this);
-      
-      var map_width = $('.choropleth')[0].getBoundingClientRect().width;
-      
-      if (d3.event.pageX < map_width / 2) {
-        d3.select("#tooltip-container")
-          .style("top", (d3.event.layerY + 15) + "px")
-          .style("left", (d3.event.layerX + 15) + "px");
-      } else {
-        var tooltip_width = $("#tooltip-container").width();
-        d3.select("#tooltip-container")
-          .style("top", (d3.event.layerY + 15) + "px")
-          .style("left", (d3.event.layerX - tooltip_width - 30) + "px");
       }
-    })
 
 
-  .on("click", function(d) {
-    sliderD = d
-    draw(d, valueHash);
+      d3.select(self.frameElement).style("height", (height * 2.3 / 3) + "px");
 
 
-  })
-  .on("mouseout", function() {
-            $(this).attr("fill-opacity", "1.0");
-            $("#tooltip-container").hide();
-        });
-    
-  g.append("path")
-      .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; }))
-      .attr("class", "boundary")
-      .attr("d", path);
-  
-  svg.attr("height", height * 2.2 / 3);
-  });
-  
+    }); //end of population csv
 
-  function draw(objj, values) {
+  }) //end of countries csv
 
-    d3.select("#dataZoom").remove();
-
-    //recreate bar graph
-    d3.select("#viz").append("svg").attr("id", "dataZoom").attr("width", "440").attr("height","320");
-    var dataZoom = d3.select("#dataZoom");
-
-    var dataZoomXScale = d3.scale.linear().domain([0,120]).range([0,440]);
-    var xAxis = d3.svg.axis().scale(dataZoomXScale).orient("bottom").ticks(6);
-    dataZoom.append("g").attr("class", "axis").attr("transform", "translate(0, 200)").call(xAxis);
-
-    var topThree = getTopThree(values);
-
-    var rectHeight = 30;
-    var transitionDuration = 750;
-
-    for(var i = 0; i < 4; i++) {
-
-      var barWidth = values[objj.properties.name];
-      var barTitle = objj.properties.name;
-      if(i < 3) {
-
-        barWidth = topThree[i]["value"];
-        barTitle = topThree[i]["countryName"];
-      }
-      dataZoom.append("rect")
-      .attr("x", "10")
-      .attr("y", i*40+10)
-      .attr("height", rectHeight)
-      .attr("width", 0)
-      .transition(transitionDuration)
-      .attr("width", dataZoomXScale(barWidth));
-
-      dataZoom.append("text").attr("x","20").attr("y", i*40+30).attr("fill", "#fff").text(barTitle);
-
-    }
-  
-
-  // Energy consumed (in million btu) per person
-    var popValue = values[objj.properties.name]/popHash[objj.properties.name] * 1000;
-    dataZoom.append("text").attr("x","20").attr("y","250")
-      .attr("fill", "#00000")
-      .attr("font-size", "20px")
-      .text("Every person in " + objj.properties.name + " spends/consumes " + Math.round(popValue) + " million btu of energy");
-
-
-  }
-
-
-  d3.select(self.frameElement).style("height", (height * 2.3 / 3) + "px");
-  
-
-// Circle graphs
-/* var svgContainer = d3.select("#circle-graph").append("svg")
-  .attr("width", 200)
-  .attr("height", 200);
- 
- countries.forEach(function(d) {
-  console.log("hi");
-  svgContainer.append("circle")
-    .attr("cx", 100)
-    .attr("cy", 100)
-    .attr("r", function(d) { 
-      console.log(valueHash[countries]);
-    });
-
- })*/
-
-  });
-//  d3.select("#slider").call(d3.slider().axis(true).min(1993).max(2013).step(1).on("slide", function(evt, value) {
-//   var time = value;
-
-// }));
-}) // population data function
-
-} 
+} //end of toggle map
 
 // Default on Consumption
 ToggleMap("consumption.csv", "2013");
@@ -284,17 +256,6 @@ document.getElementById('toggleCons').style.fontWeight = "bold";
 $("#toggleCons").addClass("active");
 
 // Toggles between the multiple graphs
-// EPI only has data avaliable for 2016
-
-/*$("#toggleEPI").on('click', function() {
-  document.getElementById('toggleCons').style.fontWeight = "normal";
-  document.getElementById('toggleProd').style.fontWeight = "normal";
-  $("#canvas-svg").empty();
-
-  document.getElementById('toggleEPI').style.fontWeight = "bold";
-  ToggleMap("epi.csv", "Score");
-});*/
-
 $("#toggleCons").on('click', function() {
   //document.getElementById('toggleEPI').style.fontWeight = "normal";
   document.getElementById('toggleProd').style.fontWeight = "normal";
@@ -343,31 +304,12 @@ function refillMap(file, input) {
                 return "#ccc";
             }
     })
-    // .on("mousemove", function(d) {
-    //   var html = "";
-
-    //   html += "<div class=\"tooltip_kv\">";
-    //   html += "<span class=\"tooltip_key\">";
-    //   html += d.properties.name;
-    //   html += "</span>";
-    //   html += "<span class=\"tooltip_value\">";
-    //   html += (valueHash[d.properties.name] ? valueHash[d.properties.name] : "");
-    //   html += "";
-    //   html += "</span>";
-    //   html += "</div>";
-      
-    //   $("#tooltip-container").html(html);
-    //   $(this).attr("fill-opacity", "0.8");
-    //   $("#tooltip-container").show();
-    // })
-
 
   });
-
 }
 
 //Sort the values so that we can display the top three
-    function sortobj(obj)
+function sortobj(obj)
   {
       var keys=Object.keys(obj);
       var kva= keys.map(function(k,i)
@@ -384,7 +326,7 @@ function refillMap(file, input) {
   }
 
   //get the top three co
-  function getTopThree(arrayToSort) {
+function getTopThree(arrayToSort) {
 
     arrayToSort = sortobj(arrayToSort); 
     var x = 0;
@@ -401,7 +343,7 @@ function refillMap(file, input) {
     }
     return topThree;
 
-  }
+}
 /***********************
 * Slider
 ***********************/
