@@ -86,6 +86,11 @@ button:hover {
   cursor: pointer;
   background-color: #647F54;
 }
+#play {
+  display: inline-block;
+  width: 400px;
+  vertical-align: top;
+}
 
 /******************
 * Tool Tips

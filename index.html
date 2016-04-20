@@ -46,6 +46,7 @@ Update when clicking to different
     </div>
     <div id="dataZoom"></div>
   </div>
+    <button id = "play">Play</button>
 
 <script>
 
@@ -169,12 +170,12 @@ function ToggleMap(file, input) {
           
           if (d3.event.pageX < map_width / 2) {
             d3.select("#tooltip-container")
-              .style("top", (d3.event.layerY + 15) + "px")
-              .style("left", (d3.event.layerX + 15) + "px");
+              .style("top", (d3.event.layerY) + "px")
+              .style("left", (d3.event.layerX) + "px");
           } else {
             var tooltip_width = $("#tooltip-container").width();
             d3.select("#tooltip-container")
-              .style("top", (d3.event.layerY + 15) + "px")
+              .style("top", (d3.event.layerY) + "px")
               .style("left", (d3.event.layerX - tooltip_width - 30) + "px");
           }
         })
@@ -295,6 +296,26 @@ function ToggleMap(file, input) {
         }); 
       } //end of refill
 
+      $("#play").click(function() {
+         //if value < max
+        (function myLoop (i) {          
+           setTimeout(function () {   
+             $("#slider2").val(parseInt($("#slider2").val())+1);  
+             $("#slider2").trigger('change');
+               rval = $("#slider2").val();
+              $("#sliderNum").html(rval);
+             if ($('#toggleCons').hasClass("active")) {
+                refillMap("consumption.csv", ""+rval, sliderD);
+              }
+              else if ($('#toggleProd').hasClass("active")) {
+                refillMap("production.csv", ""+rval, sliderD);
+              } 
+              if (--i) myLoop(i);      //  decrement i and call myLoop again if i > 0
+           }, 500)
+        })(20);
+
+      });
+
     }); //end of population csv
 
   }); //end of countries csv
@@ -331,7 +352,6 @@ $("#toggleProd").on('click', function() {
   document.getElementById('toggleProd').style.fontWeight = "bold";
   ToggleMap("production.csv", "2013");
 });
-
 
 
 //Sort the values so that we can display the top three
