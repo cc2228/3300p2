@@ -30,17 +30,18 @@ Update when clicking to different
   <div id ="buttons">
     <!-- <button id="toggleEPI">EPI</button> |  --><button id="toggleCons">Energy Consumption</button> | <button id="toggleProd">Energy Production</button>
   </div>
+<input id="slider2" type="range" min="1993" max="2013" step="1" /><div id = "sliderNum"></div>
 
   <div id="tooltip-container"></div>
   <div id = "viz">
     <div id="canvas-svg"></div>
     <div id="dataZoom"></div>
   </div>
-  <div class="container">
-    <div id="slider"></div>
-  </div>
 
 <script>
+
+//slider
+
 // Color scale
 var getColor = d3.scale.linear().domain([0,100]).range(["#d6f5d6","#145214"]);
 var valueHash, quantize, countries;
@@ -247,17 +248,18 @@ function ToggleMap(file, input) {
       /***********************
       * Slider
       ***********************/
-      var yearList = ["1993", "1994", "1995", "1996", "1997", "1998","1999", "2000", "2001", "2002", "2003", "2004", "2005", "2006", "2007", "2008", "2009", "2010", "2011", "2012", "2013"];
 
-      d3.select("#slider").call(d3.slider().axis(true).min(1993).max(2013).step(1).value(2013).on("slide", function(evt, value) {
-        var time = value;
-        if ($('#toggleCons').hasClass("active")) {
-          refillMap("consumption.csv", String(time), sliderD);
-        }
-        else if ($('#toggleProd').hasClass("active")) {
-          refillMap("production.csv", String(time), sliderD);
-        }
-      }));
+      d3.select("#slider2").on("input", function() {
+          var rval = (this).value;
+          $("#sliderNum").html(rval);
+         if ($('#toggleCons').hasClass("active")) {
+            refillMap("consumption.csv", ""+rval, sliderD);
+          }
+          else if ($('#toggleProd').hasClass("active")) {
+            refillMap("production.csv", ""+rval, sliderD);
+          }          
+      });
+
 
       function refillMap(file, input, clickedCountry) {
         var map = d3.select("#canvas-svg");
@@ -271,7 +273,7 @@ function ToggleMap(file, input) {
           });
 
             draw(clickedCountry, valueHash);
-            
+
           map.selectAll(".country").data(countries)
             .transition(750)
             .style("fill", function(d) {
