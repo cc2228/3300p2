@@ -56,6 +56,8 @@ Update when clicking to different
 var getColor = d3.scale.linear().domain([0,100]).range(["#d6f5d6","#145214"]);
 var valueHash, quantize, countries;
 var sliderD = "China";
+var makeTransitionOnBars = true;
+
 
 function ToggleMap(file, input) {
 
@@ -226,14 +228,22 @@ function ToggleMap(file, input) {
             barWidth = topThree[i]["value"];
             barTitle = topThree[i]["countryName"];
           }
-          dataZoom.append("rect")
-          .attr("x", "10")
-          .attr("y", i*40+10)
-          .attr("height", rectHeight)
-          .attr("width", 0)
-          .transition(transitionDuration)
-          .attr("width", dataZoomXScale(barWidth));
-
+          if(makeTransitionOnBars) {
+            dataZoom.append("rect")
+            .attr("x", "10")
+            .attr("y", i*40+10)
+            .attr("height", rectHeight)
+            .attr("width", 0)
+            .transition(transitionDuration)
+            .attr("width", dataZoomXScale(barWidth));
+          }
+          else {
+            dataZoom.append("rect")
+            .attr("x", "10")
+            .attr("y", i*40+10)
+            .attr("height", rectHeight)
+            .attr("width", dataZoomXScale(barWidth));
+          }
           dataZoom.append("text").attr("x","20").attr("y", i*40+30).attr("fill", "#fff").text(barTitle);
 
         }
@@ -298,7 +308,8 @@ function ToggleMap(file, input) {
 
       $("#play").click(function() {
          //if value < max
-        (function myLoop (i) {          
+        (function myLoop (i) { 
+            makeTransitionOnBars = false         
            setTimeout(function () {   
              $("#slider2").val(parseInt($("#slider2").val())+1);  
              $("#slider2").trigger('change');
@@ -313,6 +324,7 @@ function ToggleMap(file, input) {
               if (--i) myLoop(i);      //  decrement i and call myLoop again if i > 0
            }, 500)
         })(20);
+        makeTransitionOnBars = true;
 
       });
 
