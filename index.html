@@ -321,11 +321,10 @@ function ToggleMap(file, input) {
               else if ($('#toggleProd').hasClass("active")) {
                 refillMap("production.csv", ""+rval, sliderD);
               } 
-              if (--i) myLoop(i);      //  decrement i and call myLoop again if i > 0
+              if (--i) myLoop(i); 
+              else makeTransitionOnBars = true;  
            }, 500)
         })(20);
-        makeTransitionOnBars = true;
-
       });
 
     }); //end of population csv
