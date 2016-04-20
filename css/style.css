@@ -99,6 +99,7 @@ button:hover {
   border: 1px solid;
   display: none;
   font-size: 10px;
+  z-index: 1;
 }
 path:hover {
   cursor: pointer;
