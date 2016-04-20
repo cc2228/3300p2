@@ -29,6 +29,7 @@ h2 {
 
 .slider {
   margin: 10px;
+  margin-left: 0px;
 }
 #dataZoom {
   display: inline;
@@ -71,15 +72,16 @@ h2 {
 button {
   border: none;
   color: #000;
-  width: 49%;
+  width: 367.5px;
   background-color: #fff;
   padding: 10px;
   border: solid #fff;
 }
 #buttons {
   text-align: center;
-  width: 720px;
+  width: 740px;
   margin: 10px;
+  margin-left: 0px;
 }
 button:hover {
   color: #fff;
@@ -88,7 +90,7 @@ button:hover {
 }
 #play {
   display: inline-block;
-  width: 400px;
+  width: 740px;
   vertical-align: top;
 }
 
@@ -126,7 +128,7 @@ path:hover {
   padding: 20px;
 }
 #slider2 {
-  width: 720px;
+  width: 740px;
   color: #aaa;
 }
 input[type=range] {
