@@ -270,9 +270,11 @@ function ToggleMap(file, input) {
           $("#sliderNum").html(rval);
          if ($('#toggleCons').hasClass("active")) {
             refillMap("consumption.csv", ""+rval, sliderD);
+            console.log($("#sliderNum"));
           }
           else if ($('#toggleProd').hasClass("active")) {
             refillMap("production.csv", ""+rval, sliderD);
+            console.log($("#sliderNum"));
           }          
       });
 
