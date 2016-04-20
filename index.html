@@ -15,6 +15,7 @@
 <script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.1.0/topojson.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <script src="js/d3.slider.js"></script>
+
 <head>
 
 <!-- TODO
@@ -43,6 +44,7 @@ Update when clicking to different
 // Color scale
 var getColor = d3.scale.linear().domain([0,100]).range(["#d6f5d6","#145214"]);
 var valueHash, quantize, countries;
+var sliderD;
 
 function ToggleMap(file, input) {
 
@@ -81,21 +83,7 @@ function ToggleMap(file, input) {
     valueHash[d[country_key]] = +d[score_value];
   });
 
-  function sortobj(obj)
-  {
-      var keys=Object.keys(obj);
-      var kva= keys.map(function(k,i)
-      {
-          return [k,obj[k]];
-      });
-      kva.sort(function(a,b){
-          if(a[1]>b[1]) return -1;if(a[1]<b[1]) return 1;
-          return 0
-      });
-      var o={}
-      kva.forEach(function(a){ o[a[0]]=a[1]})
-      return o;
-  }
+
 
 // hashmap for population data
   var popHash = {};
@@ -135,6 +123,10 @@ function ToggleMap(file, input) {
    .datum({type: "LineString", coordinates: [[-180, 0], [-90, 0], [0, 0], [90, 0], [180, 0]]})
    .attr("class", "equator")
    .attr("d", path);
+
+  d3.select("#slider").on("input", function() {
+    console.log("heloo");
+  }); 
 
   var country = g.selectAll(".country").data(countries);
 
@@ -188,9 +180,8 @@ function ToggleMap(file, input) {
     })
 
 
-
   .on("click", function(d) {
-
+    sliderD = d
     draw(d, valueHash);
 
 
@@ -257,24 +248,7 @@ function ToggleMap(file, input) {
 
 
   }
-  function getTopThree(arrayToSort) {
 
-    arrayToSort = sortobj(arrayToSort); 
-    var x = 0;
-    var topThree = [];
-    for (var countryName in arrayToSort) {
-      if(x < 3) {
-        var countryToPush = {};
-        countryToPush.countryName = countryName;
-        countryToPush.value = arrayToSort[countryName];
-        topThree.push(countryToPush);
-
-      }
-       x++;
-    }
-    return topThree;
-
-  }
 
   d3.select(self.frameElement).style("height", (height * 2.3 / 3) + "px");
   
@@ -307,6 +281,7 @@ function ToggleMap(file, input) {
 // Default on Consumption
 ToggleMap("consumption.csv", "2013");
 document.getElementById('toggleCons').style.fontWeight = "bold";
+$("#toggleCons").addClass("active");
 
 // Toggles between the multiple graphs
 // EPI only has data avaliable for 2016
@@ -391,6 +366,42 @@ function refillMap(file, input) {
 
 }
 
+//Sort the values so that we can display the top three
+    function sortobj(obj)
+  {
+      var keys=Object.keys(obj);
+      var kva= keys.map(function(k,i)
+      {
+          return [k,obj[k]];
+      });
+      kva.sort(function(a,b){
+          if(a[1]>b[1]) return -1;if(a[1]<b[1]) return 1;
+          return 0
+      });
+      var o={}
+      kva.forEach(function(a){ o[a[0]]=a[1]})
+      return o;
+  }
+
+  //get the top three co
+  function getTopThree(arrayToSort) {
+
+    arrayToSort = sortobj(arrayToSort); 
+    var x = 0;
+    var topThree = [];
+    for (var countryName in arrayToSort) {
+      if(x < 3) {
+        var countryToPush = {};
+        countryToPush.countryName = countryName;
+        countryToPush.value = arrayToSort[countryName];
+        topThree.push(countryToPush);
+
+      }
+       x++;
+    }
+    return topThree;
+
+  }
 /***********************
 * Slider
 ***********************/

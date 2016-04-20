@@ -216,6 +216,7 @@ return function module() {
                       stepValue(scale.invert(pos / sliderLength))
                     : nearestTick(pos / sliderLength));
         }
+        //draw(sliderD, valueHash);
       }
 
       function onClickVertical() {
@@ -237,6 +238,7 @@ return function module() {
         moveHandle(scale.invert ? 
                     stepValue(scale.invert(pos / sliderLength))
                   : nearestTick(pos / sliderLength));
+
       }
 
       function onDragVertical() {
@@ -253,6 +255,7 @@ return function module() {
 
       function stopPropagation() {
         d3.event.stopPropagation();
+
       }
 
     });
