@@ -291,6 +291,14 @@ function ToggleMap(file, input) {
             valueHash[d[country_key]] = +d[score_value];
           });
 
+          var configPop = {"country":"Country", "score": input};
+
+          var country_key_pop = configPop.country;
+          var score_value_pop = configPop.score;
+          popData.forEach(function(d) {
+              popHash[d[country_key_pop]] = +d[score_value_pop];
+          });
+
           if(makeTransitionOnBars) draw(clickedCountry, valueHash);
 
 
@@ -558,7 +566,7 @@ innerDiv.innerHTML = $("#slider2").val();
 // The variable iDiv is still good... Just append to it.
 
 
-ToggleMap("consumption.csv", "2013");
+ToggleMap("consumption.csv", "1993");
 document.getElementById('toggleCons').style.fontWeight = "bold";
 $("#toggleCons").addClass("active");
 
@@ -573,7 +581,7 @@ $("#toggleCons").on('click', function() {
   $(this).addClass('active');
 
   document.getElementById('toggleCons').style.fontWeight = "bold";
-  ToggleMap("consumption.csv", "2013");
+  ToggleMap("consumption.csv", "1993");
 });
 
 
@@ -587,7 +595,7 @@ $("#toggleProd").on('click', function() {
   $(this).addClass('active');
 
   document.getElementById('toggleProd').style.fontWeight = "bold";
-  ToggleMap("production.csv", "2013");
+  ToggleMap("production.csv", "1993");
 });
 
 
