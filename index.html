@@ -290,7 +290,8 @@ function ToggleMap(file, input) {
             valueHash[d[country_key]] = +d[score_value];
           });
 
-            draw(clickedCountry, valueHash);
+          if(makeTransitionOnBars) draw(clickedCountry, valueHash);
+
 
           map.selectAll(".country").data(countries)
             .transition(750)
