@@ -45,7 +45,9 @@ Update when clicking to different
       <div id = "sliderNum">1993</div>
     </div>
     <div id="dataZoom"></div>
+
   </div>
+
     <button id = "play">Play</button>
 
 <script>
@@ -270,11 +272,9 @@ function ToggleMap(file, input) {
           $("#sliderNum").html(rval);
          if ($('#toggleCons').hasClass("active")) {
             refillMap("consumption.csv", ""+rval, sliderD);
-            console.log($("#sliderNum"));
           }
           else if ($('#toggleProd').hasClass("active")) {
             refillMap("production.csv", ""+rval, sliderD);
-            console.log($("#sliderNum"));
           }          
       });
 
@@ -337,6 +337,13 @@ function ToggleMap(file, input) {
 } //end of toggle map
 
 // Default on Consumption
+var innerDiv = document.createElement('div');
+innerDiv.id = 'sliderNum';
+innerDiv.innerHTML = $("#slider2").val();
+
+// The variable iDiv is still good... Just append to it.
+
+
 ToggleMap("consumption.csv", "2013");
 document.getElementById('toggleCons').style.fontWeight = "bold";
 $("#toggleCons").addClass("active");
@@ -345,7 +352,8 @@ $("#toggleCons").addClass("active");
 $("#toggleCons").on('click', function() {
   //document.getElementById('toggleEPI').style.fontWeight = "normal";
   document.getElementById('toggleProd').style.fontWeight = "normal";
-  $("#canvas-svg").empty();
+  $("#canvas-svg").empty(); 
+  document.getElementById("canvas-svg").appendChild(innerDiv);
 
   $(this).siblings().removeClass('active');
   $(this).addClass('active');
@@ -358,7 +366,8 @@ $("#toggleCons").on('click', function() {
 $("#toggleProd").on('click', function() {
   //document.getElementById('toggleEPI').style.fontWeight = "normal";
   document.getElementById('toggleCons').style.fontWeight = "normal";
-  $("#canvas-svg").empty();
+  $("#canvas-svg").empty(); 
+  document.getElementById("canvas-svg").appendChild(innerDiv);
 
   $(this).siblings().removeClass('active');
   $(this).addClass('active');

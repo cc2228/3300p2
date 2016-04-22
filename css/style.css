@@ -36,6 +36,11 @@ h2 {
   vertical-align: top;
   padding: 20px;
 }
+#temp {
+  display: inline-block;
+  width: 600px;
+  border: solid black;
+}
 .boundary {
   fill: none;
   stroke: #fff;
