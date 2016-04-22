@@ -45,6 +45,7 @@ Update when clicking to different
       <div id = "sliderNum">1993</div>
     </div>
     <div id="dataZoom"></div>
+    <div id="chordG"></div>
   </div>
     <button id = "play">Play</button>
 
@@ -309,6 +310,216 @@ function ToggleMap(file, input) {
         }); 
       } //end of refill
 
+      /***********************
+      * Chord Graph
+      ***********************/
+      var cmargin = {left: 50, top: 10, right: 50, bottom: 10};
+      var cwidth = 500 - cmargin.left - cmargin.right;
+      var cheight = 415 - cmargin.top - cmargin.bottom; // 5/6
+
+      var csvg = d3.select('#chordG').append('svg')
+        .attr("width", 500)
+        .attr("height", 415) // does not rely on margins
+
+      var outerRadius = cheight / 2 - 100;
+      var innerRadius = outerRadius * 0.95;
+      var opacityDef = 0.7;
+
+      var labels = ["Coal", "Electricity", "Natural Gas","Petroleum", "DUM", "China", "USA", "Russia", "Other", "DUM"];
+
+      var wrapper = csvg.append("g").attr("class", "chordWrapper")
+        .attr("transform", "translate(" + (cwidth / 2 + cmargin.left) + "," + (cheight / 2 + cmargin.top) + ")");
+
+
+    // d3.text("Production/1993.csv", "text/csv", function(err,data) {
+      d3.text("Production/2013.csv", "text/csv", function(err,data) { 
+        matrix = d3.csv.parseRows(data);
+          // d.map(function(e) {
+          //  e = +e;
+          // }) //returns empty matrix
+        // });
+        for (var i = 0; i < matrix.length; i++) {
+          for (var j = 0; j < matrix.length; j++) {
+            matrix[i][j] = parseInt(matrix[i][j]);
+          }
+        }
+        var emptyStroke = parseInt(matrix[9][4]);
+
+        // Rotation for vertical invisible chord
+        var offset = Math.PI * (emptyStroke/(emptyStroke / .4)) / 2;
+
+        var chord = d3.layout.chord()
+          .padding(.02)
+          .sortSubgroups(d3.descending)
+          .sortChords(d3.descending)
+          .matrix(matrix)
+
+        var arc = d3.svg.arc()
+          .innerRadius(innerRadius)
+          .outerRadius(outerRadius)
+          .startAngle(startAngle)
+          .endAngle(endAngle);
+
+        var path = d3.svg.chord()
+          .radius(innerRadius)
+          .startAngle(startAngle)
+          .endAngle(endAngle);
+
+        var fill = d3.scale.ordinal()
+          .domain(d3.range(labels.length))
+          .range(["#C4C4C4","#C4C4C4","#C4C4C4", "#C4C4C4","#E0E0E0","#EDC951","#CC333F","#00A0B0", "#7D1D3F", "#E0E0E0"]) //change later
+
+        /* Outer Arcs */ 
+        var g = wrapper.selectAll("g.group")
+          .data(chord.groups)
+          .enter().append("g")
+          .attr("class", "group");
+        g.append("path")
+          .style("stroke", function(d) {
+            return fill(d.index);
+          })
+          .style("fill", function(d) {
+            return fill(d.index);
+          })
+          .attr("d", arc)
+          .on("mouseover", fade(.1))
+          .on("mouseout", fade(.7));
+
+
+        /* Append Names */ 
+        g.append("text")
+            .each(function(d) { d.angle = ((d.startAngle + d.endAngle) / 2) + offset;}) //Slightly altered function to define the angle
+            .attr("dy", "0em")
+            .attr("class", "titles")
+            .attr("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
+            .attr("transform", function(d,i) { 
+              var c = arc.centroid(d);
+              return "rotate(" + (d.angle * 180 / Math.PI - 110) + ")"
+              + "translate(" + (innerRadius + 35) + ")"
+              + (d.angle > Math.PI ? "rotate(180)" : "")
+            })
+            .text(function(d,i) { return labels[i]; });
+
+        /* Inner Chords */ 
+        var chords = wrapper.selectAll("path.chord")
+          .data(chord.chords)
+          .enter().append("path")
+          .attr("class", "chord")
+          .style("stroke", "none")
+          .style("fill", function(d,i) { 
+            return fill(d.target.index); 
+          })
+          .style("opacity", opacityDef)
+          .attr("d", path);
+
+        function startAngle(d) { return d.startAngle + .7 * offset; }
+        function endAngle(d) { return d.endAngle + .7 * offset; }
+        function fade(opac) {
+          return function(g, i) { // i is the specific cord/source
+            csvg.selectAll("path.chord")
+              .filter(function(d) {
+                return d.source.index != i && d.target.index != i; 
+              })
+              .transition(750)
+                .style("opacity", opac);
+          }
+        }
+      })
+
+        function loadChords(input) {
+          var chord = d3.select("#chordG");
+          var matrix;
+          // Get array of arrays- all values are STRINGS
+          d3.text("Production/" + String(input) + ".csv", "text/csv", function(err,data) {  
+            console.log(data);
+            matrix = d3.csv.parseRows(data);
+              // d.map(function(e) {
+              //  e = +e;
+              // }) //returns empty matrix
+            // });
+            // Convert from string to int
+            for (var i = 0; i < matrix.length; i++) {
+              for (var j = 0; j < matrix.length; j++) {
+                matrix[i][j] = parseInt(matrix[i][j]);
+              }
+            }
+            var emptyStroke = matrix[9][4];
+
+            // Rotation for vertical invisible chord
+            var offset = Math.PI * (emptyStroke/(emptyStroke / .4)) / 2;
+
+            chord = d3.layout.chord()
+              .padding(.02)
+              .sortSubgroups(d3.descending)
+              .sortChords(d3.descending)
+              .matrix(matrix)
+
+            arc = d3.svg.arc()
+              .innerRadius(innerRadius)
+              .outerRadius(outerRadius)
+              .startAngle(startAngle)
+              .endAngle(endAngle);
+
+            path = d3.svg.chord()
+              .radius(innerRadius)
+              .startAngle(startAngle)
+              .endAngle(endAngle);
+
+            // var fill = d3.scale.ordinal()
+            //  .domain(d3.range(labels.length))
+            //  .range(["#C4C4C4","#C4C4C4","#C4C4C4", "#C4C4C4","#E0E0E0","#EDC951","#CC333F","#00A0B0", "#7D1D3F", "#E0E0E0"]) //change later
+
+            /* Outer Arcs */ 
+            g = wrapper.selectAll("g.group")
+              .data(chord.groups);
+              // .attr("class", "group");
+            g.select("path")
+              .style("stroke", function(d) {
+                return fill(d.index);
+              })
+              .style("fill", function(d) {
+                return fill(d.index);
+              })
+              .transition(750)
+              .attr("d", arc)
+              .on("mouseover", fade(.1))
+              .on("mouseout", fade(.7));
+
+
+            /* Append Names */ 
+
+            /* Inner Chords */ 
+            chords = wrapper.selectAll("path.chord")
+              .data(chord.chords)
+              .transition(750)
+              // .attr("class", "chord")
+              .style("stroke", "none")
+              .style("fill", function(d,i) { 
+                return fill(d.target.index); 
+              })
+              .style("opacity", opacityDef)
+              .attr("d", path);
+
+            function startAngle(d) { return d.startAngle + .7*offset; }
+          function endAngle(d) { return d.endAngle + .7*offset; }
+          function fade(opac) {
+            return function(g, i) { // i is the specific cord/source
+              csvg.selectAll("path.chord")
+                .filter(function(d) {
+                  return d.source.index != i && d.target.index != i; 
+                })
+                .transition(750)
+                  .style("opacity", opac);
+            }
+          }
+          })
+        }
+
+
+
+
+
+
       $("#play").click(function() {
          //if value < max
         (function myLoop (i) { 
@@ -331,6 +542,9 @@ function ToggleMap(file, input) {
       });
 
     }); //end of population csv
+
+  
+
 
   }); //end of countries csv
 
