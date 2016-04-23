@@ -11,7 +11,11 @@ h2 {
   color: #96CC75;
   font-size: 75px;
 }
-
+.fixed {
+  position: fixed;
+  top: 0;
+  z-index: 2;
+}
 /******************
 * MAP
 ******************/
@@ -33,8 +37,11 @@ h2 {
 .slider {
   margin: 10px;
   margin-left: 0px;
-  position: fixed;
   z-index: 1;
+}
+.fixedSlider { 
+  position: fixed;
+  top: 50px;
 }
 #dataZoom {
   display: inline-block;
@@ -54,26 +61,33 @@ h2 {
 .yearAxis {
   margin-bottom: 10px;
   color: #647F54;
-  position: fixed;
   z-index: 2;
+}
+.fixedYearAxis {
+  position: fixed;
+  top: 80px;
 }
 #sliderAxis {
   width: 750px;
-  display: inline-block;
 }
 #rightSideTitle {
-  display: inline-block;
+  float: right;
   color: #000;
   width: 400px;
   text-align: center;
 }
 #tick1 {
+  display: inline-block;
   left: 0px;
+  margin-right: 320px;
 }
 #tick2 {
+  display: inline-block;
+  margin-right: 320px;
   left: 320px;
 }
 #tick3 {
+  display: inline-block;
   left: 700px;
 }
 #chordG {

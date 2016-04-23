@@ -52,7 +52,18 @@ Update when clicking to different
     <button id = "play">Play</button>
 
 <script>
-
+$(document).bind('scroll', function() {
+   if ($(this).scrollTop() > 100) {
+      $("#buttons").addClass("fixed");
+      $(".slider").addClass("fixedSlider");
+      $(".yearAxis").addClass("fixedYearAxis");
+   }
+   else {
+      $("#buttons").removeClass("fixed");     
+      $(".slider").removeClass("fixedSlider"); 
+      $(".yearAxis").removeClass("fixedYearAxis");
+   }
+});
 //slider
 
 // Color scale
