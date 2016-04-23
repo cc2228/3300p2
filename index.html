@@ -14,7 +14,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.1.0/topojson.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
-
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+<script src = "js/vivus.js"></script>
 <head>
 
 <!-- TODO
@@ -52,6 +54,7 @@ Update when clicking to different
     <button id = "play">Play</button>
 
 <script>
+
 $(document).bind('scroll', function() {
    if ($(this).scrollTop() > 100) {
       $("#buttons").addClass("fixed");
