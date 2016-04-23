@@ -25,7 +25,6 @@ Update when clicking to different
 <body>
 
   <h2>World Energy Measurements</h2>
-  <hr>
   <div id ="buttons">
     <button id="toggleCons">Energy Consumption</button> <button id="toggleProd">Energy Production</button>
   </div>
@@ -35,7 +34,7 @@ Update when clicking to different
     <div class = "yearAxis" id = "tick1">1993</div><div class = "yearAxis" id = "tick2">2003</div><div class = "yearAxis" id = "tick3">2013</diV>
   </div>
   <div id = "rightSideTitle">
-    Top 3 countries vs. user selection
+    Top 3 countries vs. 3 user selected countries
 
   </div>
   <div id="tooltip-container"></div>
@@ -44,9 +43,9 @@ Update when clicking to different
     <div id="canvas-svg">
       <div id = "sliderNum">1993</div>
     </div>
-    <div id="dataZoom"></div>
     <div id="chordG"></div>
 
+    <div id="dataZoom"></div>
   </div>
 
     <button id = "play">Play</button>
@@ -58,6 +57,8 @@ Update when clicking to different
 // Color scale
 var getColor = d3.scale.linear().domain([0,100]).range(["#d6f5d6","#145214"]);
 var valueHash, quantize, countries;
+
+var countriesSelected = new Array();
 var sliderD = "China";
 var makeTransitionOnBars = true;
 
@@ -68,7 +69,7 @@ function ToggleMap(file, input) {
 
     var config = {"country":"Country", "score":input};
 
-    var width = 720, height = 720;
+    var width = 720, height = 1000;
 
     var country_key = config.country;
     var score_value = config.score;
@@ -187,6 +188,15 @@ function ToggleMap(file, input) {
 
         .on("click", function(d) {
 
+          if(countriesSelected.length < 3) {
+            countriesSelected.push(d);
+          }
+          else {
+            countriesSelected[2] = countriesSelected[1];
+            countriesSelected[1] = countriesSelected[0];
+            countriesSelected[0] = d;
+          }
+
           sliderD = draw(d, valueHash);
 
         })
@@ -215,22 +225,18 @@ function ToggleMap(file, input) {
 
         var dataZoomXScale = d3.scale.linear().domain([0,120]).range([0,440]);
         var xAxis = d3.svg.axis().scale(dataZoomXScale).orient("bottom").ticks(6);
-        dataZoom.append("g").attr("class", "axis").attr("transform", "translate(0, 200)").call(xAxis);
+        dataZoom.append("g").attr("class", "axis").attr("transform", "translate(0, 300)").call(xAxis);
 
         var topThree = getTopThree(values);
 
         var rectHeight = 30;
         var transitionDuration = 750;
 
-        for(var i = 0; i < 4; i++) {
+        for(var i = 0; i < 3; i++) {
 
-          var barWidth = values[objj.properties.name];
-          var barTitle = objj.properties.name;
-          if(i < 3) {
-
-            barWidth = topThree[i]["value"];
-            barTitle = topThree[i]["countryName"];
-          }
+          var barWidth = topThree[i]["value"];
+          var barTitle = topThree[i]["countryName"];
+          
           if(makeTransitionOnBars) {
             dataZoom.append("rect")
             .attr("x", "10")
@@ -250,11 +256,24 @@ function ToggleMap(file, input) {
           dataZoom.append("text").attr("x","20").attr("y", i*40+30).attr("fill", "#fff").text(barTitle);
 
         }
+
+        for (var x = 0; x < countriesSelected.length; x++) {
+          console.log("hit");
+          dataZoom.append("rect")
+          .attr("x", "10")
+          .attr("y", x*40+170)
+          .attr("height", rectHeight)
+          .attr("width", 0)
+          .transition(transitionDuration)
+          .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]));
+
+          dataZoom.append("text").attr("x","20").attr("y", x*40+190).attr("fill", "#fff").text(countriesSelected[x].properties.name);         
+        }
         
 
         // Energy consumed (in million btu) per person
         var popValue = values[objj.properties.name]/popHash[objj.properties.name] * 1000;
-        dataZoom.append("text").attr("x","20").attr("y","250")
+        dataZoom.append("text").attr("x","20").attr("y","350")
           .attr("fill", "#00000")
           .attr("font-size", "20px")
           .text("Every person in " + objj.properties.name + " spends/consumes " + Math.round(popValue) + " million btu of energy");
@@ -292,14 +311,6 @@ function ToggleMap(file, input) {
             valueHash[d[country_key]] = +d[score_value];
           });
 
-          var configPop = {"country":"Country", "score": input};
-
-          var country_key_pop = configPop.country;
-          var score_value_pop = configPop.score;
-          popData.forEach(function(d) {
-              popHash[d[country_key_pop]] = +d[score_value_pop];
-          });
-
           if(makeTransitionOnBars) draw(clickedCountry, valueHash);
 
 
@@ -319,32 +330,49 @@ function ToggleMap(file, input) {
         }); 
       } //end of refill
 
+
       $("#play").click(function() {
          //if value < max
-        (function myLoop (i) { 
-            makeTransitionOnBars = false         
-           setTimeout(function () {   
-             $("#slider2").val(parseInt($("#slider2").val())+1);  
-             $("#slider2").trigger('change');
-               rval = $("#slider2").val();
-              $("#sliderNum").html(rval);
-             if ($('#toggleCons').hasClass("active")) {
-                refillMap("consumption.csv", ""+rval, sliderD);
-              }
-              else if ($('#toggleProd').hasClass("active")) {
-                refillMap("production.csv", ""+rval, sliderD);
-                loadChords(rval);
-              } 
-              if (--i) myLoop(i); 
-              else makeTransitionOnBars = true;  
-           }, 500)
-        })(20);
+
+        $("#slider2").val(1993);  
+        $("#slider2").trigger('change');
+
+        var i = 0, howManyTimes = 20;
+        function f() {
+
+            makeTransitionOnBars = false    
+
+            $("#slider2").val(1993+i);  
+            $("#slider2").trigger('change');
+            rval = $("#slider2").val();
+            $("#sliderNum").html(rval);
+
+            console.log(rval);
+
+            if ($('#toggleCons').hasClass("active")) {
+              refillMap("consumption.csv", ""+rval, sliderD);
+            }
+            else if ($('#toggleProd').hasClass("active")) {
+              refillMap("production.csv", ""+rval, sliderD);
+              loadChords(rval);
+            } 
+
+            i++;
+            if( i < howManyTimes ){
+                setTimeout( f, 500 );
+            }
+            else {
+              makeTransitionOnBars = true;  
+            }
+        }
+
+        f();
+
       });
 
+
+
     }); //end of population csv
-
-  
-
 
   }); //end of countries csv
 
@@ -425,17 +453,16 @@ function getTopThree(arrayToSort) {
   return topThree;
 
 }
-
 /***********************
 * Chord Graph
 ***********************/
-var cmargin = {left: 50, top: 10, right: 50, bottom: 10};
-var cwidth = 800 - cmargin.left - cmargin.right;
-var cheight = 650 - cmargin.top - cmargin.bottom; // 5/6
+// var cmargin = {left: 50, top: 10, right: 50, bottom: 10};
+var cwidth = 400;
+var cheight = 333; // 5/6
 
 var csvg = d3.select('#chordG').append('svg')
-  .attr("width", 800)
-  .attr("height", 650) // does not rely on margins
+  .attr("width", cwidth)
+  .attr("height", cheight) // does not rely on margins
 
 var outerRadius = cheight / 2 - 100;
 var innerRadius = outerRadius * 0.95;
@@ -444,7 +471,7 @@ var opacityDef = 0.7;
 var labels = ["Coal", "Electricity", "Natural Gas","Petroleum", "", "China", "USA", "Russia", "Other", ""];
 
 var wrapper = csvg.append("g").attr("class", "chordWrapper")
-  .attr("transform", "translate(" + (cwidth / 2 + cmargin.left) + "," + (cheight / 2 + cmargin.top) + ")");
+  .attr("transform", "translate(" + (cwidth / 2) + "," + (cheight / 2) + ")");
 
 
 // d3.text("Production/1993.csv", "text/csv", function(err,data) {
@@ -541,7 +568,10 @@ function fade(opac) {
         return d.source.index != i && d.target.index != i; 
       })
       .transition(750)
-        .style("opacity", opac);
+        .style("opacity", function(d) {
+          if (labels[d.source.index] === "") return 0;
+          else return opac;
+        })
   }
 }
 
@@ -616,7 +646,7 @@ function loadChords(input) {
       })
       .style("opacity", function(d) {
       if (labels[d.source.index] === "") return 0;
-      else return opacityDef;
+      else return opac;
     })
       .attr("d", path);
   })

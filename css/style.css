@@ -8,7 +8,8 @@ svg {
   background-color: #fff;
 }
 h2 {
-  color: #96CC75
+  color: #96CC75;
+  font-size: 75px;
 }
 
 /******************
@@ -18,6 +19,8 @@ h2 {
 #canvas-svg {
   display: inline-block;
   position: relative;
+  float: left;
+  border-right: solid #000;
 }
   #sliderNum {
     position: absolute;
@@ -32,9 +35,9 @@ h2 {
   margin-left: 0px;
 }
 #dataZoom {
-  display: inline;
+  display: inline-block;
   vertical-align: top;
-  padding: 20px;
+  padding-bottom: 50px;
 }
 #temp {
   display: inline-block;
@@ -57,7 +60,7 @@ h2 {
 }
 #rightSideTitle {
   display: inline-block;
-  color: #fff;
+  color: #000;
   width: 400px;
   text-align: center;
 }
@@ -69,7 +72,11 @@ h2 {
 }
 #tick3 {
 }
+#chordG {
+  display: inline-block;
+  vertical-align: top;
 
+}
 /******************
 * Buttons
 ******************/
@@ -239,7 +246,6 @@ input[type=range]:focus::-ms-fill-upper {
 #dataZoom text {
   font-size: 10px;
   fill: #000;
-  height: 720px;
 }
 .axis  {
   border: solid blue;
