@@ -18,6 +18,7 @@ h2 {
   position: fixed;
   top: 0;
   z-index: 2;
+  margin: 5px 5px 5px 5px
 
 }
 /******************
@@ -28,8 +29,8 @@ h2 {
   display: inline-block;
   position: relative;
   float: left;
-  border-right: solid #8AA1B1;
-}
+/*  border-right: solid #8AA1B1;
+*/}
   #sliderNum {
     position: absolute;
     bottom: 20px;
@@ -103,6 +104,7 @@ h2 {
   margin-right: 4%;
   float: right;
 }
+
 /******************
 * Buttons
 ******************/
