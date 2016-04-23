@@ -27,13 +27,15 @@ Update when clicking to different
 <body>
 
   <h2>World Energy Measurements</h2>
-  <div id ="buttons">
-    <button id="toggleCons">Energy Consumption</button> <button id="toggleProd">Energy Production</button>
-  </div>
+  <div id = "jumpPreventOnFixed" style = "height:100px;">
+    <div id ="buttons">
+      <button id="toggleCons">Energy Consumption</button> <button id="toggleProd">Energy Production</button>
+    </div>
 
-  <input id="slider2" class = "slider" type="range" min="1993" max="2013" value = "1993" step="1" /><br>
-  <div id = "sliderAxis">
-    <div class = "yearAxis" id = "tick1">1993</div><div class = "yearAxis" id = "tick2">2003</div><div class = "yearAxis" id = "tick3">2013</diV>
+    <input id="slider2" class = "slider" type="range" min="1993" max="2013" value = "1993" step="1" /><br>
+    <div id = "sliderAxis">
+      <div class = "yearAxis" id = "tick1">1993</div><div class = "yearAxis" id = "tick2">2003</div><div class = "yearAxis" id = "tick3">2013</diV>
+    </div>
   </div>
   <div id = "rightSideTitle">
     Top 3 countries vs. 3 user selected countries
@@ -56,7 +58,7 @@ Update when clicking to different
 <script>
 
 $(document).bind('scroll', function() {
-   if ($(this).scrollTop() > 100) {
+   if ($(this).scrollTop() > 150) {
       $("#buttons").addClass("fixed");
       $(".slider").addClass("fixedSlider");
       $(".yearAxis").addClass("fixedYearAxis");
