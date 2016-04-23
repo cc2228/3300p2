@@ -43,9 +43,10 @@ Update when clicking to different
     <div id="canvas-svg">
       <div id = "sliderNum">1993</div>
     </div>
-    <div id="chordG"></div>
 
     <div id="dataZoom"></div>
+    <div id="chordG"></div>
+
   </div>
 
     <button id = "play">Play</button>
@@ -181,7 +182,7 @@ function ToggleMap(file, input) {
           } else {
             var tooltip_width = $("#tooltip-container").width();
             d3.select("#tooltip-container")
-              .style("top", (d3.event.layerY) + "px")
+              .style("top", (d3.event.layerY +250) + "px")
               .style("left", (d3.event.layerX - tooltip_width - 30) + "px");
           }
         })
