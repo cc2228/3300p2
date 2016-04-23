@@ -177,7 +177,7 @@ function ToggleMap(file, input) {
           
           if (d3.event.pageX < map_width / 2) {
             d3.select("#tooltip-container")
-              .style("top", (d3.event.layerY) + "px")
+              .style("top", (d3.event.layerY +250) + "px")
               .style("left", (d3.event.layerX) + "px");
           } else {
             var tooltip_width = $("#tooltip-container").width();
