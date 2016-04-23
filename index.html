@@ -38,8 +38,7 @@ Update when clicking to different
     </div>
   </div>
   <div id = "rightSideTitle">
-    Top 3 countries vs. 3 user selected countries
-
+    Top 3 countries vs. 3 user selected countries<br><br>
   </div>
   <div id="tooltip-container"></div>
 
@@ -47,17 +46,23 @@ Update when clicking to different
     <div id="canvas-svg">
       <div id = "sliderNum">1993</div>
     </div>
+    <div id="dropdowns">
+      <select id="country3"></select>
+      <select id="country2"></select>
+      <select id="country"></select>
+    </div>
 
-    <select id="country3"></select>
-    <select id="country2"></select>
-    <select id="country"></select>
-
-    <button type id="button">Compare Countries</button>
+    <button type id="button">Compare Countries</button><br>
 
     <div id="dataZoom"></div>
-    <div id="chordG"></div>
 
   </div>
+    <div id = "rightSideTitle">
+
+      Energy Breakdown of the Top 3 Countries
+    </div>
+    <div id="chordG"></div>
+
 
     <button id = "play">Play</button>
 
@@ -98,7 +103,9 @@ function ToggleMap(file, input) {
     var score_value = config.score;
 
     // d3 projection of world map
-    var projection = d3.geo.mercator().scale((width + 1) / 2 / Math.PI).translate([width / 2, height / 2]).precision(.1);
+    var projection = d3.geo.mercator().scale((width + 1) / 2 / Math.PI)
+    .translate([width / 2, height / 2.5])
+    .precision(.1);
 
     var path = d3.geo.path().projection(projection);
 

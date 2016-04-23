@@ -9,7 +9,10 @@ svg {
 }
 h2 {
   color: #B9D8C2;
-  font-size: 75px;
+  font-size: 65px;
+  padding-left: 15%;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 .fixed {
   position: fixed;
@@ -48,6 +51,8 @@ h2 {
   display: inline-block;
   vertical-align: top;
   padding-bottom: 50px;
+  float: right;
+  margin-right: 2%;
 }
 #temp {
   display: inline-block;
@@ -74,8 +79,9 @@ h2 {
 #rightSideTitle {
   float: right;
   color: #000;
-  width: 400px;
+  width: 40%;
   text-align: center;
+  padding-bottom: 0px;
 }
 #tick1 {
   display: inline-block;
@@ -94,7 +100,8 @@ h2 {
 #chordG {
   display: inline-block;
   vertical-align: top;
-
+  margin-right: 4%;
+  float: right;
 }
 /******************
 * Buttons
@@ -290,4 +297,26 @@ p {
 ******************/
 text.titles {
   font-size: 6px;
+}
+
+/******************
+* Drop Down
+******************/
+
+#dropdowns {
+  display: inline-block;
+  float: right;
+  padding-left: 10px;
+  width: 38%;
+}
+
+select {
+  width: 150px;
+}
+
+#button {
+  margin-right: 5%;
+  margin-top: 20px;
+  float: right;
+
 }
