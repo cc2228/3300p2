@@ -452,7 +452,7 @@ function getTopThree(arrayToSort) {
 * Chord Graph
 ***********************/
 // var cmargin = {left: 50, top: 10, right: 50, bottom: 10};
-var cwidth = 400;
+var cwidth = 410;
 var cheight = 333; // 5/6
 
 var csvg = d3.select('#chordG').append('svg')
@@ -466,7 +466,7 @@ var opacityDef = 0.7;
 var labels = ["Coal", "Electricity", "Natural Gas","Petroleum", "", "China", "USA", "Russia", "Other", ""];
 
 var wrapper = csvg.append("g").attr("class", "chordWrapper")
-  .attr("transform", "translate(" + (cwidth / 2) + "," + (cheight / 2) + ")");
+  .attr("transform", "translate(" + (cwidth / 2 ) + "," + (cheight / 2 ) + ") scale(2.0)" );
 
 
 // d3.text("Production/1993.csv", "text/csv", function(err,data) {
@@ -531,8 +531,8 @@ d3.text("Production/2013.csv", "text/csv", function(err,data) {
       .attr("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
       .attr("transform", function(d,i) { 
         var c = arc.centroid(d);
-        return "rotate(" + (d.angle * 180 / Math.PI - 110) + ")"
-        + "translate(" + (innerRadius + 35) + ")"
+        return "rotate(" + (d.angle * 180 / Math.PI - 100) + ")"
+        + "translate(" + (innerRadius + 10) + ")"
         + (d.angle > Math.PI ? "rotate(180)" : "")
       })
       .text(function(d,i) { return labels[i]; });
