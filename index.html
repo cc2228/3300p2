@@ -365,13 +365,8 @@ function ToggleMap(file, input) {
               makeTransitionOnBars = true;  
             }
         }
-
         f();
-
       });
-
-
-
     }); //end of population csv
 
   }); //end of countries csv
@@ -646,7 +641,7 @@ function loadChords(input) {
       })
       .style("opacity", function(d) {
       if (labels[d.source.index] === "") return 0;
-      else return opac;
+      else return opacityDef;
     })
       .attr("d", path);
   })
