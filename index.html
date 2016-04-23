@@ -292,6 +292,14 @@ function ToggleMap(file, input) {
             valueHash[d[country_key]] = +d[score_value];
           });
 
+          var configPop = {"country":"Country", "score": input};
+
+          var country_key_pop = configPop.country;
+          var score_value_pop = configPop.score;
+          popData.forEach(function(d) {
+              popHash[d[country_key_pop]] = +d[score_value_pop];
+          });
+
           if(makeTransitionOnBars) draw(clickedCountry, valueHash);
 
 
