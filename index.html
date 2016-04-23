@@ -48,6 +48,12 @@ Update when clicking to different
       <div id = "sliderNum">1993</div>
     </div>
 
+    <select id="country3"></select>
+    <select id="country2"></select>
+    <select id="country"></select>
+
+    <button type id="button">Compare Countries</button>
+
     <div id="dataZoom"></div>
     <div id="chordG"></div>
 
@@ -136,6 +142,46 @@ function ToggleMap(file, input) {
       // Source: Vida world json file
       d3.json("https://s3-us-west-2.amazonaws.com/vida-public/geo/world-topo-min.json", function(error, world) {
         countries = topojson.feature(world, world.objects.countries).features;
+
+
+        // Drop-down menu: to select three countries
+
+        var options = ""
+        for (var i=0; i<countries.length; i++) {
+          options += "<option value=" + countries[i].id + '>' + countries[i].properties.name + "</option>";
+        }
+        document.getElementById("country").innerHTML = options;
+        document.getElementById("country2").innerHTML = options;
+        document.getElementById("country3").innerHTML = options;
+
+        var firstCountry, secondCountry, thirdCountry;
+
+        // submit button for drop down countries
+        d3.select("#button").on('click', function(d) { 
+          firstCountry = document.getElementById("country").value;
+          secondCountry = document.getElementById("country2").value;
+          thirdCountry = document.getElementById("country3").value;
+
+          var buttonCountries = [firstCountry, secondCountry, thirdCountry];
+
+          for (var i =0; i<3; i++) { 
+            d3.selectAll('path').filter(function(d) {
+              if (d.id == buttonCountries[i]) {
+                  if(countriesSelected.length < 3) {
+                    countriesSelected.push(d);
+                  }
+                  else {
+                    countriesSelected[2] = countriesSelected[1];
+                    countriesSelected[1] = countriesSelected[0];
+                    countriesSelected[0] = d;
+                  }
+
+                  console.log(countriesSelected);
+                  draw(d, valueHash);
+              }
+            })
+          }
+        }) // end button for country drop down
 
         //initialize bar graph
         sliderD = countries[41];
