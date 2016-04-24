@@ -97,7 +97,8 @@ $(document).bind('scroll', function() {
 
 // Color scale
 var getColor = d3.scale.linear().domain([0,100]).range(["#d6f5d6","#145214"]);
-var valueHash, quantize, countries, productionValueHash;
+var valueHash, quantize, countries;
+var productionValueHash = {};
 
 
 var countriesSelected = new Array();
@@ -110,22 +111,21 @@ var fisheye = d3.fisheye.circular()
 /* Creates hashmap for production values */ 
 function createProduction() {
   d3.csv('production.csv', function(err, producData) {
-    console.log(producData);
     for (year = 1993; year < 2014; year++) {
       var config = {"country":"Country", "score":year + ""};
 
       var country_key = config.country;
       var score_value = config.score;
 
-      valueHash = {};
       producData.forEach(function(d) {
-        valueHash[d[country_key]] = +d[score_value];
+        productionValueHash[d[country_key]] = +d[score_value];
       });
     }
   });
 
 }
 createProduction();
+
 
 /* TEST */ 
 createProduction();
@@ -143,7 +143,6 @@ function ToggleMap(file, input) {
 
     var country_key = config.country;
     var score_value = config.score;
-
     // d3 projection of world map
     var projection = d3.geo.mercator().scale((width + 1) / 2 / Math.PI)
     .translate([width / 2, height / 2])
@@ -226,7 +225,6 @@ function ToggleMap(file, input) {
                     countriesSelected[0] = d;
                   }
 
-                  console.log(countriesSelected);
                   draw(d, valueHash);
               }
             })
@@ -436,7 +434,6 @@ function ToggleMap(file, input) {
             .style("fill", function(d) {
             if (valueHash[d.properties.name]) {
               var c = quantize((valueHash[d.properties.name]));
-                // console.log(getColor(c));
               return getColor(c);
                 // return "#ccc";
             } else {
@@ -464,7 +461,6 @@ function ToggleMap(file, input) {
             rval = $("#slider2").val();
             $("#sliderNum").html(rval);
 
-            console.log(rval);
 
               refillMap("consumption.csv", ""+rval, sliderD);
               loadChords(rval);
