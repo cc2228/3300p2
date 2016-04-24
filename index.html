@@ -19,6 +19,7 @@
 <script src = "js/vivus.js"></script>
 <!-- D3 Legends -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/1.10.0/d3-legend.js"></script>
+<script src = "js/fisheye.js"></script>
 <head>
 
 <!-- TODO
@@ -28,18 +29,12 @@ Update when clicking to different
 
 <body>
 
-  <h2>World Energy Measurements</h2>
-  <div id = "jumpPreventOnFixed" style = "height:100px;">
-    <div id ="buttons">
-      <button id = "play">Play</button>
+  <h2>Dominating Countries in Energy Consumption</h2>
+<!--   <div id = "jumpPreventOnFixed" style = "height:100px;">
+ -->    
+<!--     </div>
+ -->
 
-    </div>
-
-    <input id="slider2" class = "slider" type="range" min="1993" max="2013" value = "1993" step="1" /><br>
-    <div id = "sliderAxis">
-      <div class = "yearAxis" id = "tick1">1993</div><div class = "yearAxis" id = "tick2">2003</div><div class = "yearAxis" id = "tick3">2013</diV>
-    </div>
-  </div>
   <div id = "rightSideTitle">
     Top 3 countries vs. 3 user selected countries<br><br>
   </div>
@@ -57,19 +52,36 @@ Update when clicking to different
 
     <button type id="button">Compare Countries</button><br>
 
-    <div id="dataZoom"></div>
 
   </div>
-    <div id = "rightSideTitle">
 
+    <div id = "rightSideTitle">
       Energy Breakdown of the Top 3 Countries
     </div>
-    <div id="chordG"></div>
+    <div id = "rightSide">
+      <div id="dataZoom"></div>
+
+      <div id="chordG"></div>
+    </div>
+
+
+    <div id = "sliderAxis">
+      <img id="play" src="http://makercon.com/wp-content/themes/makercon/img/play-btn.png">
+      <input id="slider2" class = "slider" type="range" min="1993" max="2013" value = "1993" step="1" /><br>
+      <div class = "yearAxis" id = "tick1">1993</div>
+      <div class = "yearAxis" id = "tick2">2003</div>
+      <div class = "yearAxis" id = "tick3">2013</diV>
+    </div>
+    </div>
+
+
+<!--     <div id ="buttons">
+ --> 
 
 
 
 <script>
-
+/*
 $(document).bind('scroll', function() {
    if ($(this).scrollTop() > 150) {
       $("#buttons").addClass("fixed");
@@ -81,37 +93,20 @@ $(document).bind('scroll', function() {
       $(".slider").removeClass("fixedSlider"); 
       $(".yearAxis").removeClass("fixedYearAxis");
    }
-});
+});*/
 //slider
 
 // Color scale
 var getColor = d3.scale.linear().domain([0,100]).range(["#d6f5d6","#145214"]);
 var valueHash, quantize, countries, productionValueHash;
 
+
 var countriesSelected = new Array();
 var sliderD = "China";
 var makeTransitionOnBars = true;
-
-/* Creates hashmap for production values */ 
-// function createProduction(input) {
-//   d3.csv('production.csv', function(err, producData) {
-//     var config = {"country":"Country", "score":input};
-
-//     var country_key = config.country;
-//     var score_value = config.score;
-
-//     productionValueHash = {};
-//     producData.forEach(function(d) {
-//       productionValueHash[d[country_key]] = +d[score_value];
-//     });
-//     console.log(productionValueHash);
-//   });
-// }
-
-// /* TEST */ 
-// createProduction("1996");
-// console.log(productionValueHash);
-/* END TEST */ 
+var fisheye = d3.fisheye.circular()
+    .radius(200)
+    .distortion(2);
 
 // input argument should be the year as a string
 function ToggleMap(file, input) {
@@ -120,6 +115,7 @@ function ToggleMap(file, input) {
 
     // Creating hash map for production for all countries for specfic year (specified by input)
     d3.csv('production.csv', function(err, producData) {
+      console.log(input);
       var configProd = {"country":"Country", "score":input};
 
       var country_key = configProd.country;
@@ -158,6 +154,7 @@ function ToggleMap(file, input) {
       data.forEach(function(d) {
         valueHash[d[country_key]] = +d[score_value];
       });
+
 
 
       // hashmap for population data
@@ -255,7 +252,6 @@ function ToggleMap(file, input) {
                 return "#ccc";
             }
           })
-
           // Dynamic part: mouseover to see country name and energy info
           .on("mousemove", function(d) {
             var html = "";
@@ -273,19 +269,19 @@ function ToggleMap(file, input) {
             $("#tooltip-container").html(html);
             $(this).attr("fill-opacity", "0.8");
             $("#tooltip-container").show();
-            
+          
             var coordinates = d3.mouse(this);
             
             var map_width = $('.choropleth')[0].getBoundingClientRect().width;
             
             if (d3.event.pageX < map_width / 2) {
               d3.select("#tooltip-container")
-                .style("top", (d3.event.layerY +250) + "px")
+                .style("top", (d3.event.layerY+50) + "px")
                 .style("left", (d3.event.layerX) + "px");
             } else {
               var tooltip_width = $("#tooltip-container").width();
               d3.select("#tooltip-container")
-                .style("top", (d3.event.layerY +250) + "px")
+                .style("top", (d3.event.layerY +50) + "px")
                 .style("left", (d3.event.layerX - tooltip_width - 30) + "px");
             }
           })
@@ -319,149 +315,143 @@ function ToggleMap(file, input) {
 
         }); //end of json map function
           //-----------------------------------------------------------------
-        function draw(objj, values, valueProdHash) {
-          console.log(valueProdHash);
-
+        function draw(objj, values, productionValueHash) {
+          console.log(productionValueHash);
           d3.select("#dataZoom").remove();
-
           //recreate bar graph
           d3.select("#viz").append("svg").attr("id", "dataZoom").attr("width", "440").attr("height","320");
           var dataZoom = d3.select("#dataZoom");
-
           var dataZoomXScale = d3.scale.linear().domain([0,120]).range([0,440]);
           var xAxis = d3.svg.axis().scale(dataZoomXScale).orient("bottom").ticks(6);
           dataZoom.append("g").attr("class", "axis").attr("transform", "translate(0, 300)").call(xAxis);
-
           var topThree = getTopThree(values);
-
           var rectHeight = 30;
           var transitionDuration = 750;
-
           for(var i = 0; i < 3; i++) {
-
             var barWidth = topThree[i]["value"];
             var barTitle = topThree[i]["countryName"];
             
             if(makeTransitionOnBars) {
               dataZoom.append("rect")
-              .attr("x", "10")
+              .attr("x", "0")
               .attr("y", i*40+10)
               .attr("height", rectHeight)
               .attr("width", 0)
               .transition(transitionDuration)
-              .attr("width", dataZoomXScale(barWidth));
+              .attr("width", dataZoomXScale(barWidth)+1);
+              // dataZoom.append("rect")
+              // .attr("x", "10")
+              // .attr("y", i*40+10)
+              // .attr("height", 20)
+              // .attr("width", 0)
+              // .transition(transitionDuration+100)
+              // .attr("width", dataZoomXScale(productionValueHash["China"])+1);
             }
             else {
               dataZoom.append("rect")
-              .attr("x", "10")
+              .attr("x", "0")
               .attr("y", i*40+10)
               .attr("height", rectHeight)
               .attr("width", dataZoomXScale(barWidth));
             }
-            dataZoom.append("text").attr("x","20").attr("y", i*40+30).attr("fill", "#fff").text(barTitle);
-
+            dataZoom.append("text").attr("x","10").attr("y", i*40+30).attr("fill", "#fff").text(barTitle);
           }
-
           for (var x = 0; x < countriesSelected.length; x++) {
-            console.log("hit");
             dataZoom.append("rect")
-            .attr("x", "10")
+            .attr("x", "0")
             .attr("y", x*40+170)
             .attr("height", rectHeight)
             .attr("width", 0)
             .transition(transitionDuration)
-            .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]));
-
-            dataZoom.append("text").attr("x","20").attr("y", x*40+190).attr("fill", "#fff").text(countriesSelected[x].properties.name);         
+            .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
+            dataZoom.append("text").attr("x","10").attr("y", x*40+190).attr("fill", "#fff").text(countriesSelected[x].properties.name);         
           }
           
-
           // Energy consumed (in million btu) per person
           var popValue = values[objj.properties.name]/popHash[objj.properties.name] * 1000;
-          dataZoom.append("text").attr("x","20").attr("y","350")
+          dataZoom.append("text").attr("x","10").attr("y","350")
             .attr("fill", "#00000")
             .attr("font-size", "20px")
             .text("Every person in " + objj.properties.name + " spends/consumes " + Math.round(popValue) + " million btu of energy");
-
           return objj;
-
         }
-
         d3.select(self.frameElement).style("height", (height * 2.3 / 3) + "px");
+      
         /***********************
         * Slider
         ***********************/
 
         d3.select("#slider2").on("input", function() {
-            var rval = (this).value;
-            $("#sliderNum").html(rval);
-           if ($('#toggleCons').hasClass("active")) {
-              refillMap("consumption.csv", ""+rval, sliderD);
-            }
-            else if ($('#toggleProd').hasClass("active")) {
-              refillMap("production.csv", ""+rval, sliderD);
-              loadChords(rval);
-            }          
+          var rval = (this).value;
+          $("#sliderNum").html(rval);
+          refillMap("consumption.csv", ""+rval, sliderD);
+          loadChords(rval);
+                    
         });
 
 
         function refillMap(file, input, clickedCountry) {
           var map = d3.select("#canvas-svg");
+          // Consumption csv
           d3.csv(file, function(err, data) {
-            var config = {"country":"Country", "score":input};
-            var country_key = config.country;
-            var score_value = config.score;
-            valueHash = {};
-              data.forEach(function(d) {
-              valueHash[d[country_key]] = +d[score_value];
-            });
 
-            if (makeTransitionOnBars) draw(clickedCountry, valueHash, productionValueHash);
+            // Production csv
+            d3.csv('production.csv', function(err, producData) {
+              console.log(input);
+              var configProd = {"country":"Country", "score":input};
+
+              var country_key = configProd.country;
+              var score_value = configProd.score;
+
+              productionValueHash = {};
+              producData.forEach(function(d) {
+                productionValueHash[d[country_key]] = +d[score_value];
+              });
+              var config = {"country":"Country", "score":input};
+              var country_key = config.country;
+              var score_value = config.score;
+              valueHash = {};
+                data.forEach(function(d) {
+                valueHash[d[country_key]] = +d[score_value];
+              });
+
+              if (makeTransitionOnBars) draw(clickedCountry, valueHash, productionValueHash);
 
 
-            map.selectAll(".country").data(countries)
-              .transition(750)
-              .style("fill", function(d) {
-              if (valueHash[d.properties.name]) {
-                var c = quantize((valueHash[d.properties.name]));
-                  // console.log(getColor(c));
-                return getColor(c);
-                  // return "#ccc";
-              } else {
-                      return "#ccc";
-              }
-            });
+              map.selectAll(".country").data(countries)
+                .transition(750)
+                .style("fill", function(d) {
+                if (valueHash[d.properties.name]) {
+                  var c = quantize((valueHash[d.properties.name]));
+                  return getColor(c);
+                } else {
+                        return "#ccc";
+                }
+                
+              }); //end of consumption csv
+
+            }); //end of production csv
 
           }); 
+
         } //end of refill
 
 
         $("#play").click(function() {
-           //if value < max
 
+           //if value < max
           $("#slider2").val(1993);  
           $("#slider2").trigger('change');
-
           var i = 0, howManyTimes = 21;
           function f() {
-
               makeTransitionOnBars = false    
-
               $("#slider2").val(1993+i);  
               $("#slider2").trigger('change');
               rval = $("#slider2").val();
               $("#sliderNum").html(rval);
-
               console.log(rval);
-
-              if ($('#toggleCons').hasClass("active")) {
                 refillMap("consumption.csv", ""+rval, sliderD);
-              }
-              else if ($('#toggleProd').hasClass("active")) {
-                refillMap("production.csv", ""+rval, sliderD);
                 loadChords(rval);
-              } 
-
               i++;
               if( i < howManyTimes ){
                   setTimeout( f, 500 );
@@ -531,25 +521,25 @@ function getTopThree(arrayToSort) {
 /***********************
 * Map Legend
 ***********************/
-var percentScale = d3.scale.linear().domain([1, 9, 15]).range(["#EDE3DE", "#edf8b1", "#ff3232"]);
-var map = d3.select("#viz");
-var maplegend = map.append("g")
-      .attr("transform", "translate(0,0)");
-    maplegend.append("g")
-          .attr("class", "legendLinear")
-      var maplegendLinear = d3.legend.color()
-          .shapeWidth(30)
-          .orient('horizontal')
-          .scale(percentScale);
+// var percentScale = d3.scale.linear().domain([1, 9, 15]).range(["#EDE3DE", "#edf8b1", "#ff3232"]);
+// var map = d3.select("#viz");
+// var maplegend = map.append("g")
+//       .attr("transform", "translate(0,0)");
+//     maplegend.append("g")
+//           .attr("class", "legendLinear")
+//       var maplegendLinear = d3.legend.color()
+//           .shapeWidth(30)
+//           .orient('horizontal')
+//           .scale(percentScale);
 
-        maplegend.select(".legendLinear").call(maplegendLinear);
+//         maplegend.select(".legendLinear").call(maplegendLinear);
 
-        maplegend.append("text")
-          .attr("class", "keyLabel")
-          .attr("x", 0)
-          .attr("y", 20)
-          .text("Energy Consumption in BTU")
-          .attr("font-size", "10px");
+//         maplegend.append("text")
+//           .attr("class", "keyLabel")
+//           .attr("x", 0)
+//           .attr("y", 20)
+//           .text("Energy Consumption in BTU")
+//           .attr("font-size", "10px");
 
 
 /***********************
@@ -678,14 +668,9 @@ function loadChords(input) {
   var chord = d3.select("#chordG");
   var matrix;
   // Get array of arrays- all values are STRINGS
-  console.log("Production/" + String(input) + ".csv");
   d3.text("Production/" + String(input) + ".csv", "text/csv", function(err,data) {  
-    console.log(data);
     matrix = d3.csv.parseRows(data);
-      // d.map(function(e) {
-      //  e = +e;
-      // }) //returns empty matrix
-    // });
+
     // Convert from string to int
     for (var i = 0; i < matrix.length; i++) {
       for (var j = 0; j < matrix.length; j++) {
