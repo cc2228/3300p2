@@ -55,14 +55,18 @@ Update when clicking to different
 
     <button type id="button">Compare Countries</button><br>
 
-    <div id="dataZoom"></div>
 
   </div>
     <div id = "rightSideTitle">
 
       Energy Breakdown of the Top 3 Countries
     </div>
-    <div id="chordG"></div>
+    <div id = "rightSide">
+      <div id="dataZoom"></div>
+
+      <div id="chordG"></div>
+    </div>
+
 
 
 
@@ -84,7 +88,7 @@ $(document).bind('scroll', function() {
 
 // Color scale
 var getColor = d3.scale.linear().domain([0,100]).range(["#d6f5d6","#145214"]);
-var valueHash, quantize, countries;
+var valueHash, quantize, countries, productionHash;
 
 var countriesSelected = new Array();
 var sliderD = "China";
@@ -118,6 +122,7 @@ function ToggleMap(file, input) {
     svg.append("path").datum(graticule).attr("class", "graticule").attr("d", path);
 
       // Create hashmap with country and value
+
     valueHash = {};
     data.forEach(function(d) {
       valueHash[d[country_key]] = +d[score_value];
@@ -314,7 +319,7 @@ function ToggleMap(file, input) {
             .attr("height", rectHeight)
             .attr("width", 0)
             .transition(transitionDuration)
-            .attr("width", dataZoomXScale(barWidth));
+            .attr("width", dataZoomXScale(barWidth)+1);
           }
           else {
             dataZoom.append("rect")
@@ -328,14 +333,13 @@ function ToggleMap(file, input) {
         }
 
         for (var x = 0; x < countriesSelected.length; x++) {
-          console.log("hit");
           dataZoom.append("rect")
           .attr("x", "10")
           .attr("y", x*40+170)
           .attr("height", rectHeight)
           .attr("width", 0)
           .transition(transitionDuration)
-          .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]));
+          .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
 
           dataZoom.append("text").attr("x","20").attr("y", x*40+190).attr("fill", "#fff").text(countriesSelected[x].properties.name);         
         }
@@ -360,13 +364,8 @@ function ToggleMap(file, input) {
       d3.select("#slider2").on("input", function() {
           var rval = (this).value;
           $("#sliderNum").html(rval);
-         if ($('#toggleCons').hasClass("active")) {
-            refillMap("consumption.csv", ""+rval, sliderD);
-          }
-          else if ($('#toggleProd').hasClass("active")) {
-            refillMap("production.csv", ""+rval, sliderD);
-            loadChords(rval);
-          }          
+          refillMap("consumption.csv", ""+rval, sliderD);
+          loadChords(rval);
       });
 
 
