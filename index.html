@@ -56,13 +56,32 @@ Update when clicking to different
 //slider
 
 // Color scale
-var getColor = d3.scale.linear().domain([0,100]).range(["#d6f5d6","#145214"]);
-var valueHash, quantize, countries;
+var getColor = d3.scale.linear().domain([0,100]).range(["#2E497B", "#419F65", "#47BA5E"]);
+var valueHash, quantize, countries, productionValueHash;
 
 var countriesSelected = new Array();
 var sliderD = "China";
 var makeTransitionOnBars = true;
 
+function createProduction() {
+  d3.csv('production.csv', function(err, producData) {
+    console.log(producData);
+    for (year = 1993; year < 2014; year++) {
+      var config = {"country":"Country", "score":year + ""};
+
+      var country_key = config.country;
+      var score_value = config.score;
+
+      valueHash = {};
+      producData.forEach(function(d) {
+        valueHash[d[country_key]] = +d[score_value];
+      });
+    }
+  });
+}
+
+createProduction();
+console.log(productionValueHash);
 
 function ToggleMap(file, input) {
 
@@ -485,7 +504,7 @@ d3.text("Production/2013.csv", "text/csv", function(err,data) {
   offset = Math.PI * (emptyStroke/(emptyStroke / .4)) / 2;
 
   var chord = d3.layout.chord()
-    .padding(.02)
+    .padding(.08)
     .sortSubgroups(d3.descending)
     .sortChords(d3.descending)
     .matrix(matrix)
@@ -595,7 +614,7 @@ function loadChords(input) {
     var offset = Math.PI * (emptyStroke/(emptyStroke / .4)) / 2;
 
     chord = d3.layout.chord()
-      .padding(.02)
+      .padding(.08)
       .sortSubgroups(d3.descending)
       .sortChords(d3.descending)
       .matrix(matrix)
@@ -612,7 +631,7 @@ function loadChords(input) {
       .endAngle(endAngle);
     var fill = d3.scale.ordinal()
       .domain(d3.range(labels.length))
-      .range(["#C4C4C4","#C4C4C4","#C4C4C4", "#C4C4C4","#E0E0E0","#EDC951","#CC333F","#00A0B0", "#7D1D3F", "#E0E0E0"]) //change later
+      .range(["#C4C4C4","#C4C4C4","#C4C4C4", "#C4C4C4","#E0E0E0","#EDC951","#CC333F","#00A0B0", "#7D1D3F", "#E0E0E0"])
 
     /* Outer Arcs */ 
     g = wrapper.selectAll("g.group")
