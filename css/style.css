@@ -286,11 +286,7 @@ input[type=range]:focus::-ms-fill-upper {
 .axis  {
   border: solid blue;
 }
-#dataZoom rect {
-  fill: #8AA1B1;
- -webkit-transition: width 1s;
- transition: width 1s;
-}
+
 path {
   transition: .5s;
 }

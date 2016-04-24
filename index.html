@@ -17,8 +17,9 @@
 <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 <script src = "js/vivus.js"></script>
+<!-- D3 Legends -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/1.10.0/d3-legend.js"></script>
 <script src = "js/fisheye.js"></script>
-
 <head>
 
 <!-- TODO
@@ -97,386 +98,396 @@ $(document).bind('scroll', function() {
 
 // Color scale
 var getColor = d3.scale.linear().domain([0,100]).range(["#d6f5d6","#145214"]);
-var valueHash, quantize, countries;
-var productionValueHash = {};
+var valueHash, quantize, countries, productionValueHash;
 
 
 var countriesSelected = new Array();
 var sliderD = "China";
-var makeTransitionOnBars = true;
+var allowBarGraphToChange = true;
 var fisheye = d3.fisheye.circular()
     .radius(200)
     .distortion(2);
 
-/* Creates hashmap for production values */ 
-function createProduction() {
-  d3.csv('production.csv', function(err, producData) {
-    for (year = 1993; year < 2014; year++) {
-      var config = {"country":"Country", "score":year + ""};
-
-      var country_key = config.country;
-      var score_value = config.score;
-
-      producData.forEach(function(d) {
-        productionValueHash[d[country_key]] = +d[score_value];
-      });
-    }
-  });
-
-}
-createProduction();
-
-
-/* TEST */ 
-createProduction();
-console.log(productionValueHash);
-/* END TEST */ 
+// input argument should be the year as a string
 function ToggleMap(file, input) {
 
   d3.csv(file, function(err, data) {
 
-    var config = {"country":"Country", "score":input};
+    // Creating hash map for production for all countries for specfic year (specified by input)
+    d3.csv('production.csv', function(err, producData) {
+      console.log(input);
+      var configProd = {"country":"Country", "score":input};
 
+      var country_key = configProd.country;
+      var score_value = configProd.score;
 
-    var width = 720, height = 720;
-
-    var country_key = config.country;
-    var score_value = config.score;
-    // d3 projection of world map
-    var projection = d3.geo.mercator().scale((width + 1) / 2 / Math.PI)
-    .translate([width / 2, height / 2])
-    .precision(.1);
-
-    var path = d3.geo.path().projection(projection);
-
-    var graticule = d3.geo.graticule();
-
-    var svg = d3.select("#canvas-svg").append("svg")
-      .attr("width", width)
-      .attr("height", height);
-
-    svg.append("path").datum(graticule).attr("class", "graticule").attr("d", path);
-
-      // Create hashmap with country and value
-
-    valueHash = {};
-    data.forEach(function(d) {
-      valueHash[d[country_key]] = +d[score_value];
-    });
-
-
-
-    // hashmap for population data
-    var popHash = {};
-
-    // Import data for population, create hash value that can later be used to compare with consumption/prod
-    d3.csv("population.csv", function(err, popData) {
-      // Lillyan: Can you make the slider work for this part too? This is the population
-      var configPop = {"country":"Country", "score": "1993"};
-
-      var country_key_pop = configPop.country;
-      var score_value_pop = configPop.score;
-      popData.forEach(function(d) {
-          popHash[d[country_key_pop]] = +d[score_value_pop];
+      productionValueHash = {};
+      producData.forEach(function(d) {
+        productionValueHash[d[country_key]] = +d[score_value];
       });
 
-      quantize = d3.scale.quantize().domain([0, 1.0]).range(d3.range(100).map(function(i) { return i; }));
 
-      quantize.domain([d3.min(data, function(d){
-        return (+d[score_value]) }),
-      d3.max(data, function(d){
-        return (+d[score_value]) })]);
+      var config = {"country":"Country", "score":input};
 
-      // Source: Vida world json file
-      d3.json("https://s3-us-west-2.amazonaws.com/vida-public/geo/world-topo-min.json", function(error, world) {
-        countries = topojson.feature(world, world.objects.countries).features;
+      var width = 720, height = 720;
+
+      var country_key = config.country;
+      var score_value = config.score;
+
+      // d3 projection of world map
+      var projection = d3.geo.mercator().scale((width + 1) / 2 / Math.PI)
+      .translate([width / 2, height / 2])
+      .precision(.1);
+
+      var path = d3.geo.path().projection(projection);
+
+      var graticule = d3.geo.graticule();
+
+      var svg = d3.select("#canvas-svg").append("svg")
+        .attr("width", width)
+        .attr("height", height);
+
+      svg.append("path").datum(graticule).attr("class", "graticule").attr("d", path);
+
+        // Create hashmap with country and value
+      valueHash = {};
+      data.forEach(function(d) {
+        valueHash[d[country_key]] = +d[score_value];
+      });
 
 
-        // Drop-down menu: to select three countries
 
-        var options = ""
-        for (var i=0; i<countries.length; i++) {
-          options += "<option value=" + countries[i].id + '>' + countries[i].properties.name + "</option>";
-        }
-        document.getElementById("country").innerHTML = options;
-        document.getElementById("country2").innerHTML = options;
-        document.getElementById("country3").innerHTML = options;
+      // hashmap for population data
+      var popHash = {};
 
-        var firstCountry, secondCountry, thirdCountry;
+      // Import data for population, create hash value that can later be used to compare with consumption/prod
+      d3.csv("population.csv", function(err, popData) {
+        // Lillyan: Can you make the slider work for this part too? This is the population
+        var configPop = {"country":"Country", "score": "1993"};
 
-        // submit button for drop down countries
-        d3.select("#button").on('click', function(d) { 
-          firstCountry = document.getElementById("country").value;
-          secondCountry = document.getElementById("country2").value;
-          thirdCountry = document.getElementById("country3").value;
+        var country_key_pop = configPop.country;
+        var score_value_pop = configPop.score;
+        popData.forEach(function(d) {
+            popHash[d[country_key_pop]] = +d[score_value_pop];
+        });
 
-          var buttonCountries = [firstCountry, secondCountry, thirdCountry];
+        quantize = d3.scale.quantize().domain([0, 1.0]).range(d3.range(100).map(function(i) { return i; }));
 
-          for (var i =0; i<3; i++) { 
-            d3.selectAll('path').filter(function(d) {
-              if (d.id == buttonCountries[i]) {
-                  if(countriesSelected.length < 3) {
-                    countriesSelected.push(d);
-                  }
-                  else {
-                    countriesSelected[2] = countriesSelected[1];
-                    countriesSelected[1] = countriesSelected[0];
-                    countriesSelected[0] = d;
-                  }
+        quantize.domain([d3.min(data, function(d){
+          return (+d[score_value]) }),
+        d3.max(data, function(d){
+          return (+d[score_value]) })]);
 
-                  draw(d, valueHash);
-              }
-            })
+        // Source: Vida world json file
+        d3.json("https://s3-us-west-2.amazonaws.com/vida-public/geo/world-topo-min.json", function(error, world) {
+          countries = topojson.feature(world, world.objects.countries).features;
+
+
+          // Drop-down menu: to select three countries
+
+          var options = ""
+          for (var i=0; i<countries.length; i++) {
+            options += "<option value=" + countries[i].id + '>' + countries[i].properties.name + "</option>";
           }
-        }) // end button for country drop down
+          document.getElementById("country").innerHTML = options;
+          document.getElementById("country2").innerHTML = options;
+          document.getElementById("country3").innerHTML = options;
 
-        //initialize bar graph
-        sliderD = countries[41];
-        draw(sliderD, valueHash);
-        svg.append("path")
-           .datum(graticule)
-           .attr("class", "choropleth")
+          var firstCountry, secondCountry, thirdCountry;
+
+          // submit button for drop down countries
+          d3.select("#button").on('click', function(d) { 
+            firstCountry = document.getElementById("country").value;
+            secondCountry = document.getElementById("country2").value;
+            thirdCountry = document.getElementById("country3").value;
+
+            var buttonCountries = [firstCountry, secondCountry, thirdCountry];
+
+            for (var i =0; i<3; i++) { 
+              d3.selectAll('path').filter(function(d) {
+                if (d.id == buttonCountries[i]) {
+                    if(countriesSelected.length < 3) {
+                      countriesSelected.push(d);
+                    }
+                    else {
+                      countriesSelected[2] = countriesSelected[1];
+                      countriesSelected[1] = countriesSelected[0];
+                      countriesSelected[0] = d;
+                    }
+                    console.log(countriesSelected);
+                    draw(d, valueHash, productionValueHash);
+                }
+              })
+            }
+          }) // end button for country drop down
+
+          //initialize bar graph
+          sliderD = countries[41];
+          draw(sliderD, valueHash, productionValueHash);
+          svg.append("path")
+             .datum(graticule)
+             .attr("class", "choropleth")
+             .attr("d", path);
+
+          var g = svg.append("g");
+
+          g.append("path")
+           .datum({type: "LineString", coordinates: [[-180, 0], [-90, 0], [0, 0], [90, 0], [180, 0]]})
+           .attr("class", "equator")
            .attr("d", path);
 
-        var g = svg.append("g");
+          var country = g.selectAll(".country").data(countries);
 
-        g.append("path")
-         .datum({type: "LineString", coordinates: [[-180, 0], [-90, 0], [0, 0], [90, 0], [180, 0]]})
-         .attr("class", "equator")
-         .attr("d", path);
+          ////------------------------------------------------------------------
+          country.enter().insert("path")
+          .attr("class", "country")
+          .attr("d", path)
+          .attr("id", function(d,i) { return d.id; })
+          .attr("title", function(d) { return d.properties.name; })
+          .style("fill", function(d) {
+            if (valueHash[d.properties.name]) {
+                var c = quantize((valueHash[d.properties.name]));
+                return getColor(c);
+            } else {
+                return "#ccc";
+            }
+          })
+          // Dynamic part: mouseover to see country name and energy info
+          .on("mousemove", function(d) {
+            var html = "";
 
-        var country = g.selectAll(".country").data(countries);
-
-        ////------------------------------------------------------------------
-        country.enter().insert("path")
-        .attr("class", "country")
-        .attr("d", path)
-        .attr("id", function(d,i) { return d.id; })
-        .attr("title", function(d) { return d.properties.name; })
-        .style("fill", function(d) {
-          if (valueHash[d.properties.name]) {
-              var c = quantize((valueHash[d.properties.name]));
-              return getColor(c);
-          } else {
-              return "#ccc";
-          }
-        })
-
-        // Dynamic part: mouseover to see country name and energy info
-        .on("mousemove", function(d) {
-          var html = "";
-
-          html += "<div class=\"tooltip_kv\">";
-          html += "<span class=\"tooltip_key\">";
-          html += d.properties.name;
-          html += "</span>";
-          html += "<span class=\"tooltip_value\">";
-          html += (valueHash[d.properties.name] ? valueHash[d.properties.name] : "");
-          html += "";
-          html += "</span>";
-          html += "</div>";
+            html += "<div class=\"tooltip_kv\">";
+            html += "<span class=\"tooltip_key\">";
+            html += d.properties.name;
+            html += "</span>";
+            html += "<span class=\"tooltip_value\">";
+            html += (valueHash[d.properties.name] ? valueHash[d.properties.name] : "");
+            html += "";
+            html += "</span>";
+            html += "</div>";
+            
+            $("#tooltip-container").html(html);
+            $(this).attr("fill-opacity", "0.8");
+            $("#tooltip-container").show();
           
-          $("#tooltip-container").html(html);
-          $(this).attr("fill-opacity", "0.8");
-          $("#tooltip-container").show();
+            var coordinates = d3.mouse(this);
+            
+            var map_width = $('.choropleth')[0].getBoundingClientRect().width;
+            
+            if (d3.event.pageX < map_width / 2) {
+              d3.select("#tooltip-container")
+                .style("top", (d3.event.layerY+50) + "px")
+                .style("left", (d3.event.layerX) + "px");
+            } else {
+              var tooltip_width = $("#tooltip-container").width();
+              d3.select("#tooltip-container")
+                .style("top", (d3.event.layerY +50) + "px")
+                .style("left", (d3.event.layerX - tooltip_width - 30) + "px");
+            }
+          })
+
+          .on("click", function(d) {
+
+            if(countriesSelected.length < 3) {
+              countriesSelected.push(d);
+            }
+            else {
+              countriesSelected[2] = countriesSelected[1];
+              countriesSelected[1] = countriesSelected[0];
+              countriesSelected[0] = d;
+            }
+
+            sliderD = draw(d, valueHash, productionValueHash);
+
+          })
+
+          .on("mouseout", function() {
+            $(this).attr("fill-opacity", "1.0");
+            $("#tooltip-container").hide();
+          }); //end of country line
+            
+          g.append("path")
+              .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; }))
+              .attr("class", "boundary")
+              .attr("d", path);
           
-          var coordinates = d3.mouse(this);
-          
-          var map_width = $('.choropleth')[0].getBoundingClientRect().width;
-          
-          if (d3.event.pageX < map_width / 2) {
-            d3.select("#tooltip-container")
-              .style("top", (d3.event.layerY+50) + "px")
-              .style("left", (d3.event.layerX) + "px");
-          } else {
-            var tooltip_width = $("#tooltip-container").width();
-            d3.select("#tooltip-container")
-              .style("top", (d3.event.layerY +50) + "px")
-              .style("left", (d3.event.layerX - tooltip_width - 30) + "px");
-          }
-        })
+          svg.attr("height", height * 2.2 / 3);
 
-        .on("click", function(d) {
+        }); //end of json map function
+          //-----------------------------------------------------------------
+        function draw(objj, values, productionValueHash) {
+          console.log(productionValueHash);
+          d3.select("#dataZoom").remove();
+          //recreate bar graph
+          d3.select("#viz").append("svg").attr("id", "dataZoom").attr("width", "440").attr("height","320");
+          var dataZoom = d3.select("#dataZoom");
+          var dataZoomXScale = d3.scale.linear().domain([0,120]).range([0,440]);
+          var xAxis = d3.svg.axis().scale(dataZoomXScale).orient("bottom").ticks(6);
+          dataZoom.append("g").attr("class", "axis").attr("transform", "translate(0, 300)").call(xAxis);
+          var topThree = getTopThree(values);
+          var rectHeight = 30;
+          var transitionDuration = 750;
 
-          if(countriesSelected.length < 3) {
-            countriesSelected.push(d);
-          }
-          else {
-            countriesSelected[2] = countriesSelected[1];
-            countriesSelected[1] = countriesSelected[0];
-            countriesSelected[0] = d;
-          }
+          for(var i = 0; i < 3; i++) {
 
-          sliderD = draw(d, valueHash);
-
-        })
-
-        .on("mouseout", function() {
-          $(this).attr("fill-opacity", "1.0");
-          $("#tooltip-container").hide();
-        }); //end of country line
-          
-        g.append("path")
-            .datum(topojson.mesh(world, world.objects.countries, function(a, b) { return a !== b; }))
-            .attr("class", "boundary")
-            .attr("d", path);
-        
-        svg.attr("height", height * 2.2 / 3);
-
-      }); //end of json map function
-        //-----------------------------------------------------------------
-      function draw(objj, values) {
-
-        d3.select("#dataZoom").remove();
-
-        //recreate bar graph
-        d3.select("#viz").append("svg").attr("id", "dataZoom").attr("width", "440").attr("height","320");
-        var dataZoom = d3.select("#dataZoom");
-
-        var dataZoomXScale = d3.scale.linear().domain([0,120]).range([0,440]);
-        var xAxis = d3.svg.axis().scale(dataZoomXScale).orient("bottom").ticks(6);
-        dataZoom.append("g").attr("class", "axis").attr("transform", "translate(0, 300)").call(xAxis);
-
-        var topThree = getTopThree(values);
-
-        var rectHeight = 30;
-        var transitionDuration = 750;
-
-        for(var i = 0; i < 3; i++) {
-
-          var barWidth = topThree[i]["value"];
-          var barTitle = topThree[i]["countryName"];
-          
-          if(makeTransitionOnBars) {
+            var barWidth = topThree[i]["value"];
+            var barTitle = topThree[i]["countryName"];
+            
             dataZoom.append("rect")
             .attr("x", "0")
             .attr("y", i*40+10)
             .attr("height", rectHeight)
             .attr("width", 0)
+            .attr("fill", "#8AA1B1")
+            .attr("opacity", "1")
             .transition(transitionDuration)
             .attr("width", dataZoomXScale(barWidth)+1);
 
-            // dataZoom.append("rect")
-            // .attr("x", "10")
-            // .attr("y", i*40+10)
-            // .attr("height", 20)
-            // .attr("width", 0)
-            // .transition(transitionDuration+100)
-            // .attr("width", dataZoomXScale(productionValueHash["China"])+1);
-          }
-          else {
             dataZoom.append("rect")
             .attr("x", "0")
             .attr("y", i*40+10)
-            .attr("height", rectHeight)
-            .attr("width", dataZoomXScale(barWidth));
+            .attr("height", rectHeight/2)
+            .attr("width", 0)
+            .attr("fill", "#000")
+            .attr("opacity", ".2")
+            .transition(transitionDuration)
+            .attr("width", dataZoomXScale(productionValueHash[barTitle])+1);
+
+            dataZoom.append("text").attr("x","10").attr("y", i*40+30).attr("fill", "#fff").text(barTitle);
           }
-          dataZoom.append("text").attr("x","10").attr("y", i*40+30).attr("fill", "#fff").text(barTitle);
 
+          for (var x = 0; x < countriesSelected.length; x++) {
+
+            dataZoom.append("rect")
+            .attr("x", "0")
+            .attr("y", x*40+170)
+            .attr("height", rectHeight)
+            .attr("width", 0)
+            .attr("fill", "#8AA1B1")
+            .attr("opacity", "1")
+            .transition(transitionDuration)
+            .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
+
+            dataZoom.append("rect")
+            .attr("x", "0")
+            .attr("y", x*40+170)
+            .attr("height", rectHeight/2)
+            .attr("width", 0)
+            .attr("fill", "#000")
+            .attr("opacity", ".2")
+            .transition(transitionDuration)
+            .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]+1));
+
+            dataZoom.append("text").attr("x","10").attr("y", x*40+190).attr("fill", "#fff").text(countriesSelected[x].properties.name);  
+
+          }
+          
+          // Energy consumed (in million btu) per person
+          var popValue = values[objj.properties.name]/popHash[objj.properties.name] * 1000;
+          dataZoom.append("text").attr("x","10").attr("y","350")
+            .attr("fill", "#00000")
+            .attr("font-size", "20px")
+            .text("Every person in " + objj.properties.name + " spends/consumes " + Math.round(popValue) + " million btu of energy");
+          return objj;
         }
+        d3.select(self.frameElement).style("height", (height * 2.3 / 3) + "px");
+      
+        /***********************
+        * Slider
+        ***********************/
 
-        for (var x = 0; x < countriesSelected.length; x++) {
-          dataZoom.append("rect")
-          .attr("x", "0")
-          .attr("y", x*40+170)
-          .attr("height", rectHeight)
-          .attr("width", 0)
-          .transition(transitionDuration)
-          .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
-
-          dataZoom.append("text").attr("x","10").attr("y", x*40+190).attr("fill", "#fff").text(countriesSelected[x].properties.name);         
-        }
-        
-
-        // Energy consumed (in million btu) per person
-        var popValue = values[objj.properties.name]/popHash[objj.properties.name] * 1000;
-        dataZoom.append("text").attr("x","10").attr("y","350")
-          .attr("fill", "#00000")
-          .attr("font-size", "20px")
-          .text("Every person in " + objj.properties.name + " spends/consumes " + Math.round(popValue) + " million btu of energy");
-
-        return objj;
-
-      }
-
-      d3.select(self.frameElement).style("height", (height * 2.3 / 3) + "px");
-      /***********************
-      * Slider
-      ***********************/
-
-      d3.select("#slider2").on("input", function() {
+        d3.select("#slider2").on("input", function() {
           var rval = (this).value;
           $("#sliderNum").html(rval);
           refillMap("consumption.csv", ""+rval, sliderD);
           loadChords(rval);
-
                     
-      });
+        });
 
 
-      function refillMap(file, input, clickedCountry) {
-        var map = d3.select("#canvas-svg");
-        d3.csv(file, function(err, data) {
-          var config = {"country":"Country", "score":input};
-          var country_key = config.country;
-          var score_value = config.score;
-          valueHash = {};
-            data.forEach(function(d) {
-            valueHash[d[country_key]] = +d[score_value];
-          });
+        function refillMap(file, input, clickedCountry) {
+          var map = d3.select("#canvas-svg");
+          // Consumption csv
+          d3.csv(file, function(err, data) {
 
-          if(makeTransitionOnBars) draw(clickedCountry, valueHash);
+            // Production csv
+            d3.csv('production.csv', function(err, producData) {
+              console.log(input);
+              var configProd = {"country":"Country", "score":input};
+
+              var country_key = configProd.country;
+              var score_value = configProd.score;
+
+              productionValueHash = {};
+              producData.forEach(function(d) {
+                productionValueHash[d[country_key]] = +d[score_value];
+              });
+              var config = {"country":"Country", "score":input};
+              var country_key = config.country;
+              var score_value = config.score;
+              valueHash = {};
+                data.forEach(function(d) {
+                valueHash[d[country_key]] = +d[score_value];
+              });
+
+              if (allowBarGraphToChange) {
+                draw(clickedCountry, valueHash, productionValueHash);
+                loadChords(rval);
+              }
+
+              map.selectAll(".country").data(countries)
+                .transition(750)
+                .style("fill", function(d) {
+                if (valueHash[d.properties.name]) {
+                  var c = quantize((valueHash[d.properties.name]));
+                  return getColor(c);
+                } else {
+                        return "#ccc";
+                }
+                
+              }); //end of consumption csv
+
+            }); //end of production csv
+
+          }); 
+
+        } //end of refill
 
 
-          map.selectAll(".country").data(countries)
-            .transition(750)
-            .style("fill", function(d) {
-            if (valueHash[d.properties.name]) {
-              var c = quantize((valueHash[d.properties.name]));
-              return getColor(c);
-                // return "#ccc";
-            } else {
-                    return "#ccc";
-            }
-          });
+        $("#play").click(function() {
 
-        }); 
-      } //end of refill
+           //if value < max
+          $("#slider2").val(1993);  
+          $("#slider2").trigger('change');
+          var i = 0, howManyTimes = 21;
+          function f() {
 
+              allowBarGraphToChange = false    
 
-      $("#play").click(function() {
-         //if value < max
+              $("#slider2").val(1993+i);  
+              $("#slider2").trigger('change');
+              rval = $("#slider2").val();
 
-        $("#slider2").val(1993);  
-        $("#slider2").trigger('change');
-
-        var i = 0, howManyTimes = 21;
-        function f() {
-
-            makeTransitionOnBars = false    
-
-            $("#slider2").val(1993+i);  
-            $("#slider2").trigger('change');
-            rval = $("#slider2").val();
-            $("#sliderNum").html(rval);
-
-
+              $("#sliderNum").html(rval);
               refillMap("consumption.csv", ""+rval, sliderD);
-              loadChords(rval);
+              i++;
 
-            i++;
-            if( i < howManyTimes ){
-                setTimeout( f, 500 );
-            }
-            else {
-              makeTransitionOnBars = true;  
-            }
-        }
-        f();
-      });
-    }); //end of population csv
+              if( i < howManyTimes ){
+                  setTimeout( f, 500 );
+              }
+              else {
 
-  }); //end of countries csv
+                allowBarGraphToChange = true;  
+
+              }
+          }
+          f();
+        });
+      }); //end of population csv
+
+    }); //end of countries csv
+
+  }); //end of production csv
 
 } //end of toggle map
 
@@ -486,7 +497,6 @@ innerDiv.id = 'sliderNum';
 innerDiv.innerHTML = $("#slider2").val();
 
 // The variable iDiv is still good... Just append to it.
-
 
 ToggleMap("consumption.csv", "1993");
 
@@ -528,6 +538,31 @@ function getTopThree(arrayToSort) {
   return topThree;
 
 }
+
+/***********************
+* Map Legend
+***********************/
+// var percentScale = d3.scale.linear().domain([1, 9, 15]).range(["#EDE3DE", "#edf8b1", "#ff3232"]);
+// var map = d3.select("#viz");
+// var maplegend = map.append("g")
+//       .attr("transform", "translate(0,0)");
+//     maplegend.append("g")
+//           .attr("class", "legendLinear")
+//       var maplegendLinear = d3.legend.color()
+//           .shapeWidth(30)
+//           .orient('horizontal')
+//           .scale(percentScale);
+
+//         maplegend.select(".legendLinear").call(maplegendLinear);
+
+//         maplegend.append("text")
+//           .attr("class", "keyLabel")
+//           .attr("x", 0)
+//           .attr("y", 20)
+//           .text("Energy Consumption in BTU")
+//           .attr("font-size", "10px");
+
+
 /***********************
 * Chord Graph
 ***********************/
@@ -654,14 +689,9 @@ function loadChords(input) {
   var chord = d3.select("#chordG");
   var matrix;
   // Get array of arrays- all values are STRINGS
-  console.log("Production/" + String(input) + ".csv");
   d3.text("Production/" + String(input) + ".csv", "text/csv", function(err,data) {  
-    console.log(data);
     matrix = d3.csv.parseRows(data);
-      // d.map(function(e) {
-      //  e = +e;
-      // }) //returns empty matrix
-    // });
+
     // Convert from string to int
     for (var i = 0; i < matrix.length; i++) {
       for (var j = 0; j < matrix.length; j++) {
@@ -726,7 +756,6 @@ function loadChords(input) {
       .attr("d", path);
   })
 }
-
 
 </script>
 
