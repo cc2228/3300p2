@@ -9,8 +9,8 @@ svg {
 }
 h2 {
   color: #B9D8C2;
-  font-size: 65px;
-  padding-left: 15%;
+  font-size: 50px;
+  padding-left: 5%;
   margin-top: 20px;
   margin-bottom: 20px;
 }
@@ -88,16 +88,17 @@ h2 {
 #tick1 {
   display: inline-block;
   left: 0px;
-  margin-right: 320px;
+  margin-left: 85px;
+  margin-right: 275px;
 }
 #tick2 {
   display: inline-block;
-  margin-right: 320px;
-  left: 320px;
+  margin-right: 275px;
+  left: 275px;
 }
 #tick3 {
   display: inline-block;
-  left: 700px;
+  left: 600px;
 }
 #chordG {
   display: inline-block;
@@ -131,8 +132,12 @@ button:hover {
 }
 #play {
   display: inline-block;
-  width: 740px;
+  width: 60px;
   vertical-align: top;
+}
+
+#play:hover {
+  opacity: 0.8;
 }
 
 /******************
@@ -169,7 +174,9 @@ path:hover {
   padding: 20px;
 }
 #slider2 {
-  width: 740px;
+  width: 650px;
+  float:right;
+  padding-top:15px;
   color: #aaa;
 }
 input[type=range] {
