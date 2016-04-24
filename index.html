@@ -90,6 +90,7 @@ var countriesSelected = new Array();
 var sliderD = "China";
 var makeTransitionOnBars = true;
 
+/* Creates hashmap for production values */ 
 function createProduction() {
   d3.csv('production.csv', function(err, producData) {
     console.log(producData);
@@ -107,8 +108,10 @@ function createProduction() {
   });
 }
 
+/* TEST */ 
 createProduction();
 console.log(productionValueHash);
+/* END TEST */ 
 
 function ToggleMap(file, input) {
 
