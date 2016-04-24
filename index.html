@@ -17,6 +17,8 @@
 <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 <script src = "js/vivus.js"></script>
+<script src = "js/fisheye.js"></script>
+
 <head>
 
 <!-- TODO
@@ -101,6 +103,9 @@ var valueHash, quantize, countries, productionValueHash;
 var countriesSelected = new Array();
 var sliderD = "China";
 var makeTransitionOnBars = true;
+var fisheye = d3.fisheye.circular()
+    .radius(200)
+    .distortion(2);
 
 /* Creates hashmap for production values */ 
 function createProduction() {
@@ -284,12 +289,12 @@ function ToggleMap(file, input) {
           
           if (d3.event.pageX < map_width / 2) {
             d3.select("#tooltip-container")
-              .style("top", (d3.event.layerY +250) + "px")
+              .style("top", (d3.event.layerY+50) + "px")
               .style("left", (d3.event.layerX) + "px");
           } else {
             var tooltip_width = $("#tooltip-container").width();
             d3.select("#tooltip-container")
-              .style("top", (d3.event.layerY +250) + "px")
+              .style("top", (d3.event.layerY +50) + "px")
               .style("left", (d3.event.layerX - tooltip_width - 30) + "px");
           }
         })
