@@ -88,18 +88,44 @@ $(document).bind('scroll', function() {
 
 // Color scale
 var getColor = d3.scale.linear().domain([0,100]).range(["#d6f5d6","#145214"]);
-var valueHash, quantize, countries, productionHash;
+var valueHash, quantize, countries, productionValueHash;
+
 
 var countriesSelected = new Array();
 var sliderD = "China";
 var makeTransitionOnBars = true;
 
+/* Creates hashmap for production values */ 
+function createProduction() {
+  d3.csv('production.csv', function(err, producData) {
+    console.log(producData);
+    for (year = 1993; year < 2014; year++) {
+      var config = {"country":"Country", "score":year + ""};
+
+      var country_key = config.country;
+      var score_value = config.score;
+
+      valueHash = {};
+      producData.forEach(function(d) {
+        valueHash[d[country_key]] = +d[score_value];
+      });
+    }
+  });
+
+}
+createProduction();
+
+/* TEST */ 
+createProduction();
+console.log(productionValueHash);
+/* END TEST */ 
 
 function ToggleMap(file, input) {
 
   d3.csv(file, function(err, data) {
 
     var config = {"country":"Country", "score":input};
+
 
     var width = 720, height = 720;
 
@@ -320,6 +346,14 @@ function ToggleMap(file, input) {
             .attr("width", 0)
             .transition(transitionDuration)
             .attr("width", dataZoomXScale(barWidth)+1);
+
+            // dataZoom.append("rect")
+            // .attr("x", "10")
+            // .attr("y", i*40+10)
+            // .attr("height", 20)
+            // .attr("width", 0)
+            // .transition(transitionDuration+100)
+            // .attr("width", dataZoomXScale(productionValueHash["China"])+1);
           }
           else {
             dataZoom.append("rect")
@@ -418,13 +452,8 @@ function ToggleMap(file, input) {
 
             console.log(rval);
 
-            if ($('#toggleCons').hasClass("active")) {
               refillMap("consumption.csv", ""+rval, sliderD);
-            }
-            else if ($('#toggleProd').hasClass("active")) {
-              refillMap("production.csv", ""+rval, sliderD);
               loadChords(rval);
-            } 
 
             i++;
             if( i < howManyTimes ){
@@ -526,7 +555,7 @@ d3.text("Production/2013.csv", "text/csv", function(err,data) {
   offset = Math.PI * (emptyStroke/(emptyStroke / .4)) / 2;
 
   var chord = d3.layout.chord()
-    .padding(.02)
+    .padding(.08)
     .sortSubgroups(d3.descending)
     .sortChords(d3.descending)
     .matrix(matrix)
@@ -636,7 +665,7 @@ function loadChords(input) {
     var offset = Math.PI * (emptyStroke/(emptyStroke / .4)) / 2;
 
     chord = d3.layout.chord()
-      .padding(.02)
+      .padding(.08)
       .sortSubgroups(d3.descending)
       .sortChords(d3.descending)
       .matrix(matrix)
@@ -653,7 +682,7 @@ function loadChords(input) {
       .endAngle(endAngle);
     var fill = d3.scale.ordinal()
       .domain(d3.range(labels.length))
-      .range(["#C4C4C4","#C4C4C4","#C4C4C4", "#C4C4C4","#E0E0E0","#EDC951","#CC333F","#00A0B0", "#7D1D3F", "#E0E0E0"]) //change later
+      .range(["#C4C4C4","#C4C4C4","#C4C4C4", "#C4C4C4","#E0E0E0","#EDC951","#CC333F","#00A0B0", "#7D1D3F", "#E0E0E0"])
 
     /* Outer Arcs */ 
     g = wrapper.selectAll("g.group")
