@@ -451,6 +451,7 @@ function ToggleMap(file, input) {
         /***********************
         * Slider
         ***********************/
+        rval = "1993";
 
         d3.select("#slider2").on("input", function() {
           var rval = (this).value;
@@ -468,7 +469,6 @@ function ToggleMap(file, input) {
 
             // Production csv
             d3.csv('production.csv', function(err, producData) {
-              console.log(input);
               var configProd = {"country":"Country", "score":input};
 
               var country_key = configProd.country;
@@ -488,7 +488,7 @@ function ToggleMap(file, input) {
 
               if (allowBarGraphToChange) {
                 draw(clickedCountry, valueHash, productionValueHash);
-                loadChords(rval);
+                loadChords(input);
               }
 
               map.selectAll(".country").data(countries)
@@ -625,7 +625,7 @@ var wrapper = csvg.append("g").attr("class", "chordWrapper")
 
 // d3.text("Production/1993.csv", "text/csv", function(err,data) {
 var offset;
-d3.text("Production/2013.csv", "text/csv", function(err,data) { 
+d3.text("Production/1993.csv", "text/csv", function(err,data) { 
   matrix = d3.csv.parseRows(data);
   for (var i = 0; i < matrix.length; i++) {
     for (var j = 0; j < matrix.length; j++) {
