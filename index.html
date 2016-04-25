@@ -738,7 +738,7 @@ function fade(opac) {
       .filter(function(d) {
         return d.source.index != i && d.target.index != i; 
       })
-      .transition(750)
+      .transition(400)
         .style("opacity", function(d) {
           if (labels[d.source.index] === "") return 0;
           else return opac;
