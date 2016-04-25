@@ -105,7 +105,7 @@ $(document).bind('scroll', function() {
 //slider
 
 // Color scale
-var getColor = d3.scale.linear().domain([0,120]).range(["#d6f5d6","#145214"]);
+var getColor = d3.scale.linear().domain([0,120]).range(["#d6f5d6","#8AA1B1"]);
 var valueHash, quantize, countries, productionValueHash;
 
 
@@ -329,6 +329,7 @@ function ToggleMap(file, input) {
           map.append("g")
           .attr("class", "legendLinear")
           .attr("transform", "translate(20,20)");
+
           var legendLinear = d3.legend.color()
           .shapeWidth(30)
           .orient('horizontal')
@@ -363,6 +364,25 @@ function ToggleMap(file, input) {
             var barWidth = topThree[i]["value"];
             var barTitle = topThree[i]["countryName"];
             
+            // dataZoom.append("rect")
+            // .attr("x", "0")
+            // .attr("y", i*40+10)
+            // .attr("height", rectHeight)
+            // .attr("width", 0)
+            // .attr("fill", "#8AA1B1")
+            // .attr("opacity", "1")
+            // .transition(transitionDuration)
+            // .attr("width", dataZoomXScale(barWidth)+1);
+
+            // dataZoom.append("rect")
+            // .attr("x", "0")
+            // .attr("y", i*40+10)
+            // .attr("height", rectHeight)
+            // .attr("width", 0)
+            // .attr("fill", "#000")
+            // .attr("opacity", ".2")
+            // .transition(transitionDuration)
+            // .attr("width", dataZoomXScale(productionValueHash[barTitle])+1);
             dataZoom.append("rect")
             .attr("x", "0")
             .attr("y", i*40+10)
