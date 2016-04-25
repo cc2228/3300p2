@@ -269,7 +269,7 @@ function ToggleMap(file, input) {
             html += "</span>";
             html += "<span class=\"tooltip_value\">";
             html += (valueHash[d.properties.name] ? valueHash[d.properties.name] : "");
-            html += "";
+            html += " QBTU";
             html += "</span>";
             html += "</div>";
             
@@ -689,6 +689,8 @@ d3.text("Production/1993.csv", "text/csv", function(err,data) {
         + "translate(" + (innerRadius + 10) + ")"
         + (d.angle > Math.PI ? "rotate(180)" : "")
       })
+      .on("mouseover", fade(.1))
+      .on("mouseout", fade(.7))
       .text(function(d,i) { return labels[i]; });
 
   /* Inner Chords */ 
