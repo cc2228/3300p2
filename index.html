@@ -336,7 +336,7 @@ function ToggleMap(file, input) {
             dataZoom.append("rect")
             .attr("x", "0")
             .attr("y", i*40+10)
-            .attr("height", rectHeight)
+            .attr("height", rectHeight/2)
             .attr("width", 0)
             .attr("fill", "#8AA1B1")
             .attr("opacity", "1")
@@ -345,7 +345,7 @@ function ToggleMap(file, input) {
 
             dataZoom.append("rect")
             .attr("x", "0")
-            .attr("y", i*40+10)
+            .attr("y", i*40+24)
             .attr("height", rectHeight/2)
             .attr("width", 0)
             .attr("fill", "#000")
@@ -361,7 +361,7 @@ function ToggleMap(file, input) {
             dataZoom.append("rect")
             .attr("x", "0")
             .attr("y", x*40+170)
-            .attr("height", rectHeight)
+            .attr("height", rectHeight/2)
             .attr("width", 0)
             .attr("fill", "#8AA1B1")
             .attr("opacity", "1")
@@ -370,7 +370,7 @@ function ToggleMap(file, input) {
 
             dataZoom.append("rect")
             .attr("x", "0")
-            .attr("y", x*40+170)
+            .attr("y", x*40+184)
             .attr("height", rectHeight/2)
             .attr("width", 0)
             .attr("fill", "#000")
@@ -381,7 +381,7 @@ function ToggleMap(file, input) {
             dataZoom.append("text").attr("x","200").attr("y", x*40+190).attr("fill", "#800000").text(countriesSelected[x].properties.name);  
 
           }
-          dataZoom.append("text").attr("x","200").attr("y", "330").attr("fill", "#fff").text("(Quadrillion BTU)"); 
+          dataZoom.append("text").attr("x","180").attr("y", "340").attr("fill", "#000").text("(Quadrillion BTU)"); 
 
           dataZoom.append("rect")
           .attr("x", "0")
@@ -474,36 +474,43 @@ function ToggleMap(file, input) {
 
         } //end of refill
 
-
+        var shouldPlay = true;
         $("#play").click(function() {
 
-           //if value < max
-          $("#slider2").val(1993);  
-          $("#slider2").trigger('change');
-          var i = 0, howManyTimes = 21;
-          function f() {
+          if(shouldPlay) {
+            shouldPlay = false;
+             //if value < max
+            $("#slider2").val(1993);  
+            $("#slider2").trigger('change');
+            var i = 0, howManyTimes = 21;
+            function f() {
 
-              allowBarGraphToChange = false    
+                allowBarGraphToChange = false    
 
-              $("#slider2").val(1993+i);  
-              $("#slider2").trigger('change');
-              rval = $("#slider2").val();
+                $("#slider2").val(1993+i);  
+                $("#slider2").trigger('change');
+                rval = $("#slider2").val();
 
-              $("#sliderNum").html(rval);
-              refillMap("consumption.csv", ""+rval, sliderD);
-              i++;
+                $("#sliderNum").html(rval);
+                refillMap("consumption.csv", ""+rval, sliderD);
+                i++;
 
-              if( i < howManyTimes ){
-                  setTimeout( f, 500 );
-              }
-              else {
+                if( i < howManyTimes ){
+                    setTimeout( f, 500 );
+                }
+                else {
 
-                allowBarGraphToChange = true;  
+                  allowBarGraphToChange = true;  
+                  shouldPlay = true;
 
-              }
+                }
+            }
+            f();
+
           }
-          f();
         });
+
+
       }); //end of population csv
 
     }); //end of countries csv
