@@ -36,7 +36,7 @@ Update when clicking to different
  -->
 
   <div id = "rightSideTitle">
-    Production vs. Consumption: Top 3 Countries vs. Selected<br><br>
+    Consumption vs. Production: Top 3 Countries vs. Selected<br><br>
   </div>
   <div id="tooltip-container"></div>
 
@@ -350,11 +350,14 @@ function ToggleMap(file, input) {
           console.log(productionValueHash);
           d3.select("#dataZoom").remove();
           //recreate bar graph
-          d3.select("#viz").append("svg").attr("id", "dataZoom").attr("width", "440").attr("height","320");
+          d3.select("#viz").append("svg").attr("id", "dataZoom").attr("width", "465").attr("height","320");
           var dataZoom = d3.select("#dataZoom");
           var dataZoomXScale = d3.scale.linear().domain([0,120]).range([0,440]);
           var xAxis = d3.svg.axis().scale(dataZoomXScale).orient("bottom").ticks(6);
-          dataZoom.append("g").attr("class", "axis").attr("transform", "translate(0, 300)").call(xAxis);
+          dataZoom.append("g")
+          .attr("class", "axis")
+          .attr("transform", "translate(20, 295)")
+          .call(xAxis);
           var topThree = getTopThree(values);
           var rectHeight = 30;
           var transitionDuration = 750;
@@ -384,8 +387,8 @@ function ToggleMap(file, input) {
             // .transition(transitionDuration)
             // .attr("width", dataZoomXScale(productionValueHash[barTitle])+1);
             dataZoom.append("rect")
-            .attr("x", "0")
-            .attr("y", i*40+10)
+            .attr("x", "20")
+            .attr("y", i*40+10+25)
             .attr("height", rectHeight/2)
             .attr("width", 0)
             .attr("fill", "#8AA1B1")
@@ -394,8 +397,8 @@ function ToggleMap(file, input) {
             .attr("width", dataZoomXScale(barWidth)+1);
 
             dataZoom.append("rect")
-            .attr("x", "0")
-            .attr("y", i*40+24)
+            .attr("x", "20")
+            .attr("y", i*40+24+25)
             .attr("height", rectHeight/2)
             .attr("width", 0)
             .attr("fill", "#000")
@@ -403,13 +406,14 @@ function ToggleMap(file, input) {
             .transition(transitionDuration)
             .attr("width", dataZoomXScale(productionValueHash[barTitle])+1);
 
-            dataZoom.append("text").attr("x","200").attr("y", i*40+30).attr("fill", "#800000").text(barTitle);
+            dataZoom.append("text").attr("x","200").attr("y", i*40+30+25).attr("fill", "#800000").text(barTitle);
+
           }
 
           for (var x = 0; x < countriesSelected.length; x++) {
 
             dataZoom.append("rect")
-            .attr("x", "0")
+            .attr("x", "20")
             .attr("y", x*40+170)
             .attr("height", rectHeight/2)
             .attr("width", 0)
@@ -419,7 +423,7 @@ function ToggleMap(file, input) {
             .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
 
             dataZoom.append("rect")
-            .attr("x", "0")
+            .attr("x", "20")
             .attr("y", x*40+184)
             .attr("height", rectHeight/2)
             .attr("width", 0)
@@ -433,29 +437,45 @@ function ToggleMap(file, input) {
           }
           dataZoom.append("text").attr("x","180").attr("y", "340").attr("fill", "#000").text("(Quadrillion BTU)"); 
 
-          dataZoom.append("text")
-          .attr("x","10").attr("y", "140")
-          .attr("fill", "#fff").text("Top 3 Countries"); 
 
-
-          dataZoom.append("rect")
-          .attr("x", "0")
-          .attr("y", 125)
+         dataZoom.append("rect")
+          .attr("x", "100")
+          .attr("y", 0)
           .attr("height", 18)
           .attr("fill", "#8AA1B1")
           .attr("opacity", "1")
-          .attr("width", dataZoomXScale(120));
+          .attr("width", 40);
 
           dataZoom.append("rect")
-          .attr("x", "0")
-          .attr("y", 145)
+          .attr("x", "250")
+          .attr("y", 0)
           .attr("height", 18)
           .attr("fill", "#000")
           .attr("opacity", ".2")
-          .attr("width", dataZoomXScale(120));
+          .attr("width", 40);
 
-          dataZoom.append("text").attr("x","10").attr("y", "140").attr("fill", "#fff").text("Consumption"); 
-          dataZoom.append("text").attr("x","10").attr("y", "160").attr("fill", "#fff").text("Production"); 
+          // Styling of the datazoom graph
+          dataZoom.append("text")
+          .attr("x","-145").attr("y", "15")
+          .attr("transform", "rotate(-90)")
+          .style("color", "#000").text("Top 3 Countries"); 
+
+          dataZoom.append("text")
+          .attr("x","-275").attr("y", "15")
+          .attr("transform", "rotate(-90)")
+          .style("color", "#000").text("User Selected"); 
+
+          dataZoom.append("line")
+          .attr("x1", "20")
+          .attr("y1", "157.5")
+          .attr("x2", "440")
+          .attr("y2", "157.5")
+          .style("stroke", "#000000")
+          .style("stroke-width", "2px")
+          .style("stroke-dasharray", "5, 5");
+
+          dataZoom.append("text").attr("x","145").attr("y", "12.5").attr("fill", "#000000").text("Consumption"); 
+          dataZoom.append("text").attr("x","295").attr("y", "12.5").attr("fill", "#000000").text("Production"); 
 
           // Energy consumed (in million btu) per person
           // var popValue = values[objj.properties.name]/popHash[objj.properties.name] * 1000;
