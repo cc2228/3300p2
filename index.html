@@ -353,7 +353,7 @@ function ToggleMap(file, input) {
             .transition(transitionDuration)
             .attr("width", dataZoomXScale(productionValueHash[barTitle])+1);
 
-            dataZoom.append("text").attr("x","10").attr("y", i*40+30).attr("fill", "#fff").text(barTitle);
+            dataZoom.append("text").attr("x","200").attr("y", i*40+30).attr("fill", "#800000").text(barTitle);
           }
 
           for (var x = 0; x < countriesSelected.length; x++) {
@@ -378,16 +378,37 @@ function ToggleMap(file, input) {
             .transition(transitionDuration)
             .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]+1));
 
-            dataZoom.append("text").attr("x","10").attr("y", x*40+190).attr("fill", "#fff").text(countriesSelected[x].properties.name);  
+            dataZoom.append("text").attr("x","200").attr("y", x*40+190).attr("fill", "#800000").text(countriesSelected[x].properties.name);  
 
           }
-          
+          dataZoom.append("text").attr("x","200").attr("y", "330").attr("fill", "#fff").text("(Quadrillion BTU)"); 
+
+          dataZoom.append("rect")
+          .attr("x", "0")
+          .attr("y", 125)
+          .attr("height", 18)
+          .attr("fill", "#8AA1B1")
+          .attr("opacity", "1")
+          .attr("width", dataZoomXScale(120));
+
+          dataZoom.append("rect")
+          .attr("x", "0")
+          .attr("y", 145)
+          .attr("height", 18)
+          .attr("fill", "#000")
+          .attr("opacity", ".2")
+          .attr("width", dataZoomXScale(120));
+
+          dataZoom.append("text").attr("x","10").attr("y", "140").attr("fill", "#fff").text("Consumption"); 
+          dataZoom.append("text").attr("x","10").attr("y", "160").attr("fill", "#fff").text("Production"); 
+
           // Energy consumed (in million btu) per person
-          var popValue = values[objj.properties.name]/popHash[objj.properties.name] * 1000;
-          dataZoom.append("text").attr("x","10").attr("y","350")
-            .attr("fill", "#00000")
-            .attr("font-size", "20px")
-            .text("Every person in " + objj.properties.name + " spends/consumes " + Math.round(popValue) + " million btu of energy");
+          // var popValue = values[objj.properties.name]/popHash[objj.properties.name] * 1000;
+          // dataZoom.append("text").attr("x","10").attr("y","350")
+          //   .attr("fill", "#00000")
+          //   .attr("font-size", "20px")
+          //   .text("Every person in " + objj.properties.name + " spends/consumes " + Math.round(popValue) + " million btu of energy");
+
           return objj;
         }
         d3.select(self.frameElement).style("height", (height * 2.3 / 3) + "px");

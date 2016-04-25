@@ -75,6 +75,9 @@ h2 {
   position: fixed;
   top: 80px;
 }
+rect {
+  transition: width 1s;
+}
 #sliderAxis {
   width: 750px;
 }
@@ -280,8 +283,7 @@ input[type=range]:focus::-ms-fill-upper {
   background-color: #647F54;
 }
 #dataZoom text {
-  font-size: 10px;
-  fill: #000;
+  font-size: 15px;
 }
 .axis  {
   border: solid blue;
@@ -302,7 +304,7 @@ p {
 * Chord Diagram
 ******************/
 text.titles {
-  font-size: 6px;
+  font-size: 10px;
 }
 
 /******************
