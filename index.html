@@ -313,6 +313,29 @@ function ToggleMap(file, input) {
           
           svg.attr("height", height * 2.2 / 3);
 
+
+          /***********************
+          * Map Legend
+          ***********************/
+
+          var map = d3.select("svg");
+          map.append("g")
+          .attr("class", "legendLinear")
+          .attr("transform", "translate(20,20)");
+          var legendLinear = d3.legend.color()
+          .shapeWidth(30)
+          .orient('horizontal')
+          .scale(getColor);
+
+          svg.select(".legendLinear").call(legendLinear);
+
+      // svg.append("text")
+      //   .attr("class", "keyLabel")
+      //   .attr("x", 0)
+      //   .attr("y", 20)
+      //   .text("Energy Consumption in BTU")
+      //   .attr("font-size", "10px");
+
         }); //end of json map function
           //-----------------------------------------------------------------
         function draw(objj, values, productionValueHash) {
@@ -519,30 +542,6 @@ function getTopThree(arrayToSort) {
 }
 
 /***********************
-* Map Legend
-***********************/
-// var percentScale = d3.scale.linear().domain([1, 9, 15]).range(["#EDE3DE", "#edf8b1", "#ff3232"]);
-// var map = d3.select("#viz");
-// var maplegend = map.append("g")
-//       .attr("transform", "translate(0,0)");
-//     maplegend.append("g")
-//           .attr("class", "legendLinear")
-//       var maplegendLinear = d3.legend.color()
-//           .shapeWidth(30)
-//           .orient('horizontal')
-//           .scale(percentScale);
-
-//         maplegend.select(".legendLinear").call(maplegendLinear);
-
-//         maplegend.append("text")
-//           .attr("class", "keyLabel")
-//           .attr("x", 0)
-//           .attr("y", 20)
-//           .text("Energy Consumption in BTU")
-//           .attr("font-size", "10px");
-
-
-/***********************
 * Chord Graph
 ***********************/
 // var cmargin = {left: 50, top: 10, right: 50, bottom: 10};
@@ -625,7 +624,7 @@ d3.text("Production/2013.csv", "text/csv", function(err,data) {
       .attr("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
       .attr("transform", function(d,i) { 
         var c = arc.centroid(d);
-        return "rotate(" + (d.angle * 180 / Math.PI - 100) + ")"
+        return "rotate(" + (d.angle * 180 / Math.PI - 102) + ")"
         + "translate(" + (innerRadius + 10) + ")"
         + (d.angle > Math.PI ? "rotate(180)" : "")
       })
@@ -718,7 +717,20 @@ function loadChords(input) {
       .attr("d", arc)
       .on("mouseover", fade(.1))
       .on("mouseout", fade(.7));
-    /* Append Names */ 
+    /* Update Names */ 
+
+    g.select("text")
+      .transition(750)
+      .each(function(d) { d.angle = ((d.startAngle + d.endAngle) / 2) + offset;}) //Slightly altered function to define the angle
+      .attr("dy", "0em")
+      .attr("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
+      .attr("transform", function(d,i) { 
+        var c = arc.centroid(d);
+        return "rotate(" + (d.angle * 180 / Math.PI - 102) + ")"
+        + "translate(" + (innerRadius + 10) + ")"
+        + (d.angle > Math.PI ? "rotate(180)" : "")
+      });
+      // .text(function(d,i) { return labels[i]; });
 
     /* Inner Chords */ 
     chords = wrapper.selectAll("path.chord")
