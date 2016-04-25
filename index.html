@@ -36,7 +36,7 @@ Update when clicking to different
  -->
 
   <div id = "rightSideTitle">
-    Top 3 countries vs. 3 user selected countries<br><br>
+    Production vs. Consumption: Top 3 Countries vs. Selected<br><br>
   </div>
   <div id="tooltip-container"></div>
 
@@ -45,13 +45,16 @@ Update when clicking to different
       <div id = "sliderNum">1993</div>
     </div>
     <div id="dropdowns">
-      <select id="country3"></select>
+      Click a country on the map or select:
+      <select id="country3"></select><!-- 
       <select id="country2"></select>
-      <select id="country"></select>
+      <select id="country"></select> -->
     </div>
 
-    <button type id="button">Compare Countries</button><br>
 
+<!--     <button type id="button">Compare Countries</button><br>
+ -->
+    <div id="dataZoom"></div>
 
   </div>
 
@@ -72,6 +75,11 @@ Update when clicking to different
       <div class = "yearAxis" id = "tick2">2003</div>
       <div class = "yearAxis" id = "tick3">2013</diV>
     </div>
+    </div>
+
+    <div id="bottomText">
+      <p>Hello test test test test ello test test test test ello test test test test </p>
+      <p>We can write a description to fill up the space here!</p>
     </div>
 
 
@@ -184,26 +192,25 @@ function ToggleMap(file, input) {
 
 
           // Drop-down menu: to select three countries
-
           var options = ""
           for (var i=0; i<countries.length; i++) {
             options += "<option value=" + countries[i].id + '>' + countries[i].properties.name + "</option>";
           }
-          document.getElementById("country").innerHTML = options;
+          document.getElementById("country3").innerHTML = options;/*
           document.getElementById("country2").innerHTML = options;
-          document.getElementById("country3").innerHTML = options;
+          document.getElementById("country").innerHTML = options;*/
 
           var firstCountry, secondCountry, thirdCountry;
 
           // submit button for drop down countries
-          d3.select("#button").on('click', function(d) { 
-            firstCountry = document.getElementById("country").value;
+          d3.select("#country3").on('change', function(d) { 
+            firstCountry = document.getElementById("country3").value;/*
             secondCountry = document.getElementById("country2").value;
-            thirdCountry = document.getElementById("country3").value;
+            thirdCountry = document.getElementById("country").value;*/
 
-            var buttonCountries = [firstCountry, secondCountry, thirdCountry];
+            var buttonCountries = [firstCountry];
 
-            for (var i =0; i<3; i++) { 
+            for (var i =0; i<buttonCountries.length; i++) { 
               d3.selectAll('path').filter(function(d) {
                 if (d.id == buttonCountries[i]) {
                     if(countriesSelected.length < 3) {
@@ -382,6 +389,11 @@ function ToggleMap(file, input) {
 
           }
           dataZoom.append("text").attr("x","180").attr("y", "340").attr("fill", "#000").text("(Quadrillion BTU)"); 
+
+          dataZoom.append("text")
+          .attr("x","10").attr("y", "140")
+          .attr("fill", "#fff").text("Top 3 Countries"); 
+
 
           dataZoom.append("rect")
           .attr("x", "0")
