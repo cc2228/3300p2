@@ -690,6 +690,8 @@ d3.text("Production/2013.csv", "text/csv", function(err,data) {
         + "translate(" + (innerRadius + 10) + ")"
         + (d.angle > Math.PI ? "rotate(180)" : "")
       })
+      .on("mouseover", fade(.1))
+      .on("mouseout", fade(.7))
       .text(function(d,i) { return labels[i]; });
 
   /* Inner Chords */ 
