@@ -349,3 +349,8 @@ select {
 
 }
 
+text.keyLabel, text.label {
+  font-size: 12px;
+  font-weight: lighter;
+}
+

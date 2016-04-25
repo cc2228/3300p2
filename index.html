@@ -625,14 +625,14 @@ var wrapper = csvg.append("g").attr("class", "chordWrapper")
 
 // d3.text("Production/1993.csv", "text/csv", function(err,data) {
 var offset;
-d3.text("Production/1993.csv", "text/csv", function(err,data) { 
+d3.text("Consumption/1993.csv", "text/csv", function(err,data) { 
   matrix = d3.csv.parseRows(data);
   for (var i = 0; i < matrix.length; i++) {
     for (var j = 0; j < matrix.length; j++) {
-      matrix[i][j] = parseInt(matrix[i][j]);
+      matrix[i][j] = parseFloat(matrix[i][j]);
     }
   }
-  var emptyStroke = parseInt(matrix[9][4]);
+  var emptyStroke = parseFloat(matrix[9][4]);
 
   // Rotation for vertical invisible chord
   offset = Math.PI * (emptyStroke/(emptyStroke / .4)) / 2;
@@ -730,13 +730,13 @@ function loadChords(input) {
   var chord = d3.select("#chordG");
   var matrix;
   // Get array of arrays- all values are STRINGS
-  d3.text("Production/" + String(input) + ".csv", "text/csv", function(err,data) {  
+  d3.text("Consumption/" + String(input) + ".csv", "text/csv", function(err,data) {  
     matrix = d3.csv.parseRows(data);
 
     // Convert from string to int
     for (var i = 0; i < matrix.length; i++) {
       for (var j = 0; j < matrix.length; j++) {
-        matrix[i][j] = parseInt(matrix[i][j]);
+        matrix[i][j] = parseFloat(matrix[i][j]);
       }
     }
     var emptyStroke = matrix[9][4];
@@ -810,6 +810,92 @@ function loadChords(input) {
       .attr("d", path);
   })
 }
+
+/* PRODUCTION: FIX ON BUTTON TOGGLE */
+// function loadChords(input) {
+//   var chord = d3.select("#chordG");
+//   var matrix;
+//   // Get array of arrays- all values are STRINGS
+//   d3.text("Production/" + String(input) + ".csv", "text/csv", function(err,data) {  
+//     matrix = d3.csv.parseRows(data);
+
+//     // Convert from string to int
+//     for (var i = 0; i < matrix.length; i++) {
+//       for (var j = 0; j < matrix.length; j++) {
+//         matrix[i][j] = parseInt(matrix[i][j]);
+//       }
+//     }
+//     var emptyStroke = matrix[9][4];
+
+//     // Rotation for vertical invisible chord
+//     var offset = Math.PI * (emptyStroke/(emptyStroke / .4)) / 2;
+
+//     chord = d3.layout.chord()
+//       .padding(.08)
+//       .sortSubgroups(d3.descending)
+//       .sortChords(d3.descending)
+//       .matrix(matrix)
+
+//     arc = d3.svg.arc()
+//       .innerRadius(innerRadius)
+//       .outerRadius(outerRadius)
+//       .startAngle(startAngle)
+//       .endAngle(endAngle);
+
+//     path = d3.svg.chord()
+//       .radius(innerRadius)
+//       .startAngle(startAngle)
+//       .endAngle(endAngle);
+//     var fill = d3.scale.ordinal()
+//       .domain(d3.range(labels.length))
+//       .range(["#C4C4C4","#C4C4C4","#C4C4C4", "#C4C4C4","#E0E0E0","#EDC951","#CC333F","#00A0B0", "#7D1D3F", "#E0E0E0"])
+
+//     /* Outer Arcs */ 
+//     g = wrapper.selectAll("g.group")
+//       .data(chord.groups);
+//       // .attr("class", "group");
+//     g.select("path")
+//       .style("stroke", function(d, i) {
+//       if (labels[i] === "") return "none";
+//       else return fill(d.index);
+//     })
+//       .style("fill", function(d, i) {
+//       if (labels[i] === "") return "none";
+//       else return fill(d.index);
+//     })
+//       .attr("d", arc)
+//       .on("mouseover", fade(.1))
+//       .on("mouseout", fade(.7));
+//     /* Update Names */ 
+
+//     g.select("text")
+//       .transition(750)
+//       .each(function(d) { d.angle = ((d.startAngle + d.endAngle) / 2) + offset;}) //Slightly altered function to define the angle
+//       .attr("dy", "0em")
+//       .attr("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
+//       .attr("transform", function(d,i) { 
+//         var c = arc.centroid(d);
+//         return "rotate(" + (d.angle * 180 / Math.PI - 102) + ")"
+//         + "translate(" + (innerRadius + 10) + ")"
+//         + (d.angle > Math.PI ? "rotate(180)" : "")
+//       });
+//       // .text(function(d,i) { return labels[i]; });
+
+//     /* Inner Chords */ 
+//     chords = wrapper.selectAll("path.chord")
+//       .data(chord.chords)
+//       // .attr("class", "chord")
+//       .style("stroke", "none")
+//       .style("fill", function(d,i) { 
+//         return fill(d.target.index);
+//       })
+//       .style("opacity", function(d) {
+//       if (labels[d.source.index] === "") return 0;
+//       else return opacityDef;
+//     })
+//       .attr("d", path);
+//   })
+// }
 
 </script>
 
