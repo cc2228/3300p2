@@ -1,7 +1,8 @@
 body {
   height: 100%;
-  font-family: 'Raleway', sans-serif; 
-  /*font-family: 'Raleway', sans-serif;  */
+  /*font-family: 'Raleway', sans-serif; */
+  font-family: 'Georgia', sans-serif; 
+  /*font-family: 'Open Sans', sans-serif;  */
   background-color: #fff;
 }
 svg {
@@ -120,7 +121,7 @@ rect {
 * Buttons
 ******************/
 
-button {
+/*button {
   border: none;
   color: #000;
   width: 367.5px;
@@ -128,22 +129,23 @@ button {
   background-color: #fff;
   padding: 10px;
   border: solid #8AA1B1;
-}
+}*/
 #buttons {
   text-align: center;
   width: 740px;
   margin: 10px;
   margin-left: 0px;
 }
-button:hover {
+/*button:hover {
   color: #fff;
   cursor: pointer;
   background-color: #8AA1B1;
-}
+}*/
 #play {
   display: inline-block;
   width: 60px;
   vertical-align: top;
+  cursor: pointer;
 }
 
 #play:hover {
@@ -332,6 +334,7 @@ text.titles {
 
 select {
   width: 150px;
+  cursor: pointer;
 }
 
 #button {
@@ -339,6 +342,9 @@ select {
   margin-top: 20px;
   float: right;
 
+}
+button:focus, #country3:focus, #button:focus {
+  outline:0 !important;
 }
 
 /******************
