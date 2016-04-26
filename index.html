@@ -66,8 +66,8 @@
       <div id="chordG"></div>
       <div class="text-center">
         <div id="select-filter" class="btn-group" role="group" aria-label="...">
-          <button type="button" class="btn btn-default active" id="Consumption">Consumption</button>
-          <button type="button" class="btn btn-default" id="Production">Production</button>
+          <button type="button" class="btn btn-default active chordB" id="Consumption">Consumption</button>
+          <button type="button" class="btn btn-default chordB" id="Production">Production</button>
         </div>
       </div>
     </div>
@@ -530,7 +530,7 @@ function ToggleMap(file, input) {
         /***********************
         * Button
         ***********************/
-        d3.selectAll("button").on("click", function() {
+        d3.selectAll(".chordB").on("click", function() {
           type = this.id;
           rval = $("#slider2").val();
           loadChords(rval, type);
