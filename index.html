@@ -54,7 +54,7 @@
 
 <!--     <button type id="button">Compare Countries</button><br>
  -->
-    <!-- <div id="dataZoom"></div> -->
+    <div id="dataZoom"></div>
 
   </div>
 
@@ -65,19 +65,13 @@
       <div id="dataZoom"></div>
 
       <div id="chordG">
-        <div class="text-center ">
-        <div id="select-filter" class="btn-group" role="group" aria-label="...">
-          <button type="button" class="btn btn-default active chordB" id="Consumption">Consumption</button>
-          <button type="button" class="btn btn-default chordB" id="Production">Production</button>
+        <div class="text-center">
+          <div id="select-filter" class="btn-group" role="group" aria-label="...">
+            <button type="button" class="btn btn-default active chordB" id="Consumption">Consumption</button>
+            <button type="button" class="btn btn-default chordB" id="Production">Production</button>
+          </div>
         </div>
       </div>
-      </div>
-      <!-- <div class="text-center">
-        <div id="select-filter" class="btn-group" role="group" aria-label="...">
-          <button type="button" class="btn btn-default active chordB" id="Consumption">Consumption</button>
-          <button type="button" class="btn btn-default chordB" id="Production">Production</button>
-        </div>
-      </div> -->
     </div>
 
 
@@ -366,7 +360,7 @@ function ToggleMap(file, input) {
           var xAxis = d3.svg.axis().scale(dataZoomXScale).orient("bottom").ticks(6);
           dataZoom.append("g")
           .attr("class", "axis")
-          .attr("transform", "translate(20, 295) scale(.9)")
+          .attr("transform", "translate(20, 295)")
           .call(xAxis);
 
           dataZoom.append("text").attr("x","180").attr("y", "340").attr("fill", "#000").text("(Quadrillion BTU)"); 
