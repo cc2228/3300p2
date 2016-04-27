@@ -35,7 +35,7 @@
  -->
 
   <div id = "rightSideTitle">
-    Consumption vs. Production Country Comparison<br><br>
+    Consumption vs. Production Country Comparison<br>
   </div>
   <div id="tooltip-container"></div>
 
@@ -43,12 +43,20 @@
     <div id="canvas-svg">
       <div id = "sliderNum">1993</div>
     </div>
+
+<!--       <form id="population">
+        <input id="rawButton" type="radio" name="population" value="raw" checked> Raw 
+        <input id="scaledButton" type="radio" name="population" value="scaled"> Scaled to Population<br>
+      </form> -->
+
+
     <div id="dropdowns">
       Click a country on the map or select:
       <select id="country3"></select><!-- 
       <select id="country2"></select>
       <select id="country"></select> -->
     </div>
+
 
 
 <!--     <button type id="button">Compare Countries</button><br>
@@ -63,13 +71,15 @@
     <div id = "rightSide">
       <div id="dataZoom"></div>
 
-      <div id="chordG"></div>
-      <div class="text-center">
-        <div id="select-filter" class="btn-group" role="group" aria-label="...">
-          <button type="button" class="btn btn-default active chordB" id="Consumption">Consumption</button>
-          <button type="button" class="btn btn-default chordB" id="Production">Production</button>
+      <div id="chordG">
+        <div class="text-center">
+          <div id="select-filter" class="btn-group" role="group" aria-label="...">
+            <button type="button" class="btn btn-default active chordB" id="Consumption">Consumption</button>
+            <button type="button" class="btn btn-default chordB" id="Production">Production</button>
+          </div>
         </div>
       </div>
+
     </div>
 
 
@@ -349,10 +359,11 @@ function ToggleMap(file, input) {
 
         }); //end of json map function
           //-----------------------------------------------------------------
+
         function draw(objj, values, productionValueHash) {
           d3.select("#dataZoom").remove();
           //recreate bar graph
-          d3.select("#viz").append("svg").attr("id", "dataZoom").attr("width", "465").attr("height","320");
+          d3.select("#viz").append("svg").attr("id", "dataZoom").attr("width", "485").attr("height","350");
           var dataZoom = d3.select("#dataZoom");
           var dataZoomXScale = d3.scale.linear().domain([0,120]).range([0,440]);
           var xAxis = d3.svg.axis().scale(dataZoomXScale).orient("bottom").ticks(6);
@@ -360,109 +371,267 @@ function ToggleMap(file, input) {
           .attr("class", "axis")
           .attr("transform", "translate(20, 295)")
           .call(xAxis);
+          dataZoom.append("text").attr("class", "axis").attr("x","180").attr("y", "340").attr("fill", "#000").text("(Quadrillion BTU)"); 
+
           var topThree = getTopThree(values);
           var rectHeight = 30;
           var transitionDuration = 750;
+/*
+          var x = 0;
 
-          for(var i = 0; i < 3; i++) {
+            // Redraw scale
+            d3.select(".axis").remove();
+            var dataZoomXScale = d3.scale.linear().domain([0,120]).range([0,440]);
+            var xAxis = d3.svg.axis().scale(dataZoomXScale).orient("bottom").ticks(6);
+            dataZoom.append("g")
+            .attr("class", "axis")
+            .attr("transform", "translate(20, 295)")
+            .call(xAxis);
 
-            var barWidth = topThree[i]["value"];
-            var barTitle = topThree[i]["countryName"];
+            d3.selectAll(".prodBar").remove();
+            d3.selectAll(".consumpBar").remove();
+*/
+            for(var i = 0; i < 3; i++) {
+
+              var barTitle = topThree[i]["countryName"];
+              var barWidth = topThree[i]["value"];
+              var prodWidth = productionValueHash[barTitle];
+
+              if(!allowBarGraphToChange) {
+                dataZoom.append("rect")
+                .attr("class", "consumpBar")
+                .attr("x", "20")
+                .attr("y", i*40+10+25+6.5)
+                .attr("height", rectHeight/2)
+                .attr("fill", "#589CC4")
+                .attr("z-fill", "1")
+                .attr("width", dataZoomXScale(barWidth));
+
+                dataZoom.append("rect")
+                .attr("class", "prodBar")
+                .attr("x", "20")
+                .attr("y", i*40+24+25-15)
+                .attr("height", rectHeight)
+                .attr("fill", "#CCC")
+                .attr("opacity", ".5")
+                .attr("width", dataZoomXScale(prodWidth));
+              } 
+
+              else {
+                dataZoom.append("rect")
+                .attr("class", "consumpBar")
+                .attr("x", "20")
+                .attr("y", i*40+10+25+6.5)
+                .attr("height", rectHeight/2)
+                .attr("width", 0)
+                .attr("fill", "#589CC4")
+                .attr("z-fill", "1")
+                .transition(transitionDuration)
+                .attr("width", dataZoomXScale(barWidth));
+
+                dataZoom.append("rect")
+                .attr("class", "prodBar")
+                .attr("x", "20")
+                .attr("y", i*40+24+25-15)
+                .attr("height", rectHeight)
+                .attr("width", 0)
+                .attr("fill", "#CCC")
+                .attr("opacity", ".5")
+                .transition(transitionDuration)
+                .attr("width", dataZoomXScale(prodWidth));
+              }
+              dataZoom.append("text").attr("x","200").attr("y", i*40+30+25).attr("fill", "#000000").text(barTitle);
+
+            }
+
+            for (var x = 0; x < countriesSelected.length; x++) {
+
+              var userSelectCons = values[countriesSelected[x].properties.name];
+              var userSelectProd = productionValueHash[countriesSelected[x].properties.name];
+
+              if (!allowBarGraphToChange) {
+
+                dataZoom.append("rect")
+                .attr("x", "20")
+                .attr("y", x*40+170+6.5)
+                .attr("height", rectHeight/2)
+                .attr("fill", "#589CC4")
+                .attr("opacity", "1")
+                .attr("width", dataZoomXScale(userSelectCons));
+
+                dataZoom.append("rect")
+                .attr("x", "20")
+                .attr("y", x*40+184-15)
+                .attr("height", rectHeight)
+                .attr("fill", "#CCC")
+                .attr("opacity", ".5")
+                .attr("width", dataZoomXScale(userSelectProd));
+              }
+              else {
+                dataZoom.append("rect")
+                .attr("x", "20")
+                .attr("y", x*40+170+6.5)
+                .attr("height", rectHeight/2)
+                .attr("width", 0)
+                .attr("fill", "#589CC4")
+                .attr("opacity", "1")
+                .transition(transitionDuration)
+                .attr("width", dataZoomXScale(userSelectCons));
+
+                dataZoom.append("rect")
+                .attr("x", "20")
+                .attr("y", x*40+184-15)
+                .attr("height", rectHeight)
+                .attr("width", 0)
+                .attr("fill", "#CCC")
+                .attr("opacity", ".5")
+                .transition(transitionDuration)
+                .attr("width", dataZoomXScale(userSelectProd));        
+              }
+
+              dataZoom.append("text").attr("x","200").attr("y", x*40+190).attr("fill", "#000000").text(countriesSelected[x].properties.name);  
+
+            }
+/*
+          d3.select("#rawButton").on("change", function() {
+
+          }) // end raw data
+
+
+          // Population SCALED data
+          // Note: Scale also changes for population data (in million btu per person?)
+          d3.select("#scaledButton").on("change", function() {
+          
+            // Redraw scale
+            d3.selectAll(".axis").remove();
+            var dataZoomXScale = d3.scale.linear().domain([0,400]).range([0,440]);
+            var xAxis = d3.svg.axis().scale(dataZoomXScale).orient("bottom").ticks(6);
+            dataZoom.append("g")
+            .attr("class", "axis")
+            .attr("transform", "translate(20, 295)")
+            .call(xAxis);
+
+            dataZoom.append("text")
+            .attr("class", "axis")
+            .attr("x","180").attr("y", "340").attr("fill", "#000").text("(Million BTU per Person)"); 
+
+            d3.selectAll(".prodBar").remove();
+            d3.selectAll(".consumpBar").remove();
+
+            // Redraw bars for population
+            for(var i = 0; i < 3; i++) {
+
+              var barTitle = topThree[i]["countryName"];
+              var barWidth = topThree[i]["value"]/popHash[barTitle]*1000;
+              var prodWidth = productionValueHash[barTitle]/popHash[barTitle]*1000;
+
+              console.log(barWidth);
+              
+              if(!allowBarGraphToChange) {
+                dataZoom.append("rect")
+                .attr("class", "consumpBar")
+                .attr("x", "20")
+                .attr("y", i*40+10+25+6.5)
+                .attr("height", rectHeight/2)
+                .attr("fill", "#589CC4")
+                .attr("z-fill", "1")
+                .attr("width", dataZoomXScale(barWidth));
+
+                dataZoom.append("rect")
+                .attr("class", "prodBar")
+                .attr("x", "20")
+                .attr("y", i*40+24+25-15)
+                .attr("height", rectHeight)
+                .attr("fill", "#CCC")
+                .attr("opacity", ".5")
+                .attr("width", dataZoomXScale(prodWidth));
+              } 
+
+              else {
+                dataZoom.append("rect")
+                .attr("class", "consumpBar")
+                .attr("x", "20")
+                .attr("y", i*40+10+25+6.5)
+                .attr("height", rectHeight/2)
+                .attr("width", 0)
+                .attr("fill", "#589CC4")
+                .attr("z-fill", "1")
+                .transition(transitionDuration)
+                .attr("width", dataZoomXScale(barWidth));
+
+                dataZoom.append("rect")
+                .attr("class", "prodBar")
+                .attr("x", "20")
+                .attr("y", i*40+24+25-15)
+                .attr("height", rectHeight)
+                .attr("width", 0)
+                .attr("fill", "#CCC")
+                .attr("opacity", ".5")
+                .transition(transitionDuration)
+                .attr("width", dataZoomXScale(prodWidth));
+              }
+              dataZoom.append("text").attr("x","200").attr("y", i*40+30+25).attr("fill", "#000000").text(barTitle);
+
+            }
+
+            for (var x = 0; x < countriesSelected.length; x++) {
+
+              var userSelectCons = values[countriesSelected[x].properties.name]/popHash[countriesSelected[x].properties.name]*1000;
+              var userSelectProd = productionValueHash[countriesSelected[x].properties.name]/popHash[countriesSelected[x].properties.name]*1000;
+              
+              
+              if (!allowBarGraphToChange) {
+
+                dataZoom.append("rect")
+                .attr("class", "consumpBar")
+                .attr("x", "20")
+                .attr("y", x*40+170+6.5)
+                .attr("height", rectHeight/2)
+                .attr("fill", "#589CC4")
+                .attr("opacity", "1")
+                .attr("width", dataZoomXScale(userSelectCons));
+
+                dataZoom.append("rect")
+                .attr("class", "prodBar")
+                .attr("x", "20")
+                .attr("y", x*40+184-15)
+                .attr("height", rectHeight)
+                .attr("fill", "#CCC")
+                .attr("opacity", ".5")
+                .attr("width", dataZoomXScale(userSelectProd));
+              }
+              else {
+                dataZoom.append("rect")
+                .attr("class", "consumpBar")
+                .attr("x", "20")
+                .attr("y", x*40+170+6.5)
+                .attr("height", rectHeight/2)
+                .attr("width", 0)
+                .attr("fill", "#589CC4")
+                .attr("opacity", "1")
+                .transition(transitionDuration)
+                .attr("width", dataZoomXScale(userSelectCons));
+
+                dataZoom.append("rect")
+                .attr("class", "prodBar")
+                .attr("x", "20")
+                .attr("y", x*40+184-15)
+                .attr("height", rectHeight)
+                .attr("width", 0)
+                .attr("fill", "#CCC")
+                .attr("opacity", ".5")
+                .transition(transitionDuration)
+                .attr("width", dataZoomXScale(userSelectProd));        
+              }
+
+              dataZoom.append("text").attr("x","200").attr("y", x*40+190).attr("fill", "#000000").text(countriesSelected[x].properties.name);  
+
+            }
             
-            if(!allowBarGraphToChange) {
-              dataZoom.append("rect")
-              .attr("class", "consumpBar")
-              .attr("x", "20")
-              .attr("y", i*40+10+25+6.5)
-              .attr("height", rectHeight/2)
-              .attr("fill", "#589CC4")
-              .attr("z-fill", "1")
-              .attr("width", dataZoomXScale(barWidth)+1);
+          }) // end scaled button
+*/
 
-              dataZoom.append("rect")
-              .attr("class", "prodBar")
-              .attr("x", "20")
-              .attr("y", i*40+24+25-15)
-              .attr("height", rectHeight)
-              .attr("fill", "#CCC")
-              .attr("opacity", ".5")
-              .attr("width", dataZoomXScale(productionValueHash[barTitle])+1);
-            } 
-
-            else {
-              dataZoom.append("rect")
-              .attr("class", "consumpBar")
-              .attr("x", "20")
-              .attr("y", i*40+10+25+6.5)
-              .attr("height", rectHeight/2)
-              .attr("width", 0)
-              .attr("fill", "#589CC4")
-              .attr("z-fill", "1")
-              .transition(transitionDuration)
-              .attr("width", dataZoomXScale(barWidth)+1);
-
-              dataZoom.append("rect")
-              .attr("class", "prodBar")
-              .attr("x", "20")
-              .attr("y", i*40+24+25-15)
-              .attr("height", rectHeight)
-              .attr("width", 0)
-              .attr("fill", "#CCC")
-              .attr("opacity", ".5")
-              .transition(transitionDuration)
-              .attr("width", dataZoomXScale(productionValueHash[barTitle])+1);
-            }
-            dataZoom.append("text").attr("x","200").attr("y", i*40+30+25).attr("fill", "#000000").text(barTitle);
-
-          }
-
-          for (var x = 0; x < countriesSelected.length; x++) {
-
-            if (!allowBarGraphToChange) {
-
-              dataZoom.append("rect")
-              .attr("x", "20")
-              .attr("y", x*40+170+6.5)
-              .attr("height", rectHeight/2)
-              .attr("fill", "#589CC4")
-              .attr("opacity", "1")
-              .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
-
-              dataZoom.append("rect")
-              .attr("x", "20")
-              .attr("y", x*40+184-15)
-              .attr("height", rectHeight)
-              .attr("fill", "#CCC")
-              .attr("opacity", ".5")
-              .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]+1));
-            }
-            else {
-              dataZoom.append("rect")
-              .attr("x", "20")
-              .attr("y", x*40+170+6.5)
-              .attr("height", rectHeight/2)
-              .attr("width", 0)
-              .attr("fill", "#589CC4")
-              .attr("opacity", "1")
-              .transition(transitionDuration)
-              .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
-
-              dataZoom.append("rect")
-              .attr("x", "20")
-              .attr("y", x*40+184-15)
-              .attr("height", rectHeight)
-              .attr("width", 0)
-              .attr("fill", "#CCC")
-              .attr("opacity", ".5")
-              .transition(transitionDuration)
-              .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]+1));        
-            }
-            dataZoom.append("text").attr("x","200").attr("y", x*40+190).attr("fill", "#000000").text(countriesSelected[x].properties.name);  
-
-          }
-          dataZoom.append("text").attr("x","180").attr("y", "340").attr("fill", "#000").text("(Quadrillion BTU)"); 
-
-
+          // color legends
          dataZoom.append("rect")
           .attr("x", "100")
           .attr("y", 0)
@@ -476,7 +645,7 @@ function ToggleMap(file, input) {
           .attr("y", 0)
           .attr("height", 18)
           .attr("fill", "#CCC")
-          .attr("opacity", ".3")
+          .attr("opacity", ".5")
           .attr("width", 40);
 
           // Styling of the datazoom graph
@@ -502,15 +671,10 @@ function ToggleMap(file, input) {
           dataZoom.append("text").attr("x","145").attr("y", "12.5").attr("fill", "#000000").text("Consumption"); 
           dataZoom.append("text").attr("x","295").attr("y", "12.5").attr("fill", "#000000").text("Production"); 
 
-          // Energy consumed (in million btu) per person
-          // var popValue = values[objj.properties.name]/popHash[objj.properties.name] * 1000;
-          // dataZoom.append("text").attr("x","10").attr("y","350")
-          //   .attr("fill", "#00000")
-          //   .attr("font-size", "20px")
-          //   .text("Every person in " + objj.properties.name + " spends/consumes " + Math.round(popValue) + " million btu of energy");
 
           return objj;
         }
+
         d3.select(self.frameElement).style("height", (height * 2.3 / 3) + "px");
 
         /***********************
@@ -637,12 +801,7 @@ var innerDiv = document.createElement('div');
 innerDiv.id = 'sliderNum';
 innerDiv.innerHTML = $("#slider2").val();
 
-// The variable iDiv is still good... Just append to it.
-
 ToggleMap("consumption.csv", "1993");
-
-// Toggles between the multiple graphs
-
 
 
 //Sort the values so that we can display the top three
@@ -734,6 +893,7 @@ d3.text("Consumption/1993.csv", "text/csv", function(err,data) {
   var fill = d3.scale.ordinal()
     .domain(d3.range(labels.length))
     .range(["#C4C4C4","#C4C4C4","#C4C4C4", "#C4C4C4","#E0E0E0","#EDC951","#CC333F","#00A0B0", "#7D1D3F", "#E0E0E0"]) //change later
+    //.range(["#C4C4C4","#C4C4C4","#C4C4C4", "#C4C4C4","#E0E0E0","#D79E00","#00974A","#D77670", "#005689", "#E0E0E0"])
 
   /* Outer Arcs */ 
   var g = wrapper.selectAll("g.group")
@@ -839,6 +999,7 @@ function loadChords(input, type) {
     var fill = d3.scale.ordinal()
       .domain(d3.range(labels.length))
       .range(["#C4C4C4","#C4C4C4","#C4C4C4", "#C4C4C4","#E0E0E0","#EDC951","#CC333F","#00A0B0", "#7D1D3F", "#E0E0E0"])
+
 
     /* Outer Arcs */ 
     g = wrapper.selectAll("g.group")
