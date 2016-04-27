@@ -1,4 +1,3 @@
-<!-- CHANGE -->
 <!DOCTYPE html>
 <html>
 <meta charset="utf-8">
@@ -54,7 +53,7 @@
 
 <!--     <button type id="button">Compare Countries</button><br>
  -->
-    <!-- <div id="dataZoom"></div> -->
+    <div id="dataZoom"></div>
 
   </div>
 
@@ -64,20 +63,13 @@
     <div id = "rightSide">
       <div id="dataZoom"></div>
 
-      <div id="chordG">
-        <div class="text-center ">
+      <div id="chordG"></div>
+      <div class="text-center">
         <div id="select-filter" class="btn-group" role="group" aria-label="...">
           <button type="button" class="btn btn-default active chordB" id="Consumption">Consumption</button>
           <button type="button" class="btn btn-default chordB" id="Production">Production</button>
         </div>
       </div>
-      </div>
-      <!-- <div class="text-center">
-        <div id="select-filter" class="btn-group" role="group" aria-label="...">
-          <button type="button" class="btn btn-default active chordB" id="Consumption">Consumption</button>
-          <button type="button" class="btn btn-default chordB" id="Production">Production</button>
-        </div>
-      </div> -->
     </div>
 
 
@@ -233,7 +225,7 @@ function ToggleMap(file, input) {
                       countriesSelected[1] = countriesSelected[0];
                       countriesSelected[0] = d;
                     }
-                    drawUserSelected(d, valueHash, productionValueHash);
+                    draw(d, valueHash, productionValueHash);
                 }
               })
             }
@@ -241,8 +233,6 @@ function ToggleMap(file, input) {
 
           //initialize bar graph
           sliderD = countries[41];
-          d3.select("#dataZoom").remove();
-          initBars();
           draw(sliderD, valueHash, productionValueHash);
           svg.append("path")
              .datum(graticule)
@@ -317,7 +307,7 @@ function ToggleMap(file, input) {
               countriesSelected[0] = d;
             }
 
-            sliderD = drawUserSelected(d, valueHash, productionValueHash);
+            sliderD = draw(d, valueHash, productionValueHash);
 
           })
 
@@ -359,16 +349,159 @@ function ToggleMap(file, input) {
 
         }); //end of json map function
           //-----------------------------------------------------------------
-        function initBars() {
-          d3.select("#viz").append("svg").attr("id", "dataZoom").attr("width", "465").attr("height","400");
+
+
+        function draw(objj, values, productionValueHash) {
+          d3.select("#dataZoom").remove();
+          //recreate bar graph
+          d3.select("#viz").append("svg").attr("id", "dataZoom").attr("width", "465").attr("height","320");
           var dataZoom = d3.select("#dataZoom");
           var dataZoomXScale = d3.scale.linear().domain([0,120]).range([0,440]);
           var xAxis = d3.svg.axis().scale(dataZoomXScale).orient("bottom").ticks(6);
           dataZoom.append("g")
           .attr("class", "axis")
-          .attr("transform", "translate(20, 295) scale(.9)")
+          .attr("transform", "translate(20, 295)")
           .call(xAxis);
+          var topThree = getTopThree(values);
+          var rectHeight = 30;
+          var transitionDuration = 750;
 
+          for(var i = 0; i < 3; i++) {
+
+            var barWidth = topThree[i]["value"];
+            var barTitle = topThree[i]["countryName"];
+            
+            if(!allowBarGraphToChange) {
+              dataZoom.append("rect")
+              .attr("class", "consumpBar")
+              .attr("x", "20")
+              .attr("y", i*40+10+25+6.5)
+              .attr("height", rectHeight/2)
+              .attr("fill", "#589CC4")
+              .attr("z-fill", "1")
+              .attr("width", dataZoomXScale(barWidth)+1);
+
+              dataZoom.append("rect")
+              .attr("class", "prodBar")
+              .attr("x", "20")
+              .attr("y", i*40+24+25-15)
+              .attr("height", rectHeight)
+              .attr("fill", "#CCC")
+              .attr("opacity", ".5")
+              .attr("width", dataZoomXScale(productionValueHash[barTitle])+1);
+            } 
+
+            else {
+              dataZoom.append("rect")
+              .attr("class", "consumpBar")
+              .attr("x", "20")
+              .attr("y", i*40+10+25+6.5)
+              .attr("height", rectHeight/2)
+              .attr("width", 0)
+              .attr("fill", "#589CC4")
+              .attr("z-fill", "1")
+              .transition(transitionDuration)
+              .attr("width", dataZoomXScale(barWidth)+1);
+
+              dataZoom.append("rect")
+              .attr("class", "prodBar")
+              .attr("x", "20")
+              .attr("y", i*40+24+25-15)
+              .attr("height", rectHeight)
+              .attr("width", 0)
+              .attr("fill", "#CCC")
+              .attr("opacity", ".5")
+              .transition(transitionDuration)
+              .attr("width", dataZoomXScale(productionValueHash[barTitle])+1);
+            }
+            dataZoom.append("text").attr("x","200").attr("y", i*40+30+25).attr("fill", "#000000").text(barTitle);
+
+          }
+
+          for (var x = 0; x < countriesSelected.length; x++) {
+
+            if (!allowBarGraphToChange) {
+
+              dataZoom.append("rect")
+              .attr("x", "20")
+              .attr("y", x*40+170+6.5)
+              .attr("height", rectHeight/2)
+              .attr("fill", "#589CC4")
+              .attr("opacity", "1")
+              .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
+
+              dataZoom.append("rect")
+              .attr("x", "20")
+              .attr("y", x*40+184-15)
+              .attr("height", rectHeight)
+              .attr("fill", "#CCC")
+              .attr("opacity", ".5")
+              .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]+1));
+            }
+            else {
+              dataZoom.append("rect")
+              .attr("x", "20")
+              .attr("y", x*40+170+6.5)
+              .attr("height", rectHeight/2)
+              .attr("width", 0)
+              .attr("fill", "#589CC4")
+              .attr("opacity", "1")
+              .transition(transitionDuration)
+              .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
+
+              dataZoom.append("rect")
+              .attr("x", "20")
+              .attr("y", x*40+184-15)
+              .attr("height", rectHeight)
+              .attr("width", 0)
+              .attr("fill", "#CCC")
+              .attr("opacity", ".5")
+              .transition(transitionDuration)
+              .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]+1));        
+            }
+            // if (!allowBarGraphToChange) {
+            //   console.log('CHANGE');
+            //   dataZoom.select("consumpBar")
+            //   .transition(50)
+            //   // .attr("x", "20")
+            //   .attr("y", x*40+170+6.5)
+            //   // .attr("height", rectHeight/2)
+            //   // .attr("fill", "#589CC4")
+            //   // .attr("opacity", "1")
+            //   .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
+
+            //   dataZoom.select("prodBar")
+            //   .transition(750)
+            //   .attr("y", x*40+184-15)
+            //   // .attr("height", rectHeight)
+            //   // .attr("fill", "#CCC")
+            //   // .attr("opacity", ".5")
+            //   .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]+1));
+            // }
+            // else {
+            //   dataZoom.append("rect")
+            //   .attr("x", "20")
+            //   .attr("y", x*40+170+6.5)
+            //   .attr("height", rectHeight/2)
+            //   .attr("width", 0)
+            //   .attr("fill", "#589CC4")
+            //   .attr("opacity", "1")
+            //   .transition(transitionDuration)
+            //   .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
+
+            //   dataZoom.append("rect")
+            //   .attr("x", "20")
+            //   .attr("y", x*40+184-15)
+            //   .attr("height", rectHeight)
+            //   .attr("width", 0)
+            //   .attr("fill", "#CCC")
+            //   .attr("opacity", ".5")
+            //   .transition(transitionDuration)
+            //   .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]+1));        
+            // }
+            dataZoom.append("text").attr("x","200").attr("y", x*40+190).attr("fill", "#000000").text(countriesSelected[x].properties.name);  
+
+          }
           dataZoom.append("text").attr("x","180").attr("y", "340").attr("fill", "#000").text("(Quadrillion BTU)"); 
 
 
@@ -410,242 +543,16 @@ function ToggleMap(file, input) {
 
           dataZoom.append("text").attr("x","145").attr("y", "12.5").attr("fill", "#000000").text("Consumption"); 
           dataZoom.append("text").attr("x","295").attr("y", "12.5").attr("fill", "#000000").text("Production"); 
-        }
-        // allowBarstoChange = true when play is done
-        function draw(objj, values, productionValueHash) {
-          // d3.select("#dataZoom").remove();
-          //recreate bar graph
-          var dataZoom = d3.select("#dataZoom");
 
-          var dataZoomXScale = d3.scale.linear().domain([0,120]).range([0,440]);
-          var topThree = getTopThree(values);
-          var rectHeight = 30;
-          var transitionDuration = 750;
+          // Energy consumed (in million btu) per person
+          // var popValue = values[objj.properties.name]/popHash[objj.properties.name] * 1000;
+          // dataZoom.append("text").attr("x","10").attr("y","350")
+          //   .attr("fill", "#00000")
+          //   .attr("font-size", "20px")
+          //   .text("Every person in " + objj.properties.name + " spends/consumes " + Math.round(popValue) + " million btu of energy");
 
-          for(var i = 0; i < 3; i++) {
-
-            var barWidth = topThree[i]["value"];
-            var barTitle = topThree[i]["countryName"];
-            
-            if(!allowBarGraphToChange) {
-              if (barTitle == "United States") {
-                dataZoom.select(".usaBarC")
-                .transition(250)
-                .attr("y", i*40+10+25+6.5)
-                .attr("width", dataZoomXScale(barWidth)+1);
-
-                dataZoom.select(".usaBarP")
-                .transition(250)
-                .attr("y", i*40+24+25-15)
-                .attr("width", dataZoomXScale(productionValueHash[barTitle])+1);
-
-                dataZoom.select(".usaBarText")
-                .transition(250)
-                .attr("y", i*40+30+25)
-              }
-              if (barTitle == "Russian Federation") {
-                dataZoom.select(".russBarC")
-                .transition(250)
-                .attr("y", i*40+10+25+6.5)
-                .attr("width", dataZoomXScale(barWidth)+1);
-
-                dataZoom.select(".russBarP")
-                .transition(250)
-                .attr("y", i*40+24+25-15)
-                .attr("width", dataZoomXScale(productionValueHash[barTitle])+1);
-
-                dataZoom.select(".russBarText")
-                .transition(250)
-                .attr("y", i*40+30+25)
-              }
-              if (barTitle == "China") {
-                dataZoom.select(".chinaBarC")
-                .transition(250)
-                .attr("y", i*40+10+25+6.5)
-                .attr("width", dataZoomXScale(barWidth)+1);
-
-                dataZoom.select(".chinaBarP")
-                .transition(250)
-                .attr("y", i*40+24+25-15)
-                .attr("width", dataZoomXScale(productionValueHash[barTitle])+1);
-
-                dataZoom.select(".chinaBarText")
-                .transition(250)
-                .attr("y", i*40+30+25)
-              }
-            } 
-            // Runs when initially loaded
-            else {
-              dataZoom.append("rect")
-              .attr("class", function() {
-                if (i == 0) return "usaBarC";
-                if (i == 1) return "russBarC";
-                if (i == 2) return "chinaBarC";
-              })
-              .attr("x", "20")
-              .attr("y", i*40+10+25+6.5)
-              .attr("height", rectHeight/2)
-              .attr("width", 0)
-              .attr("fill", "#589CC4")
-              .attr("z-fill", "1")
-              .transition(transitionDuration)
-              .attr("width", dataZoomXScale(barWidth)+1);
-
-              dataZoom.append("rect")
-              .attr("class", function() {
-                if (i == 0) return "usaBarP";
-                if (i == 1) return "russBarP";
-                if (i == 2) return "chinaBarP";
-              })
-              .attr("x", "20")
-              .attr("y", i*40+24+25-15)
-              .attr("height", rectHeight)
-              .attr("width", 0)
-              .attr("fill", "#CCC")
-              .attr("opacity", ".5")
-              .transition(transitionDuration)
-              .attr("width", dataZoomXScale(productionValueHash[barTitle])+1);
-            
-              dataZoom.append("text")
-              .attr("x","200")
-              .attr("y", i*40+30+25)
-              .attr("fill", "#000000")
-              .attr("class", function() {
-                if (i == 0) return "usaBarText";
-                if (i == 1) return "russBarText";
-                if (i == 2) return "chinaBarText";
-              })
-              .attr("z-fill", "100")
-              .text(barTitle);
-
-            }
-          }
           return objj;
         }
-
-        function drawUserSelected(objj, values, productionValueHash) {
-          var dataZoom = d3.select("#dataZoom");
-
-          var dataZoomXScale = d3.scale.linear().domain([0,120]).range([0,440]);
-          var topThree = getTopThree(values);
-          var rectHeight = 30;
-          var transitionDuration = 750;
-
-          if (allowBarGraphToChange || shouldPlay) {
-            d3.selectAll(".selcBar").remove();
-            d3.selectAll("text.selcBar").remove();
-          }          
-
-          for (var x = 0; x < countriesSelected.length; x++) {
-
-            if (!allowBarGraphToChange) {
-              if (x == 0) {
-                console.log(countriesSelected[x].properties.name);
-                dataZoom.select(".firstBarC")
-                .transition(250)
-                .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
-
-                dataZoom.select(".firstBarP")
-                .transition(250)
-                .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]+1));
-
-                dataZoom.select(".userTextFirst")
-                .attr("y", x*40+190)
-                .text(countriesSelected[x].properties.name);
-                console.log(countriesSelected[x].properties.name);
-              }
-
-              if (x == 1) {
-                console.log("IN X1");
-                dataZoom.select(".secondBarC")
-                .transition(250)
-                .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
-
-                dataZoom.select(".secondBarP")
-                .transition(250)
-                .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]+1));
-
-                dataZoom.select(".userTextSecond")
-                .attr("y", x*40+190)
-                .text(countriesSelected[x].properties.name);
-              }
-
-              if (x == 2) {
-                console.log("IN X2");
-                dataZoom.select(".thirdBarC")
-                .transition(250)
-                .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
-
-                dataZoom.select(".thirdBarP")
-                .transition(250)
-                .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]+1));
-
-                dataZoom.select(".userTextThird")
-                .attr("y", x*40+190)
-                .text(countriesSelected[x].properties.name);
-              }
-    
-            }
-            else if (allowBarGraphToChange) {
-              dataZoom.append("rect")
-              .attr("class", function() {
-                if (x == 0) return "firstBarC selcBar";
-                if (x == 1) return "secondBarC selcBar";
-                if (x == 2) return "thirdBarC selcBar";
-              })
-              .attr("x", "20")
-              .attr("y", x*40+170+6.5)
-              .attr("height", rectHeight/2)
-              .attr("width", 0)
-              .attr("fill", "#589CC4")
-              .attr("opacity", "1")
-              .transition(transitionDuration)
-              .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
-
-              dataZoom.append("rect")
-              .attr("class", function() {
-                if (x == 0) return "firstBarP selcBar";
-                if (x == 1) return "secondBarP selcBar";
-                if (x == 2) return "thirdBarP selcBar";
-              })
-              .attr("x", "20")
-              .attr("y", x*40+184-15)
-              .attr("height", rectHeight)
-              .attr("width", 0)
-              .attr("fill", "#CCC")
-              .attr("opacity", ".5")
-              .transition(transitionDuration)
-              .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]+1)); 
-
-              dataZoom.append("text")
-              .attr("x","200")
-              .attr("y", x*40+190)
-              .attr("fill", "#000000")
-              .attr("class", function() {
-                if (x == 0) return "userTextFirst selcBar";
-                if (x == 1) return "userTextSecond selcBar";
-                if (x == 2) return "userTextThird selcBar";
-              })
-              .text(countriesSelected[x].properties.name);
-    
-            }
-
-          }
-
-   
-            
-
-            
-
-            // Energy consumed (in million btu) per person
-            // var popValue = values[objj.properties.name]/popHash[objj.properties.name] * 1000;
-            // dataZoom.append("text").attr("x","10").attr("y","350")
-            //   .attr("fill", "#00000")
-            //   .attr("font-size", "20px")
-            //   .text("Every person in " + objj.properties.name + " spends/consumes " + Math.round(popValue) + " million btu of energy");
-            return objj;
-          
-          }
         d3.select(self.frameElement).style("height", (height * 2.3 / 3) + "px");
 
         /***********************
@@ -697,12 +604,10 @@ function ToggleMap(file, input) {
               });
               
               draw(clickedCountry, valueHash, productionValueHash);
-              drawUserSelected(clickedCountry, valueHash, productionValueHash);
               loadChords(input, type);
 
               if (allowBarGraphToChange) {
                 draw(clickedCountry, valueHash, productionValueHash);
-                drawUserSelected(clickedCountry, valueHash, productionValueHash);
                 loadChords(input, type);
               }
 
@@ -725,7 +630,6 @@ function ToggleMap(file, input) {
         } //end of refill
 
         var shouldPlay = true;
-        var endofPlay = false;
         $("#play").click(function() {
 
           if(shouldPlay) {
@@ -743,9 +647,7 @@ function ToggleMap(file, input) {
                 rval = $("#slider2").val();
 
                 $("#sliderNum").html(rval);
-                if (i < 20) {
-                  refillMap("consumption.csv", ""+rval, sliderD);
-                }
+                refillMap("consumption.csv", ""+rval, sliderD);
                 i++;
 
                 if( i < howManyTimes ){
@@ -755,7 +657,6 @@ function ToggleMap(file, input) {
 
                   allowBarGraphToChange = true;  
                   shouldPlay = true;
-                  endofPlay = true;
 
                 }
             }
