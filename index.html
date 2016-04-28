@@ -669,9 +669,9 @@ function ToggleMap(file, input) {
           $("#sliderNum").html(rval);
           $("#smallSliderNum").html(rval);
           refillMap("consumption.csv", ""+rval, sliderD);
+          changeBreakDescription(rval);
           draw(clickedCountry, valueHash, productionValueHash);
           loadChords(rval, type);
-          changeBreakDescription(rval);
           sliderClick = false;       
         });
 
