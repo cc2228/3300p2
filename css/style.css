@@ -1,3 +1,7 @@
+html {
+  padding-bottom: 50px;
+
+}
 body {
   padding: 10px;
   height: 100%;
@@ -135,10 +139,11 @@ text.titles {
   font-size: 15px;
 }
 #chordTitle {
-  color: #005689;
+  /*color: #005689;*/
+  color: black;
   text-align: center;
   padding: 0 10px;
-  font-size: 18px;
+  font-size: 22px;
   font-weight: bold;
 }
 #chordDate {
@@ -151,6 +156,7 @@ text.titles {
   border-left: thick solid #005689;
   padding-left: 15px;
   margin-top: 20px;
+  height: 170px;
 }
 
 /******************
@@ -433,3 +439,18 @@ text.label {
   font-size: 20px;
   padding-right:20px;
 }
+
+/******************
+* MISC
+******************/
+.secondViz {
+  /*padding-top: 35px;*/
+}
+hr {
+  float: right;
+  padding-bottom: 15px;
+}
+.descripChordContainer {
+  padding-top: 35px;
+}
+
