@@ -53,7 +53,9 @@
     </div>
 
   </div>
-
+  <div id="textInput">
+     Over the past two decades, international energy consumption and production have grown drastically. The top three countries, China, U.S, and Russia, consume and produce nearly as much energy as the rest of the world. Below we show the energy breakdown by category.
+  </div>
 
 
     <div id = "sliderAxis">
@@ -62,7 +64,6 @@
       <div class = "yearAxis" id = "tick1">1993</div>
       <div class = "yearAxis" id = "tick2">2003</div>
       <div class = "yearAxis" id = "tick3">2013</diV>
-    </div>
     </div>
 
     <!-- <div class="container-fluid text-center"> -->
@@ -75,22 +76,46 @@
       <div id = "smallSliderNum">1993</div>
     </div>
     <div class="col-md-4">
-      <div id="chordChangeDescript">fldjiaks</div>
+      <div id="chordChangeDescript">The chord diagram shows the energy breakdown of the top 3 countries ordered in descending ratios. Play the slider to see the changes over the years. Hover over the country name or energy source to see the highlighted categories.</div>
     </div>
       <!-- <div class="row">
+
+      <div class="row">
         <div class = "secTitle">
-          China's Coal Increase since 1993
-          <div id="chinaCoalPer"></div>
+          <div id="chinaPopPer"></div>
+            The diagram shows the energy breakdown of the top 3 countries ordered in descending ratios. Play the slider to see the changes over the years. Hover over the country name to see the highlighted categories. 
+
+            <br>
+            // 1993
+            In 1993, the United States was the largest energy producer and consumer, dominating nearly a third of the world in every energy category. 
+
+            // 1994
+            In 1994, China overtakes Russia top become the second largest energy consumer in the world. Meanwhile, Russia's energy consumption and production begin to decrease until 1999. 
+
+            // 1999
+            In 1999, China's energy consumption overtakes production. Russia's end it's decline in energy consumption and production from 1994, and begins to grow again. 
+
+            // 2000 - 2005
+            In 2000, the Chinese economic boom takes off, and by 2005, China becomes the leading coal producer and consumer of the world. 
+
+            // 2005 - 2012
+
+
+            // 2012
+            By 2012, China's middle class population represents 68% of the population, an enormous growth from 4% in 2000. This growth in population also helps explain their increased consumption in coal and electricity.
+
+            // 2013
+            While the U.S and Russia have become relatively stagnant in energy consumption and production, China's coal consumption and production are predicted to continue to skyrocket over the next decade. The area of focus in the coming years will be on developing countries. 
+
+            // Cite sources!!!
+
+
+          China's Population Growth since 1993
         </div>
       </div>
       <hr width=60%/>
       <div class="row">
-        <div class = "secTitle">
-          China's Electricity Increase since 1993
-          <div id="chinaElecPer"></div>
-        </div>
-      </div>
-    </div> -->
+-->
     <div class="col-md-6 text-center">
       <div id="chordG">
         <div class="text-center">
@@ -302,7 +327,7 @@ function ToggleMap(file, input) {
             } else {
               var tooltip_width = $("#tooltip-container").width();
               d3.select("#tooltip-container")
-                .style("top", (d3.event.layerY +50) + "px")
+                .style("top", (d3.event.layerY +35) + "px")
                 .style("left", (d3.event.layerX - tooltip_width - 30) + "px");
             }
           })
@@ -377,7 +402,7 @@ function ToggleMap(file, input) {
         }); //end of json map function
           //-----------------------------------------------------------------
         function initBars() {
-          d3.select("#viz").append("svg").attr("id", "dataZoom").attr("width", "465").attr("height","400");
+          d3.select("#viz").append("svg").attr("id", "dataZoom").attr("width", "485").attr("height","380");
           var dataZoom = d3.select("#dataZoom");
           var dataZoomXScale = d3.scale.linear().domain([0,120]).range([0,440]);
           var xAxis = d3.svg.axis().scale(dataZoomXScale).orient("bottom").ticks(6);
@@ -427,6 +452,7 @@ function ToggleMap(file, input) {
 
           dataZoom.append("text").attr("x","145").attr("y", "12.5").attr("fill", "#000000").text("Consumption"); 
           dataZoom.append("text").attr("x","295").attr("y", "12.5").attr("fill", "#000000").text("Production"); 
+
         }
         // allowBarstoChange = true when play is done
         function draw(objj, values, productionValueHash) {
@@ -438,11 +464,6 @@ function ToggleMap(file, input) {
           var topThree = getTopThree(values);
           var rectHeight = 30;
           var transitionDuration = 750;
-
-          if (allowBarGraphToChange) {
-            d3.selectAll(".setBar").remove();
-            d3.selectAll("text.setBar").remove();
-          } 
 
           for(var i = 0; i < 3; i++) {
 
@@ -496,7 +517,7 @@ function ToggleMap(file, input) {
               }
             } 
             // Runs when initially loaded
-            else {
+            else if (rval != "2013") {
               dataZoom.append("rect")
               .attr("class", function() {
                 if (barTitle == "United States") return "usaBarC setBar";
@@ -649,11 +670,6 @@ function ToggleMap(file, input) {
 
           }
 
-   
-            
-
-            
-
             // Energy consumed (in million btu) per person
             // var popValue = values[objj.properties.name]/popHash[objj.properties.name] * 1000;
             // dataZoom.append("text").attr("x","10").attr("y","350")
@@ -678,6 +694,7 @@ function ToggleMap(file, input) {
           $("#smallSliderNum").html(rval);
           refillMap("consumption.csv", ""+rval, sliderD);
           loadChords(rval, type);
+          console.log("cliked value");
           changeBreakDescription(rval);
           sliderClick = false;       
         });
@@ -719,13 +736,19 @@ function ToggleMap(file, input) {
               draw(clickedCountry, valueHash, productionValueHash);
               drawUserSelected(clickedCountry, valueHash, productionValueHash);
               loadChords(input, type);
-              changeBreakDescription(rval);
+              if (!endofPlay) {
+                changeBreakDescription(rval);
+              }
+              else if ($("#slider2").val() == "2013") {
+                changeBreakDescription(rval);
+              }
+
 
               if (allowBarGraphToChange) {
                 draw(clickedCountry, valueHash, productionValueHash);
                 drawUserSelected(clickedCountry, valueHash, productionValueHash);
                 loadChords(input, type);
-                changeBreakDescription(rval);
+                // changeBreakDescription(rval);
               }
 
               map.selectAll(".country").data(countries)
@@ -766,7 +789,7 @@ function ToggleMap(file, input) {
 
                 $("#sliderNum").html(rval);
                 $("#smallSliderNum").html(rval);
-                if (i < 20) {
+                if (i < 21) {
                   refillMap("consumption.csv", ""+rval, sliderD);
                 }
                 i++;
@@ -1012,7 +1035,6 @@ function loadChords(input, type) {
     /* Outer Arcs */ 
     g = wrapper.selectAll("g.group")
       .data(chord.groups);
-      // .attr("class", "group");
     g.select("path")
       .style("stroke", function(d, i) {
       if (labels[i] === "") return "none";
@@ -1043,7 +1065,6 @@ function loadChords(input, type) {
     /* Inner Chords */ 
     chords = wrapper.selectAll("path.chord")
       .data(chord.chords)
-      // .attr("class", "chord")
       .style("stroke", "none")
       .style("fill", function(d,i) { 
         return fill(d.target.index);
@@ -1059,15 +1080,29 @@ function loadChords(input, type) {
 function changeBreakDescription(rval) {
   if (parseInt(rval) == 1993) {
     $("#chordChangeDescript").html("");
-    $("#chordChangeDescript").html("test 1993");
+    $("#chordChangeDescript").html("The chord diagram shows the energy breakdown of the top 3 countries ordered in descending ratios. Play the slider to see the changes over the years. Hover over the country name or energy source to see the highlighted categories.");
+  }
+  if (parseInt(rval) == 1994) {
+    $("#chordChangeDescript").html("");
+    $("#chordChangeDescript").html("In 1993, the United States was the largest energy producer and consumer, dominating nearly a third of the world in every energy category.");
+  }
+  if (parseInt(rval) == 1999) {
+    $("#chordChangeDescript").html("");
+    $("#chordChangeDescript").html("In 1999, China's energy consumption overtakes production. Russia's end it's decline in energy consumption and production from 1994, and begins to grow again. ");
   }
   if (parseInt(rval) == 2000) {
     $("#chordChangeDescript").html("");
-    $("#chordChangeDescript").html("test 2000");
+    $("#chordChangeDescript").html("In 2000, the Chinese economic boom takes off, and by 2005, China becomes the leading coal producer and consumer of the world.");
   }
-  if (parseInt(rval) == 2008) {
+  if (parseInt(rval) == 2012) {
+    console.log("AT 2012");
     $("#chordChangeDescript").html("");
-    $("#chordChangeDescript").html("test 2008");
+    $("#chordChangeDescript").html("By 2012, China's middle class population represents 68% of the population, an enormous growth from 4% in 2000. This growth in population also helps explain their increased consumption in coal and electricity.");
+  }
+  if (parseInt(rval) == 2013) {
+    console.log("AT 2013");
+    $("#chordChangeDescript").html("");
+    $("#chordChangeDescript").html("While the U.S and Russia have become relatively stagnant in energy consumption and production, China's coal consumption and production are predicted to continue to skyrocket over the next decade. The area of focus in the coming years will be on developing countries.");
   }
 }
 

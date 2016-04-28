@@ -62,6 +62,12 @@ h2 {
   float: right;
   margin-right: 1%;
 }
+#textInput {
+  border-left: thick solid #005689;
+  padding-left: 10px;
+  font-weight: bold;
+}
+
 #temp {
   display: inline-block;
   width: 600px;
@@ -130,11 +136,15 @@ text.titles {
   font-weight: bold;
 }
 #chordDate {
+  margin-top: 20px;
   font-size: 75px;
-  border-right: thick solid #005689
+  /*border-right: thick solid #005689*/
 }
 #chordChangeDescript {
   font-size: 20px;
+  border-left: thick solid #005689;
+  padding-left: 15px;
+  margin-top: 20px;
 }
 
 /******************
@@ -399,3 +409,17 @@ text.label {
 #select-filter {
   padding-right: 70px;
 }*/
+
+
+#textInput {
+  width: 470px;
+  font-size: 18px;
+  float: right;
+
+}
+
+#rightSideTitle {
+  float:right;
+  font-size: 20px;
+  padding-right:20px;
+}
