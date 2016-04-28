@@ -13,7 +13,6 @@ svg {
 h2 {
   color: #005689;
   font-size: 50px;
-  padding-left: 5%;
   margin-top: 20px;
   margin-bottom: 20px;
   font-weight: bold;
@@ -141,7 +140,7 @@ text.titles {
   /*border-right: thick solid #005689*/
 }
 #chordChangeDescript {
-  font-size: 20px;
+  font-size: 18px;
   border-left: thick solid #005689;
   padding-left: 15px;
   margin-top: 20px;

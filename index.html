@@ -29,11 +29,11 @@
 
 <body>
 
-  <h2>Dominating Countries in Energy Consumption</h2>
-<!--   <div id = "jumpPreventOnFixed" style = "height:100px;">
- -->    
-<!--     </div>
- -->
+<div class="row">
+  <div class="container-fluid text-center">
+    <h2>Dominating Countries in Energy Consumption</h2>
+  </div>
+</div>
 
   <div id = "rightSideTitle">
     Consumption vs. Production Country Comparison<br><br>
@@ -694,7 +694,6 @@ function ToggleMap(file, input) {
           $("#smallSliderNum").html(rval);
           refillMap("consumption.csv", ""+rval, sliderD);
           loadChords(rval, type);
-          console.log("cliked value");
           changeBreakDescription(rval);
           sliderClick = false;       
         });
@@ -1095,12 +1094,10 @@ function changeBreakDescription(rval) {
     $("#chordChangeDescript").html("In 2000, the Chinese economic boom takes off, and by 2005, China becomes the leading coal producer and consumer of the world.");
   }
   if (parseInt(rval) == 2012) {
-    console.log("AT 2012");
     $("#chordChangeDescript").html("");
     $("#chordChangeDescript").html("By 2012, China's middle class population represents 68% of the population, an enormous growth from 4% in 2000. This growth in population also helps explain their increased consumption in coal and electricity.");
   }
   if (parseInt(rval) == 2013) {
-    console.log("AT 2013");
     $("#chordChangeDescript").html("");
     $("#chordChangeDescript").html("While the U.S and Russia have become relatively stagnant in energy consumption and production, China's coal consumption and production are predicted to continue to skyrocket over the next decade. The area of focus in the coming years will be on developing countries.");
   }
