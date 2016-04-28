@@ -36,14 +36,17 @@ h2 {
   display: inline-block;
   position: relative;
   float: left;
-/*  border-right: solid #8AA1B1;
-*/}
+}
   #sliderNum {
     position: absolute;
     bottom: 10px;
     right: 100px;
     font-size: 100px;
   }
+
+/******************
+* SLIDER
+******************/
 
 .slider {
   margin: 10px;
@@ -54,6 +57,10 @@ h2 {
   position: fixed;
   top: 50px;
 }
+
+/******************
+* BAR CHART
+******************/
 #dataZoom {
   display: inline-block;
   vertical-align: top;
@@ -318,6 +325,10 @@ input[type=range]:focus::-ms-fill-upper {
 /******************
 * Bar Graph
 ******************/
+path.domain {
+  fill: none;
+  stroke: black;
+}
 
 .clicked {
   background-color: #647F54;
