@@ -54,8 +54,6 @@
 
 <!--     <button type id="button">Compare Countries</button><br>
  -->
-    <div id="dataZoom"></div>
-
   </div>
 
     <div id = "rightSideTitle">
@@ -114,6 +112,7 @@ $(document).bind('scroll', function() {
 // Color scale
 var getColor = d3.scale.linear().domain([0,120]).range(["#d6f5d6","#005689"]);
 var valueHash, quantize, countries, productionValueHash;
+var sliderClick = false;
 
 
 var countriesSelected = new Array();
@@ -290,7 +289,7 @@ function ToggleMap(file, input) {
             
             if (d3.event.pageX < map_width / 2) {
               d3.select("#tooltip-container")
-                .style("top", (d3.event.layerY+50) + "px")
+                .style("top", (d3.event.layerY+30) + "px")
                 .style("left", (d3.event.layerX) + "px");
             } else {
               var tooltip_width = $("#tooltip-container").width();
@@ -416,12 +415,17 @@ function ToggleMap(file, input) {
           var rectHeight = 30;
           var transitionDuration = 750;
 
+          if (allowBarGraphToChange) {
+            console.log(sliderClick);
+            d3.selectAll(".setBar").remove();
+            d3.selectAll("text.setBar").remove();
+          } 
+
           for(var i = 0; i < 3; i++) {
 
             var barWidth = topThree[i]["value"];
             var barTitle = topThree[i]["countryName"];
-            
-            if(!allowBarGraphToChange) {
+            if(!allowBarGraphToChange || sliderClick) {
               if (barTitle == "United States") {
                 dataZoom.select(".usaBarC")
                 .transition(250)
@@ -472,9 +476,9 @@ function ToggleMap(file, input) {
             else {
               dataZoom.append("rect")
               .attr("class", function() {
-                if (i == 0) return "usaBarC";
-                if (i == 1) return "russBarC";
-                if (i == 2) return "chinaBarC";
+                if (barTitle == "United States") return "usaBarC setBar";
+                if (barTitle == "Russian Federation") return "russBarC setBar";
+                if (barTitle == "China") return "chinaBarC setBar";
               })
               .attr("x", "20")
               .attr("y", i*40+10+25+6.5)
@@ -487,9 +491,9 @@ function ToggleMap(file, input) {
 
               dataZoom.append("rect")
               .attr("class", function() {
-                if (i == 0) return "usaBarP";
-                if (i == 1) return "russBarP";
-                if (i == 2) return "chinaBarP";
+                if (barTitle == "United States") return "usaBarP setBar";
+                if (barTitle == "Russian Federation") return "russBarP setBar";
+                if (barTitle == "China") return "chinaBarP setBar";
               })
               .attr("x", "20")
               .attr("y", i*40+24+25-15)
@@ -505,9 +509,9 @@ function ToggleMap(file, input) {
               .attr("y", i*40+30+25)
               .attr("fill", "#000000")
               .attr("class", function() {
-                if (i == 0) return "usaBarText";
-                if (i == 1) return "russBarText";
-                if (i == 2) return "chinaBarText";
+                if (barTitle == "United States") return "usaBarText setBar";
+                if (barTitle == "Russian Federation") return "russBarText setBar";
+                if (barTitle == "China") return "chinaBarText setBar";
               })
               .attr("z-fill", "100")
               .text(barTitle);
@@ -534,7 +538,6 @@ function ToggleMap(file, input) {
 
             if (!allowBarGraphToChange) {
               if (x == 0) {
-                console.log(countriesSelected[x].properties.name);
                 dataZoom.select(".firstBarC")
                 .transition(250)
                 .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
@@ -546,11 +549,9 @@ function ToggleMap(file, input) {
                 dataZoom.select(".userTextFirst")
                 .attr("y", x*40+190)
                 .text(countriesSelected[x].properties.name);
-                console.log(countriesSelected[x].properties.name);
               }
 
               if (x == 1) {
-                console.log("IN X1");
                 dataZoom.select(".secondBarC")
                 .transition(250)
                 .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
@@ -565,7 +566,6 @@ function ToggleMap(file, input) {
               }
 
               if (x == 2) {
-                console.log("IN X2");
                 dataZoom.select(".thirdBarC")
                 .transition(250)
                 .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
@@ -649,11 +649,12 @@ function ToggleMap(file, input) {
         var type = "Consumption";
 
         d3.select("#slider2").on("input", function() {
+          sliderClick = true;
           var rval = (this).value;
           $("#sliderNum").html(rval);
           refillMap("consumption.csv", ""+rval, sliderD);
           loadChords(rval, type);
-                    
+          sliderClick = false;       
         });
 
         /***********************
