@@ -390,7 +390,7 @@ function ToggleMap(file, input) {
           .attr("y", 0)
           .attr("height", 18)
           .attr("fill", "#589CC4")
-          .attr("opacity", "1")
+          .attr("opacity", ".7")
           .attr("width", 40);
 
           dataZoom.append("rect")
@@ -504,6 +504,7 @@ function ToggleMap(file, input) {
               .attr("y", i*40+10+25+6.5)
               .attr("height", rectHeight/2)
               .attr("width", 0)
+              .attr("opacity", ".7")
               .attr("fill", "#589CC4")
               .attr("z-fill", "1")
               .transition(transitionDuration)
@@ -612,7 +613,7 @@ function ToggleMap(file, input) {
               .attr("height", rectHeight/2)
               .attr("width", 0)
               .attr("fill", "#589CC4")
-              .attr("opacity", "1")
+              .attr("opacity", ".7")
               .transition(transitionDuration)
               .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
 
@@ -712,9 +713,13 @@ function ToggleMap(file, input) {
               draw(clickedCountry, valueHash, productionValueHash);
               drawUserSelected(clickedCountry, valueHash, productionValueHash);
               loadChords(input, type);
+
+              // If the slider is not playing
               if (!endofPlay) {
                 changeBreakDescription(rval);
               }
+
+              // If the slider is at value 2013 (reinitialize)
               else if ($("#slider2").val() == "2013") {
                 changeBreakDescription(rval);
               }
@@ -1057,7 +1062,7 @@ function changeBreakDescription(rval) {
     $("#chordChangeDescript").html("");
     $("#chordChangeDescript").html("The chord diagram shows the energy breakdown of the top 3 countries ordered in descending ratios. Play the slider to see the changes over the years. Hover over the country name or energy source to see the highlighted categories.");
   }
-  if (parseInt(rval) == 1994) {
+  if (parseInt(rval) >= 1994 && parseInt(rval) < 1999) {
     $("#chordChangeDescript").html("");
     $("#chordChangeDescript").html("In 1993, the United States was the largest energy producer and consumer, dominating nearly a third of the world in every energy category.");
   }
@@ -1065,7 +1070,7 @@ function changeBreakDescription(rval) {
     $("#chordChangeDescript").html("");
     $("#chordChangeDescript").html("In 1999, China's energy consumption overtakes production. Russia's end it's decline in energy consumption and production from 1994, and begins to grow again. ");
   }
-  if (parseInt(rval) == 2000) {
+  if (parseInt(rval) >= 2000 && parseInt(rval) < 2012) {
     $("#chordChangeDescript").html("");
     $("#chordChangeDescript").html("In 2000, the Chinese economic boom takes off, and by 2005, China becomes the leading coal producer and consumer of the world.");
   }
