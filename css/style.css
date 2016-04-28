@@ -391,3 +391,17 @@ text.label {
 #select-filter {
   padding-right: 70px;
 }*/
+
+
+#textInput {
+  width: 470px;
+  font-size: 18px;
+  float: right;
+
+}
+
+#rightSideTitle {
+  float:right;
+  font-size: 20px;
+  padding-right:20px;
+}

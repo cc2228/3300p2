@@ -50,7 +50,9 @@
     </div>
 
   </div>
-
+  <div id="textInput">
+     Over the past two decades, international energy consumption and production have grown drastically. The top three countries, China, U.S, and Russia, consume and produce nearly as much energy as the rest of the world. Below we show the energy breakdown by category.
+  </div>
 
 
     <div id = "sliderAxis">
@@ -59,7 +61,6 @@
       <div class = "yearAxis" id = "tick1">1993</div>
       <div class = "yearAxis" id = "tick2">2003</div>
       <div class = "yearAxis" id = "tick3">2013</diV>
-    </div>
     </div>
 
     <!-- <div class="container-fluid text-center"> -->
@@ -70,6 +71,33 @@
       <div class="row">
         <div class = "secTitle">
           <div id="chinaPopPer"></div>
+            The diagram shows the energy breakdown of the top 3 countries ordered in descending ratios. Play the slider to see the changes over the years. Hover over the country name to see the highlighted categories. 
+
+            <br>
+            // 1993
+            In 1993, the United States was the largest energy producer and consumer, dominating nearly a third of the world in every energy category. 
+
+            // 1994
+            In 1994, China overtakes Russia top become the second largest energy consumer in the world. Meanwhile, Russia's energy consumption and production begin to decrease until 1999. 
+
+            // 1999
+            In 1999, China's energy consumption overtakes production. Russia's end it's decline in energy consumption and production from 1994, and begins to grow again. 
+
+            // 2000 - 2005
+            In 2000, the Chinese economic boom takes off, and by 2005, China becomes the leading coal producer and consumer of the world. 
+
+            // 2005 - 2012
+
+
+            // 2012
+            By 2012, China's middle class population represents 68% of the population, an enormous growth from 4% in 2000. This growth in population also helps explain their increased consumption in coal and electricity.
+
+            // 2013
+            While the U.S and Russia have become relatively stagnant in energy consumption and production, China's coal consumption and production are predicted to continue to skyrocket over the next decade. The area of focus in the coming years will be on developing countries. 
+
+            // Cite sources!!!
+
+
           China's Population Growth since 1993
         </div>
       </div>
@@ -377,7 +405,7 @@ function ToggleMap(file, input) {
         }); //end of json map function
           //-----------------------------------------------------------------
         function initBars() {
-          d3.select("#viz").append("svg").attr("id", "dataZoom").attr("width", "465").attr("height","400");
+          d3.select("#viz").append("svg").attr("id", "dataZoom").attr("width", "485").attr("height","380");
           var dataZoom = d3.select("#dataZoom");
           var dataZoomXScale = d3.scale.linear().domain([0,120]).range([0,440]);
           var xAxis = d3.svg.axis().scale(dataZoomXScale).orient("bottom").ticks(6);
@@ -427,6 +455,7 @@ function ToggleMap(file, input) {
 
           dataZoom.append("text").attr("x","145").attr("y", "12.5").attr("fill", "#000000").text("Consumption"); 
           dataZoom.append("text").attr("x","295").attr("y", "12.5").attr("fill", "#000000").text("Production"); 
+
         }
         // allowBarstoChange = true when play is done
         function draw(objj, values, productionValueHash) {
