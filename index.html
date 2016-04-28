@@ -436,6 +436,11 @@ function ToggleMap(file, input) {
           var rectHeight = 30;
           var transitionDuration = 750;
 
+          // if (allowBarGraphToChange || shouldPlay) {
+          //   d3.selectAll(".setBar").remove();
+          //   d3.selectAll("text.setBar").remove();
+          // } 
+
           for(var i = 0; i < 3; i++) {
 
             var barWidth = topThree[i]["value"];
@@ -664,6 +669,7 @@ function ToggleMap(file, input) {
           $("#sliderNum").html(rval);
           $("#smallSliderNum").html(rval);
           refillMap("consumption.csv", ""+rval, sliderD);
+          draw(clickedCountry, valueHash, productionValueHash);
           loadChords(rval, type);
           changeBreakDescription(rval);
           sliderClick = false;       
