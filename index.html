@@ -46,31 +46,11 @@
     </div>
     <div id="dropdowns">
       Click a country on the map or select:
-      <select id="country3"></select><!-- 
-      <select id="country2"></select>
-      <select id="country"></select> -->
+      <select id="country3"></select>
     </div>
 
-
-<!--     <button type id="button">Compare Countries</button><br>
- -->
   </div>
 
-    <div id = "rightSideTitle">
-      Energy Breakdown of the Top 3 Countries
-    </div>
-    <div id = "rightSide">
-      <div id="dataZoom"></div>
-
-      <div id="chordG">
-        <div class="text-center">
-          <div id="select-filter" class="btn-group" role="group" aria-label="...">
-            <button type="button" class="btn btn-default active chordB" id="Consumption">Consumption</button>
-            <button type="button" class="btn btn-default chordB" id="Production">Production</button>
-          </div>
-        </div>
-      </div>
-    </div>
 
 
     <div id = "sliderAxis">
@@ -82,14 +62,42 @@
     </div>
     </div>
 
-    <div id="bottomText">
-      <p>Hello test test test test ello test test test test ello test test test test </p>
-      <p>We can write a description to fill up the space here!</p>
+    <!-- <div class="container-fluid text-center"> -->
+    <div class="col-md-6 text-center">
+      <div id = "chordTitle">
+        Energy Breakdown of the Top 3 Countries Ordered in Descending Ratios
+      </div>
+      <div class="row">
+        <div class = "secTitle">
+          <div id="chinaPopPer"></div>
+          China's Population Growth since 1993
+        </div>
+      </div>
+      <hr width=60%/>
+      <div class="row">
+        <div class = "secTitle">
+          China's Coal Increase since 1993
+          <div id="chinaCoalPer"></div>
+        </div>
+      </div>
+      <hr width=60%/>
+      <div class="row">
+        <div class = "secTitle">
+          China's Electricity Increase since 1993
+          <div id="chinaElecPer"></div>
+        </div>
+      </div>
     </div>
-
-
-<!--     <div id ="buttons">
- --> 
+    <div class="col-md-6 text-center">
+      <div id="chordG">
+        <div class="text-center">
+          <div id="select-filter" class="btn-group" role="group" aria-label="...">
+            <button type="button" class="btn btn-default active chordB" id="Consumption">Consumption</button>
+            <button type="button" class="btn btn-default chordB" id="Production">Production</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
 
 
@@ -331,10 +339,10 @@ function ToggleMap(file, input) {
           * Map Legend
           ***********************/
 
-          var map = d3.select("svg");
+          var map = d3.select("svg").append("g");
           map.append("g")
           .attr("class", "legendLinear")
-          .attr("transform", "translate(5,25)");
+          .attr("transform", "translate(545,25)");
 
           var legendLinear = d3.legend.color()
           .shapeWidth(30)
@@ -342,13 +350,29 @@ function ToggleMap(file, input) {
           .scale(getColor);
 
           svg.select(".legendLinear").call(legendLinear);
+          map.append("rect")
+          .attr("class", "noData")
+          .attr("height", 15)
+          .attr('width', 30)
+          .attr("transform", "translate(513,25)")
+          .style("fill", "#CCCCCC")
+          map.append("text")
+          .attr("class", "noData")
+          .attr("x", 15)
+          .attr('y', 30)
+          .attr("transform", "translate(513,27)")
+          .text("No Data")
+          .style("font-size", 10)
+          .style("text-anchor", "middle")
 
-      // svg.append("text")
-      //   .attr("class", "keyLabel")
-      //   .attr("x", 0)
-      //   .attr("y", 20)
-      //   .text("Energy Consumption in BTU")
-      //   .attr("font-size", "10px");
+      svg.append("text")
+        .attr("class", "keyLabel")
+        .attr("x", 0)
+        .attr("y", 20)
+        .attr("transform", "translate(508,-10)")
+        .text("Energy Consumption in QBTU")
+        .attr("font-size", "14px")
+        .attr("font-weight", "bolder");
 
         }); //end of json map function
           //-----------------------------------------------------------------
@@ -416,7 +440,6 @@ function ToggleMap(file, input) {
           var transitionDuration = 750;
 
           if (allowBarGraphToChange) {
-            console.log(sliderClick);
             d3.selectAll(".setBar").remove();
             d3.selectAll("text.setBar").remove();
           } 
@@ -819,21 +842,22 @@ function getTopThree(arrayToSort) {
 /***********************
 * Chord Graph
 ***********************/
-var cwidth = 410;
-var cheight = 333; // 5/6
+// Help from: http://www.visualcinnamon.com/2015/08/stretched-chord.html
+var cwidth = 670;
+var cheight = 556; // 5/6
 
 var csvg = d3.select('#chordG').append('svg')
   .attr("width", cwidth)
   .attr("height", cheight) // does not rely on margins
 
-var outerRadius = cheight / 2 - 100;
+var outerRadius = cheight / 2 - 25;
 var innerRadius = outerRadius * 0.95;
 var opacityDef = 0.7;
 
 var labels = ["Coal", "Electricity", "Natural Gas","Petroleum", "", "China", "USA", "Russia", "Other", ""];
 
 var wrapper = csvg.append("g").attr("class", "chordWrapper")
-  .attr("transform", "translate(" + (cwidth / 2 ) + "," + (cheight / 2 ) + ") scale(2.0)" );
+  .attr("transform", "translate(" + (cwidth / 2  - 15) + "," + (cheight / 2 ) + ")" );
 
 
 // d3.text("Production/1993.csv", "text/csv", function(err,data) {
@@ -891,20 +915,24 @@ d3.text("Consumption/1993.csv", "text/csv", function(err,data) {
 
 
   /* Append Names */ 
+  // g.append("text")
+  //   .append("textPath")
+  //   .attr("xlink:href", function(d) { return "path.group"})
+  //   .text("Hover");
+
   g.append("text")
-      .each(function(d) { d.angle = ((d.startAngle + d.endAngle) / 2) + offset;}) //Slightly altered function to define the angle
-      .attr("dy", "0em")
+      .each(function(d) { d.angle = ((d.startAngle + d.endAngle) / 2) + offset;})
       .attr("class", "titles")
       .attr("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
       .attr("transform", function(d,i) { 
         var c = arc.centroid(d);
-        return "rotate(" + (d.angle * 180 / Math.PI - 102) + ")"
-        + "translate(" + (innerRadius + 10) + ")"
-        + (d.angle > Math.PI ? "rotate(180)" : "")
+        return "rotate(" + (d.angle * 180 / Math.PI - 102) + ")" //orig 102
+        + "translate(" + (innerRadius + 20) + ")"
+        + (d.angle > Math.PI ? "rotate(180)" : "") // orig 180
       })
+      .text(function(d,i) { return labels[i]; })
       .on("mouseover", fade(.1))
-      .on("mouseout", fade(.7))
-      .text(function(d,i) { return labels[i]; });
+      .on("mouseout", fade(.7));
 
   /* Inner Chords */ 
   var chords = wrapper.selectAll("path.chord")
@@ -930,7 +958,7 @@ function fade(opac) {
       .filter(function(d) {
         return d.source.index != i && d.target.index != i; 
       })
-      .transition(400)
+      .transition(200)
         .style("opacity", function(d) {
           if (labels[d.source.index] === "") return 0;
           else return opac;
@@ -992,20 +1020,20 @@ function loadChords(input, type) {
       .attr("d", arc)
       .on("mouseover", fade(.1))
       .on("mouseout", fade(.7));
+    
+
     /* Update Names */ 
 
     g.select("text")
-      .transition(750)
-      .each(function(d) { d.angle = ((d.startAngle + d.endAngle) / 2) + offset;}) //Slightly altered function to define the angle
-      .attr("dy", "0em")
-      .attr("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
-      .attr("transform", function(d,i) { 
-        var c = arc.centroid(d);
-        return "rotate(" + (d.angle * 180 / Math.PI - 102) + ")"
-        + "translate(" + (innerRadius + 10) + ")"
-        + (d.angle > Math.PI ? "rotate(180)" : "")
-      });
-      // .text(function(d,i) { return labels[i]; });
+     .transition(750)
+     .each(function(d) { d.angle = ((d.startAngle + d.endAngle) / 2) + offset;}) //Slightly altered function to define the angle
+     .attr("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
+     .attr("transform", function(d,i) { 
+       var c = arc.centroid(d);
+       return "rotate(" + (d.angle * 180 / Math.PI - 102) + ")"
+       + "translate(" + (innerRadius + 20) + ")"
+       + (d.angle > Math.PI ? "rotate(180)" : "")
+     });
 
     /* Inner Chords */ 
     chords = wrapper.selectAll("path.chord")

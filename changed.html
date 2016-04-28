@@ -408,7 +408,6 @@ function ToggleMap(file, input) {
         function draw(objj, values, productionValueHash) {
           // d3.select("#dataZoom").remove();
           //recreate bar graph
-          console.log(countriesSelected);
           var dataZoom = d3.select("#dataZoom");
 
           var dataZoomXScale = d3.scale.linear().domain([0,120]).range([0,440]);
@@ -451,7 +450,7 @@ function ToggleMap(file, input) {
               }
             } 
             // Runs when initially loaded
-            else if (rval != "2013") {
+            else {
               dataZoom.append("rect")
               .attr("class", function() {
                 if (i == 0) return "usaBarC";
@@ -490,7 +489,6 @@ function ToggleMap(file, input) {
         }
 
         function drawUserSelected(objj, values, productionValueHash) {
-
           var dataZoom = d3.select("#dataZoom");
 
           var dataZoomXScale = d3.scale.linear().domain([0,120]).range([0,440]);
@@ -498,77 +496,110 @@ function ToggleMap(file, input) {
           var rectHeight = 30;
           var transitionDuration = 750;
 
-            for (var x = 0; x < countriesSelected.length; x++) {
+          if (allowBarGraphToChange && rval != "2013") {
+            d3.selectAll(".selcBar").remove();
+            d3.selectAll("text.selcBar").remove();
+          }          
 
-              if (!allowBarGraphToChange) {
+          for (var x = 0; x < countriesSelected.length; x++) {
 
-                if (x == 0) {
-                  dataZoom.select(".firstBarC")
-                  .transition(250)
-                  .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
-
-                  dataZoom.select(".firstBarP")
-                  .transition(250)
-                  .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]+1));
-                }
-
-                if (x == 1) {
-                  dataZoom.select(".secondBarC")
-                  .transition(250)
-                  .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
-
-                  dataZoom.select(".secondBarP")
-                  .transition(250)
-                  .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]+1));
-                }
-
-                if (x == 2) {
-                  dataZoom.select(".thirdBarC")
-                  .transition(250)
-                  .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
-
-                  dataZoom.select(".thirdBarP")
-                  .transition(250)
-                  .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]+1));
-                }
-      
-              }
-              else if (rval != "2013") {
-
-                dataZoom.append("rect")
-                .attr("class", function() {
-                  if (x == 0) return "firstBarC";
-                  if (x == 1) return "secondBarC";
-                  if (x == 2) return "thirdBarC";
-                })
-                .attr("x", "20")
-                .attr("y", x*40+170+6.5)
-                .attr("height", rectHeight/2)
-                .attr("width", 0)
-                .attr("fill", "#589CC4")
-                .attr("opacity", "1")
-                .transition(transitionDuration)
+            if (!allowBarGraphToChange) {
+              if (x == 0) {
+                console.log(countriesSelected[x].properties.name);
+                dataZoom.select(".firstBarC")
+                .transition(250)
                 .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
 
-                dataZoom.append("rect")
-                .attr("class", function() {
-                  if (x == 0) return "firstBarP";
-                  if (x == 1) return "secondBarP";
-                  if (x == 2) return "thirdBarP";
-                })
-                .attr("x", "20")
-                .attr("y", x*40+184-15)
-                .attr("height", rectHeight)
-                .attr("width", 0)
-                .attr("fill", "#CCC")
-                .attr("opacity", ".5")
-                .transition(transitionDuration)
-                .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]+1));        
-              }
-              
-              dataZoom.append("text").attr("x","200").attr("y", x*40+190).attr("fill", "#000000").text(countriesSelected[x].properties.name);  
+                dataZoom.select(".firstBarP")
+                .transition(250)
+                .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]+1));
 
+                dataZoom.select(".userTextFirst")
+                .attr("y", x*40+190)
+                .text(countriesSelected[x].properties.name);
+                console.log(countriesSelected[x].properties.name);
+              }
+
+              if (x == 1) {
+                console.log("IN X1");
+                dataZoom.select(".secondBarC")
+                .transition(250)
+                .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
+
+                dataZoom.select(".secondBarP")
+                .transition(250)
+                .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]+1));
+
+                dataZoom.select(".userTextSecond")
+                .attr("y", x*40+190)
+                .text(countriesSelected[x].properties.name);
+              }
+
+              if (x == 2) {
+                console.log("IN X2");
+                dataZoom.select(".thirdBarC")
+                .transition(250)
+                .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
+
+                dataZoom.select(".thirdBarP")
+                .transition(250)
+                .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]+1));
+
+                dataZoom.select(".userTextThird")
+                .attr("y", x*40+190)
+                .text(countriesSelected[x].properties.name);
+              }
+    
             }
+            else if (allowBarGraphToChange) {
+              dataZoom.append("rect")
+              .attr("class", function() {
+                if (x == 0) return "firstBarC selcBar";
+                if (x == 1) return "secondBarC selcBar";
+                if (x == 2) return "thirdBarC selcBar";
+              })
+              .attr("x", "20")
+              .attr("y", x*40+170+6.5)
+              .attr("height", rectHeight/2)
+              .attr("width", 0)
+              .attr("fill", "#589CC4")
+              .attr("opacity", "1")
+              .transition(transitionDuration)
+              .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
+
+              dataZoom.append("rect")
+              .attr("class", function() {
+                if (x == 0) return "firstBarP selcBar";
+                if (x == 1) return "secondBarP selcBar";
+                if (x == 2) return "thirdBarP selcBar";
+              })
+              .attr("x", "20")
+              .attr("y", x*40+184-15)
+              .attr("height", rectHeight)
+              .attr("width", 0)
+              .attr("fill", "#CCC")
+              .attr("opacity", ".5")
+              .transition(transitionDuration)
+              .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]+1)); 
+
+              dataZoom.append("text")
+              .attr("x","200")
+              .attr("y", x*40+190)
+              .attr("fill", "#000000")
+              .attr("class", function() {
+                if (x == 0) return "userTextFirst selcBar";
+                if (x == 1) return "userTextSecond selcBar";
+                if (x == 2) return "userTextThird selcBar";
+              })
+              .text(countriesSelected[x].properties.name);
+    
+            }
+
+          }
+
+   
+            
+
             
 
             // Energy consumed (in million btu) per person
@@ -580,8 +611,6 @@ function ToggleMap(file, input) {
             return objj;
           
           }
-
-        }
         d3.select(self.frameElement).style("height", (height * 2.3 / 3) + "px");
 
         /***********************
@@ -633,10 +662,12 @@ function ToggleMap(file, input) {
               });
               
               draw(clickedCountry, valueHash, productionValueHash);
+              drawUserSelected(clickedCountry, valueHash, productionValueHash);
               loadChords(input, type);
 
               if (allowBarGraphToChange) {
                 draw(clickedCountry, valueHash, productionValueHash);
+                drawUserSelected(clickedCountry, valueHash, productionValueHash);
                 loadChords(input, type);
               }
 
@@ -659,6 +690,7 @@ function ToggleMap(file, input) {
         } //end of refill
 
         var shouldPlay = true;
+        var endofPlay = false;
         $("#play").click(function() {
 
           if(shouldPlay) {
@@ -676,7 +708,9 @@ function ToggleMap(file, input) {
                 rval = $("#slider2").val();
 
                 $("#sliderNum").html(rval);
-                refillMap("consumption.csv", ""+rval, sliderD);
+                if (i < 20) {
+                  refillMap("consumption.csv", ""+rval, sliderD);
+                }
                 i++;
 
                 if( i < howManyTimes ){
@@ -686,6 +720,7 @@ function ToggleMap(file, input) {
 
                   allowBarGraphToChange = true;  
                   shouldPlay = true;
+                  endofPlay = true;
 
                 }
             }
@@ -834,7 +869,7 @@ d3.text("Consumption/1993.csv", "text/csv", function(err,data) {
       .attr("transform", function(d,i) { 
         var c = arc.centroid(d);
         return "rotate(" + (d.angle * 180 / Math.PI - 102) + ")"
-        + "translate(" + (innerRadius + 10) + ")"
+        + "translate(" + (innerRadius + 15) + ")"
         + (d.angle > Math.PI ? "rotate(180)" : "")
       })
       .on("mouseover", fade(.1))
@@ -932,12 +967,12 @@ function loadChords(input, type) {
     g.select("text")
       .transition(750)
       .each(function(d) { d.angle = ((d.startAngle + d.endAngle) / 2) + offset;}) //Slightly altered function to define the angle
-      .attr("dy", "0em")
+      .attr("dy", "2em")
       .attr("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
       .attr("transform", function(d,i) { 
         var c = arc.centroid(d);
         return "rotate(" + (d.angle * 180 / Math.PI - 102) + ")"
-        + "translate(" + (innerRadius + 10) + ")"
+        + "translate(" + (innerRadius + 15) + ")"
         + (d.angle > Math.PI ? "rotate(180)" : "")
       });
       // .text(function(d,i) { return labels[i]; });
