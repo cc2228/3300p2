@@ -1,4 +1,5 @@
 body {
+  padding: 10px;
   height: 100%;
   font-family: 'Raleway', sans-serif; 
 /*  font-family: 'Georgia', sans-serif; 
@@ -122,11 +123,18 @@ text.titles {
   font-size: 15px;
 }
 #chordTitle {
-  color: #000;
+  color: #005689;
   text-align: center;
   padding: 0 10px;
   font-size: 18px;
   font-weight: bold;
+}
+#chordDate {
+  font-size: 75px;
+  border-right: thick solid #005689
+}
+#chordChangeDescript {
+  font-size: 20px;
 }
 
 /******************

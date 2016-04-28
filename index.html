@@ -41,6 +41,9 @@
   <div id="tooltip-container"></div>
 
   <div id = "viz">
+    <!-- <div id="arrow">
+      <img id="sepArrow" src="img/arrow.png">
+    </div> -->
     <div id="canvas-svg">
       <div id = "sliderNum">1993</div>
     </div>
@@ -54,7 +57,7 @@
 
 
     <div id = "sliderAxis">
-      <img id="play" src="http://makercon.com/wp-content/themes/makercon/img/play-btn.png">
+      <img id="play" src="img/playbtn.png">
       <input id="slider2" class = "slider" type="range" min="1993" max="2013" value = "1993" step="1" /><br>
       <div class = "yearAxis" id = "tick1">1993</div>
       <div class = "yearAxis" id = "tick2">2003</div>
@@ -63,18 +66,18 @@
     </div>
 
     <!-- <div class="container-fluid text-center"> -->
-    <div class="col-md-6 text-center">
+    <div class="row text-center">
       <div id = "chordTitle">
         Energy Breakdown of the Top 3 Countries Ordered in Descending Ratios
       </div>
-      <div class="row">
-        <div class = "secTitle">
-          <div id="chinaPopPer"></div>
-          China's Population Growth since 1993
-        </div>
-      </div>
-      <hr width=60%/>
-      <div class="row">
+    </div>
+    <div class="col-md-2 text-center" id="chordDate">
+      <div id = "smallSliderNum">1993</div>
+    </div>
+    <div class="col-md-4">
+      <div id="chordChangeDescript">fldjiaks</div>
+    </div>
+      <!-- <div class="row">
         <div class = "secTitle">
           China's Coal Increase since 1993
           <div id="chinaCoalPer"></div>
@@ -87,7 +90,7 @@
           <div id="chinaElecPer"></div>
         </div>
       </div>
-    </div>
+    </div> -->
     <div class="col-md-6 text-center">
       <div id="chordG">
         <div class="text-center">
@@ -126,9 +129,6 @@ var sliderClick = false;
 var countriesSelected = new Array();
 var sliderD = "China";
 var allowBarGraphToChange = true;
-var fisheye = d3.fisheye.circular()
-    .radius(200)
-    .distortion(2);
 
 // input argument should be the year as a string
 function ToggleMap(file, input) {
@@ -675,8 +675,10 @@ function ToggleMap(file, input) {
           sliderClick = true;
           var rval = (this).value;
           $("#sliderNum").html(rval);
+          $("#smallSliderNum").html(rval);
           refillMap("consumption.csv", ""+rval, sliderD);
           loadChords(rval, type);
+          changeBreakDescription(rval);
           sliderClick = false;       
         });
 
@@ -717,11 +719,13 @@ function ToggleMap(file, input) {
               draw(clickedCountry, valueHash, productionValueHash);
               drawUserSelected(clickedCountry, valueHash, productionValueHash);
               loadChords(input, type);
+              changeBreakDescription(rval);
 
               if (allowBarGraphToChange) {
                 draw(clickedCountry, valueHash, productionValueHash);
                 drawUserSelected(clickedCountry, valueHash, productionValueHash);
                 loadChords(input, type);
+                changeBreakDescription(rval);
               }
 
               map.selectAll(".country").data(countries)
@@ -761,6 +765,7 @@ function ToggleMap(file, input) {
                 rval = $("#slider2").val();
 
                 $("#sliderNum").html(rval);
+                $("#smallSliderNum").html(rval);
                 if (i < 20) {
                   refillMap("consumption.csv", ""+rval, sliderD);
                 }
@@ -843,8 +848,8 @@ function getTopThree(arrayToSort) {
 * Chord Graph
 ***********************/
 // Help from: http://www.visualcinnamon.com/2015/08/stretched-chord.html
-var cwidth = 670;
-var cheight = 556; // 5/6
+var cwidth = 500;
+var cheight = 416; // 5/6
 
 var csvg = d3.select('#chordG').append('svg')
   .attr("width", cwidth)
@@ -1049,6 +1054,21 @@ function loadChords(input, type) {
     })
       .attr("d", path);
   })
+}
+
+function changeBreakDescription(rval) {
+  if (parseInt(rval) == 1993) {
+    $("#chordChangeDescript").html("");
+    $("#chordChangeDescript").html("test 1993");
+  }
+  if (parseInt(rval) == 2000) {
+    $("#chordChangeDescript").html("");
+    $("#chordChangeDescript").html("test 2000");
+  }
+  if (parseInt(rval) == 2008) {
+    $("#chordChangeDescript").html("");
+    $("#chordChangeDescript").html("test 2008");
+  }
 }
 
 </script>
