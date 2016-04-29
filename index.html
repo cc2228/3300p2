@@ -386,7 +386,6 @@ function ToggleMap(file, input) {
             var barWidth = topThree[i]["value"];
             var barTitle = topThree[i]["countryName"];
 
-            console.log(sliderClick);
 
             if(!allowBarGraphToChange || sliderClick) {
               if (barTitle == "United States") {
@@ -707,9 +706,18 @@ function ToggleMap(file, input) {
                 $("#sliderNum").html(rval);
                 $("#smallSliderNum").html(rval);
                 if (i < 21) {
+                  if (i == 0) {
+                    d3.selectAll(".setBar").remove();
+                    d3.selectAll("text.setBar").remove();
+                    sliderClick = false;
+                    allowBarGraphToChange = true;
+                    draw(clickedCountry, valueHash, productionValueHash); 
+                  }
+                  else {
+                    draw(clickedCountry, valueHash, productionValueHash); 
+                    drawUserSelected(clickedCountry, valueHash, productionValueHash);
+                  }
                   refillMap("consumption.csv", ""+rval, sliderD);
-                  draw(clickedCountry, valueHash, productionValueHash); 
-                  drawUserSelected(clickedCountry, valueHash, productionValueHash);
                 }
                 i++;
 
