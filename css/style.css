@@ -51,9 +51,11 @@ h5 {
 }
   #sliderNum {
     position: absolute;
-    bottom: 10px;
+    left: 570px;
     right: 100px;
-    font-size: 100px;
+    font-size: 60px;
+    top: 10px;
+
   }
 
 /******************
@@ -134,7 +136,7 @@ rect {
 #chordG {
   display: inline-block;
   float:right;
-  padding-right: 50px;
+  padding-right: 35px;
 
 }
 
