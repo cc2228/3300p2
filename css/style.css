@@ -22,7 +22,7 @@ h2 {
   font-weight: bold;
 }
 
-h5 {
+h4 {
   display: inline;
   color: #005689;
   font-weight: bold;
@@ -364,8 +364,8 @@ p {
 #dropdowns {
   display: inline-block;
   float: right;
-  padding-left: 30px;
   width: 50%;
+  font-size:15px;
 }
 
 #country3 {
