@@ -48,7 +48,7 @@
     <div id = "sliderNum">1993</div>
   </div>
   <div id="dropdowns">
-    Click a country on the map or select:
+    <div class="emphasize">Click</div> a country on the map or <div class="emphasize">select</div>:
     <select id="country3"></select>
   </div>
 
@@ -137,6 +137,7 @@ function ToggleMap(file, input) {
 
       var country_key = configProd.country;
       var score_value = configProd.score;
+      var clickedCountry = "initial";
 
       productionValueHash = {};
       producData.forEach(function(d) {
@@ -445,6 +446,9 @@ function ToggleMap(file, input) {
 
             var barWidth = topThree[i]["value"];
             var barTitle = topThree[i]["countryName"];
+
+            console.log(sliderClick);
+
             if(!allowBarGraphToChange || sliderClick) {
               if (barTitle == "United States") {
                 dataZoom.select(".usaBarC")
@@ -647,12 +651,6 @@ function ToggleMap(file, input) {
 
           }
 
-            // Energy consumed (in million btu) per person
-            // var popValue = values[objj.properties.name]/popHash[objj.properties.name] * 1000;
-            // dataZoom.append("text").attr("x","10").attr("y","350")
-            //   .attr("fill", "#00000")
-            //   .attr("font-size", "20px")
-            //   .text("Every person in " + objj.properties.name + " spends/consumes " + Math.round(popValue) + " million btu of energy");
             return objj;
           
           }
@@ -666,6 +664,8 @@ function ToggleMap(file, input) {
 
         d3.select("#slider2").on("input", function() {
           sliderClick = true;
+          console.log('IN CLICK');
+          console.log(sliderClick);
           var rval = (this).value;
           $("#sliderNum").html(rval);
           $("#smallSliderNum").html(rval);
@@ -710,8 +710,9 @@ function ToggleMap(file, input) {
                 valueHash[d[country_key]] = +d[score_value];
               });
               
-              draw(clickedCountry, valueHash, productionValueHash);
-              drawUserSelected(clickedCountry, valueHash, productionValueHash);
+              if (sliderClick) {
+                drawUserSelected(clickedCountry, valueHash, productionValueHash);
+              }
               loadChords(input, type);
 
               // If the slider is not playing
@@ -721,15 +722,13 @@ function ToggleMap(file, input) {
 
               // If the slider is at value 2013 (reinitialize)
               else if ($("#slider2").val() == "2013") {
-                changeBreakDescription(rval);
+                changeBreakDescription("2013");
               }
 
 
               if (allowBarGraphToChange) {
-                draw(clickedCountry, valueHash, productionValueHash);
                 drawUserSelected(clickedCountry, valueHash, productionValueHash);
                 loadChords(input, type);
-                // changeBreakDescription(rval);
               }
 
               map.selectAll(".country").data(countries)
@@ -761,7 +760,7 @@ function ToggleMap(file, input) {
             var i = 0, howManyTimes = 21;
             function f() {
 
-                allowBarGraphToChange = false    
+                allowBarGraphToChange = false;
 
                 $("#slider2").val(1993+i);  
                 $("#slider2").trigger('change');
@@ -771,6 +770,8 @@ function ToggleMap(file, input) {
                 $("#smallSliderNum").html(rval);
                 if (i < 21) {
                   refillMap("consumption.csv", ""+rval, sliderD);
+                  draw(clickedCountry, valueHash, productionValueHash); 
+                  drawUserSelected(clickedCountry, valueHash, productionValueHash);
                 }
                 i++;
 
