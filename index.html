@@ -782,7 +782,7 @@ function getTopThree(arrayToSort) {
 ***********************/
 
 // Help from: http://www.visualcinnamon.com/2015/08/stretched-chord.html
-var cwidth = 400;
+var cwidth = 420;
 var cheight = 363; // 5/6
 
 var csvg = d3.select('#chordG').append('svg')
@@ -831,7 +831,7 @@ d3.text("Consumption/1993.csv", "text/csv", function(err,data) {
 
   var fill = d3.scale.ordinal()
     .domain(d3.range(labels.length))
-    .range(["#C4C4C4","#C4C4C4","#C4C4C4", "#C4C4C4","#E0E0E0","#E6AE17","#E64917","#10A157", "#166492", "#E0E0E0"])
+    .range(["#C4C4C4","#C4C4C4","#C4C4C4", "#C4C4C4","#E0E0E0","#E6AE17","#E64917","#94C2BC", "#166492", "#E0E0E0"])
 
 
   /* Outer Arcs */ 
