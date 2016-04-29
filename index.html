@@ -78,7 +78,7 @@
     <div id="chordChangeDescript">In 1993, the United States was the largest energy producer and consumer, dominating nearly a third of the world in every energy category.</div>
   </div>
 
-<!-- </div> -->
+</div>
 
 
 <script>
@@ -608,7 +608,7 @@ function ToggleMap(file, input) {
           $("#smallSliderNum").html(rval);
           refillMap("consumption.csv", ""+rval, sliderD);
           changeBreakDescription(rval);
-          draw(clickedCountry, valueHash, productionValueHash);
+          //draw(clickedCountry, valueHash, productionValueHash);
           loadChords(rval, type);
           sliderClick = false;       
         });
@@ -663,6 +663,8 @@ function ToggleMap(file, input) {
               }
 
               if (allowBarGraphToChange) {
+                sliderClick = true;
+                draw(clickedCountry, valueHash, productionValueHash);
                 drawUserSelected(clickedCountry, valueHash, productionValueHash);
                 loadChords(input, type);
               }
@@ -1006,5 +1008,6 @@ function changeBreakDescription(rval) {
 
 </script>
 <script src = "js/main.js"></script>
+
 </body>
 </html>
