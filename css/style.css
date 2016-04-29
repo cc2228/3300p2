@@ -150,7 +150,7 @@ text.titles {
   font-weight: bold;
 }
 #chordDate {
-  margin-top: 30px;
+  margin-top: 20px;
   font-size: 75px;
   /*border-right: thick solid #005689*/
 }
@@ -158,7 +158,7 @@ text.titles {
   font-size: 18px;
   border-left: thick solid #005689;
   padding-left: 15px;
-  margin-top: 50px;
+  margin-top: 40px;
   height: 120px;
   width:500px;
   text-align: left;
