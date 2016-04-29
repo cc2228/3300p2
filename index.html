@@ -19,108 +19,75 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
 <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
-<script src = "js/vivus.js"></script>
 <!-- D3 Legends -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/1.10.0/d3-legend.js"></script>
-<script src = "js/fisheye.js"></script>
 <!-- Bootstrap -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 <head>
 
 <body>
 
-<div class="row">
-  <div class="container-fluid text-center">
-    <h2>Dominating Countries in Energy Consumption</h2>
+  <div class="row">
+    <div class="container-fluid text-center">
+      <h2>Dominating Countries in Energy Consumption</h2>
+    </div>
   </div>
-</div>
 
-<div id = "rightSideTitle">
-  Consumption vs. Production Country Comparison<br><br>
-</div>
-<div id="tooltip-container"></div>
-
-<div id = "viz">
-  <!-- <div id="arrow">
-    <img id="sepArrow" src="img/arrow.png">
-  </div> -->
-  <div id="canvas-svg">
-    <div id = "sliderNum">1993</div>
+  <div id = "rightSideTitle">
+    Consumption vs. Production Country Comparison<br>
   </div>
+
+  <div id="tooltip-container"></div>
   <div id="dropdowns">
-    <div class="emphasize">Click</div> a country on the map or <div class="emphasize">select</div>:
+    <h5>Click</h5> a country on the map or <h5>select</h5> to compare:
     <select id="country3"></select>
   </div>
-
-</div>
-<div id="textInput">
-   Over the past two decades, international energy consumption and production have grown drastically. The top three countries, China, U.S, and Russia, consume and produce nearly as much energy as the rest of the world. Below we show the energy breakdown by category.
-</div>
-
-
-<div id = "sliderAxis">
-  <img id="play" src="img/playbtn.png">
-  <input id="slider2" class = "slider" type="range" min="1993" max="2013" value = "1993" step="1" /><br>
-  <div class = "yearAxis" id = "tick1">1993</div>
-  <div class = "yearAxis" id = "tick2">2003</div>
-  <div class = "yearAxis" id = "tick3">2013</diV>
-</div>
-
-<!-- <div class="container-fluid text-center"> -->
-<!-- <div class="row text-center">
+  <div id = "viz">
+    <div id="canvas-svg">
+  </div>
+  </div>
   <div id = "chordTitle">
-    Energy Breakdown of the Top 3 Countries Ordered in Descending Ratios
+    Energy Breakdown of the Top 3 Countries
+  </div>      
+  <div id="description">
+      The diagram shows ratios in descending order.<br> <h5>Hover</h5> over the labels to see the highlighted categories.
   </div>
-</div> -->
-<div class="secondViz">
-  <hr width=40%/>
-  <div class="descripChordContainer">
-    <div class="col-md-2 text-center" id="chordDate">
-      <div id = "smallSliderNum">1993</div>
-    </div>
-    <div class="col-md-4">
-      <div id="chordChangeDescript">The chord diagram shows the energy breakdown of the top 3 countries ordered in descending ratios. Play the slider to see the changes over the years. Hover over the country name or energy source to see the highlighted categories.</div>
+  <div class="text-center">
+    <div id="select-filter" class="btn-group" role="group" aria-label="...">
+      <button type="button" class="btn btn-default active chordB" id="Consumption">Consumption</button>
+      <button type="button" class="btn btn-default chordB" id="Production">Production</button>
+      <br>
     </div>
   </div>
-  <div class="col-md-6 text-center">
-    <div class="text-center">
-      <div id = "chordTitle">
-        Energy Breakdown of the Top 3 Countries Ordered in Descending Ratios
-      </div>
-    </div>
-    <div id="chordG"></div>
-    <div class="text-center">
-        <div id="select-filter" class="btn-group" role="group" aria-label="...">
-          <button type="button" class="btn btn-default active chordB" id="Consumption">Consumption</button>
-          <button type="button" class="btn btn-default chordB" id="Production">Production</button>
-        </div>
-      </div>
+
+  <div id="chordG"></div>
+
+  <div id = "sliderAxis">
+    <img id="play" src="img/playbtn.png">
+    <input id="slider2" class = "slider" type="range" min="1993" max="2013" value = "1993" step="1" /><br>
+    <div class = "yearAxis" id = "tick1">1993</div>
+    <div class = "yearAxis" id = "tick2">2003</div>
+    <div class = "yearAxis" id = "tick3">2013</diV>
   </div>
+
+  <div class="col-md-2 text-center" id="chordDate">
+    <div id = "smallSliderNum">1993</div>
+  </div>
+
+  <div class="col-md-4">
+    <div id="chordChangeDescript">In 1993, the United States was the largest energy producer and consumer, dominating nearly a third of the world in every energy category.</div>
+  </div>
+
 </div>
 
 
 <script>
-/*
-$(document).bind('scroll', function() {
-   if ($(this).scrollTop() > 150) {
-      $("#buttons").addClass("fixed");
-      $(".slider").addClass("fixedSlider");
-      $(".yearAxis").addClass("fixedYearAxis");
-   }
-   else {
-      $("#buttons").removeClass("fixed");     
-      $(".slider").removeClass("fixedSlider"); 
-      $(".yearAxis").removeClass("fixedYearAxis");
-   }
-});*/
-//slider
 
 // Color scale
 var getColor = d3.scale.linear().domain([0,120]).range(["#d6f5d6","#005689"]);
 var valueHash, quantize, countries, productionValueHash;
 var sliderClick = false;
 var endofPlay = true;
-
 
 var countriesSelected = new Array();
 var sliderD = "China";
@@ -143,7 +110,6 @@ function ToggleMap(file, input) {
       producData.forEach(function(d) {
         productionValueHash[d[country_key]] = +d[score_value];
       });
-
 
       var config = {"country":"Country", "score":input};
 
@@ -173,69 +139,49 @@ function ToggleMap(file, input) {
         valueHash[d[country_key]] = +d[score_value];
       });
 
+      quantize = d3.scale.quantize().domain([0, 1.0]).range(d3.range(100).map(function(i) { return i; }));
+
+      quantize.domain([d3.min(data, function(d){
+        return (+d[score_value]) }),
+      d3.max(data, function(d){
+        return (+d[score_value]) })]);
+
+      // Source: Vida world json file
+      d3.json("https://s3-us-west-2.amazonaws.com/vida-public/geo/world-topo-min.json", function(error, world) {
+        countries = topojson.feature(world, world.objects.countries).features;
 
 
-      // hashmap for population data
-      var popHash = {};
+        // Drop-down menu: to select three countries
+        var options = ""
+        for (var i=0; i<countries.length; i++) {
+          options += "<option value=" + countries[i].id + '>' + countries[i].properties.name + "</option>";
+        }
+        document.getElementById("country3").innerHTML = options;
 
-      // Import data for population, create hash value that can later be used to compare with consumption/prod
-      d3.csv("population.csv", function(err, popData) {
-        // Lillyan: Can you make the slider work for this part too? This is the population
-        var configPop = {"country":"Country", "score": "1993"};
+        var firstCountry, secondCountry, thirdCountry;
 
-        var country_key_pop = configPop.country;
-        var score_value_pop = configPop.score;
-        popData.forEach(function(d) {
-            popHash[d[country_key_pop]] = +d[score_value_pop];
-        });
+        // submit button for drop down countries
+        d3.select("#country3").on('change', function(d) { 
+          firstCountry = document.getElementById("country3").value;
 
-        quantize = d3.scale.quantize().domain([0, 1.0]).range(d3.range(100).map(function(i) { return i; }));
+          var buttonCountries = [firstCountry];
 
-        quantize.domain([d3.min(data, function(d){
-          return (+d[score_value]) }),
-        d3.max(data, function(d){
-          return (+d[score_value]) })]);
-
-        // Source: Vida world json file
-        d3.json("https://s3-us-west-2.amazonaws.com/vida-public/geo/world-topo-min.json", function(error, world) {
-          countries = topojson.feature(world, world.objects.countries).features;
-
-
-          // Drop-down menu: to select three countries
-          var options = ""
-          for (var i=0; i<countries.length; i++) {
-            options += "<option value=" + countries[i].id + '>' + countries[i].properties.name + "</option>";
+          for (var i =0; i<buttonCountries.length; i++) { 
+            d3.selectAll('path').filter(function(d) {
+              if (d.id == buttonCountries[i] && valueHash[d.properties.name]) {
+                  if(countriesSelected.length < 3) {
+                    countriesSelected.push(d);
+                  }
+                  else {
+                    countriesSelected[2] = countriesSelected[1];
+                    countriesSelected[1] = countriesSelected[0];
+                    countriesSelected[0] = d;
+                  }
+                  drawUserSelected(d, valueHash, productionValueHash);
+              }
+            })
           }
-          document.getElementById("country3").innerHTML = options;/*
-          document.getElementById("country2").innerHTML = options;
-          document.getElementById("country").innerHTML = options;*/
-
-          var firstCountry, secondCountry, thirdCountry;
-
-          // submit button for drop down countries
-          d3.select("#country3").on('change', function(d) { 
-            firstCountry = document.getElementById("country3").value;/*
-            secondCountry = document.getElementById("country2").value;
-            thirdCountry = document.getElementById("country").value;*/
-
-            var buttonCountries = [firstCountry];
-
-            for (var i =0; i<buttonCountries.length; i++) { 
-              d3.selectAll('path').filter(function(d) {
-                if (d.id == buttonCountries[i]) {
-                    if(countriesSelected.length < 3) {
-                      countriesSelected.push(d);
-                    }
-                    else {
-                      countriesSelected[2] = countriesSelected[1];
-                      countriesSelected[1] = countriesSelected[0];
-                      countriesSelected[0] = d;
-                    }
-                    drawUserSelected(d, valueHash, productionValueHash);
-                }
-              })
-            }
-          }) // end button for country drop down
+        }) // end button for country drop down
 
           //initialize bar graph
           sliderD = countries[41];
@@ -294,29 +240,29 @@ function ToggleMap(file, input) {
             
             if (d3.event.pageX < map_width / 2) {
               d3.select("#tooltip-container")
-                .style("top", (d3.event.layerY+30) + "px")
+                .style("top", (d3.event.layerY+60) + "px")
                 .style("left", (d3.event.layerX) + "px");
             } else {
               var tooltip_width = $("#tooltip-container").width();
               d3.select("#tooltip-container")
-                .style("top", (d3.event.layerY +35) + "px")
+                .style("top", (d3.event.layerY +65) + "px")
                 .style("left", (d3.event.layerX - tooltip_width - 30) + "px");
             }
           })
 
           .on("click", function(d) {
-
-            if(countriesSelected.length < 3) {
-              countriesSelected.push(d);
+            if(valueHash[d.properties.name]) {
+              if(countriesSelected.length < 3) {
+                countriesSelected.push(d);
+              }
+              else {
+                countriesSelected[2] = countriesSelected[1];
+                countriesSelected[1] = countriesSelected[0];
+                countriesSelected[0] = d;
+              }
+              clickedCountry = d;
+              sliderD = drawUserSelected(d, valueHash, productionValueHash);
             }
-            else {
-              countriesSelected[2] = countriesSelected[1];
-              countriesSelected[1] = countriesSelected[0];
-              countriesSelected[0] = d;
-            }
-
-            sliderD = drawUserSelected(d, valueHash, productionValueHash);
-
           })
 
           .on("mouseout", function() {
@@ -332,41 +278,42 @@ function ToggleMap(file, input) {
           svg.attr("height", height * 2.2 / 3);
 
 
+
           /***********************
           * Map Legend
           ***********************/
 
-          var map = d3.select("svg").append("g");
-          map.append("g")
-          .attr("class", "legendLinear")
-          .attr("transform", "translate(545,25)");
+        var map = d3.select("svg").append("g");
+        map.append("g")
+        .attr("class", "legendLinear")
+        .attr("transform", "translate(430,470)");
 
-          var legendLinear = d3.legend.color()
-          .shapeWidth(30)
-          .orient('horizontal')
-          .scale(getColor);
+        var legendLinear = d3.legend.color()
+        .shapeWidth(30)
+        .orient('horizontal')
+        .scale(getColor);
 
-          svg.select(".legendLinear").call(legendLinear);
-          map.append("rect")
-          .attr("class", "noData")
-          .attr("height", 15)
-          .attr('width', 30)
-          .attr("transform", "translate(513,25)")
-          .style("fill", "#CCCCCC")
-          map.append("text")
-          .attr("class", "noData")
-          .attr("x", 15)
-          .attr('y', 30)
-          .attr("transform", "translate(513,27)")
-          .text("No Data")
-          .style("font-size", 10)
-          .style("text-anchor", "middle")
+        svg.select(".legendLinear").call(legendLinear);
+        map.append("rect")
+        .attr("class", "noData")
+        .attr("height", 15)
+        .attr('width', 30)
+        .attr("transform", "translate(398,470)")
+        .style("fill", "#CCCCCC")
+        map.append("text")
+        .attr("class", "noData")
+        .attr("x", 15)
+        .attr('y', 30)
+        .attr("transform", "translate(396,473)")
+        .text("No Data")
+        .style("font-size", 10)
+        .style("text-anchor", "middle")
 
-      svg.append("text")
+        svg.append("text")
         .attr("class", "keyLabel")
         .attr("x", 0)
         .attr("y", 20)
-        .attr("transform", "translate(508,-10)")
+        .attr("transform", "translate(398,445)")
         .text("Energy Consumption in QBTU")
         .attr("font-size", "14px")
         .attr("font-weight", "bolder");
@@ -374,7 +321,7 @@ function ToggleMap(file, input) {
         }); //end of json map function
           //-----------------------------------------------------------------
         function initBars() {
-          d3.select("#viz").append("svg").attr("id", "dataZoom").attr("width", "485").attr("height","380");
+          d3.select("#viz").append("svg").attr("id", "dataZoom").attr("width", "485").attr("height","370");
           var dataZoom = d3.select("#dataZoom");
           var dataZoomXScale = d3.scale.linear().domain([0,120]).range([0,440]);
           var xAxis = d3.svg.axis().scale(dataZoomXScale).orient("bottom").ticks(6);
@@ -385,8 +332,7 @@ function ToggleMap(file, input) {
 
           dataZoom.append("text").attr("x","180").attr("y", "340").attr("fill", "#000").text("(Quadrillion BTU)"); 
 
-
-         dataZoom.append("rect")
+          dataZoom.append("rect")
           .attr("x", "100")
           .attr("y", 0)
           .attr("height", 18)
@@ -426,9 +372,7 @@ function ToggleMap(file, input) {
           dataZoom.append("text").attr("x","295").attr("y", "12.5").attr("fill", "#000000").text("Production"); 
 
         }
-        // allowBarstoChange = true when play is done
         function draw(objj, values, productionValueHash) {
-          // d3.select("#dataZoom").remove();
           //recreate bar graph
           var dataZoom = d3.select("#dataZoom");
 
@@ -436,11 +380,6 @@ function ToggleMap(file, input) {
           var topThree = getTopThree(values);
           var rectHeight = 30;
           var transitionDuration = 750;
-
-          // if (allowBarGraphToChange || shouldPlay) {
-          //   d3.selectAll(".setBar").remove();
-          //   d3.selectAll("text.setBar").remove();
-          // } 
 
           for(var i = 0; i < 3; i++) {
 
@@ -650,10 +589,8 @@ function ToggleMap(file, input) {
             }
 
           }
-
-            return objj;
           
-          }
+        }
         d3.select(self.frameElement).style("height", (height * 2.3 / 3) + "px");
 
         /***********************
@@ -725,7 +662,6 @@ function ToggleMap(file, input) {
                 changeBreakDescription("2013");
               }
 
-
               if (allowBarGraphToChange) {
                 drawUserSelected(clickedCountry, valueHash, productionValueHash);
                 loadChords(input, type);
@@ -796,8 +732,6 @@ function ToggleMap(file, input) {
 
     }); //end of countries csv
 
-  }); //end of production csv
-
 } //end of toggle map
 
 // Default on Consumption
@@ -805,13 +739,8 @@ var innerDiv = document.createElement('div');
 innerDiv.id = 'sliderNum';
 innerDiv.innerHTML = $("#slider2").val();
 
-// The variable iDiv is still good... Just append to it.
 
 ToggleMap("consumption.csv", "1993");
-
-// Toggles between the multiple graphs
-
-
 
 //Sort the values so that we can display the top three
 function sortobj(obj) {
@@ -851,25 +780,25 @@ function getTopThree(arrayToSort) {
 /***********************
 * Chord Graph
 ***********************/
+
 // Help from: http://www.visualcinnamon.com/2015/08/stretched-chord.html
-var cwidth = 500;
-var cheight = 416; // 5/6
+var cwidth = 400;
+var cheight = 363; // 5/6
 
 var csvg = d3.select('#chordG').append('svg')
   .attr("width", cwidth)
   .attr("height", cheight) // does not rely on margins
 
-var outerRadius = cheight / 2 - 25;
+var outerRadius = cheight / 2 - 30;
 var innerRadius = outerRadius * 0.95;
 var opacityDef = 0.7;
 
-var labels = ["Coal", "Electricity", "Natural Gas","Petroleum", "", "China", "USA", "Russia", "Other", ""];
+var labels = ["Coal", "Electricity", 'Nat. Gas',"Petroleum", "", "China", "USA", "Russia", "Other", ""];
 
 var wrapper = csvg.append("g").attr("class", "chordWrapper")
   .attr("transform", "translate(" + (cwidth / 2  - 15) + "," + (cheight / 2 ) + ")" );
 
 
-// d3.text("Production/1993.csv", "text/csv", function(err,data) {
 var offset;
 d3.text("Consumption/1993.csv", "text/csv", function(err,data) { 
   matrix = d3.csv.parseRows(data);
@@ -902,7 +831,8 @@ d3.text("Consumption/1993.csv", "text/csv", function(err,data) {
 
   var fill = d3.scale.ordinal()
     .domain(d3.range(labels.length))
-    .range(["#C4C4C4","#C4C4C4","#C4C4C4", "#C4C4C4","#E0E0E0","#EDC951","#CC333F","#00A0B0", "#7D1D3F", "#E0E0E0"]) //change later
+    .range(["#C4C4C4","#C4C4C4","#C4C4C4", "#C4C4C4","#E0E0E0","#E6AE17","#E64917","#10A157", "#166492", "#E0E0E0"])
+
 
   /* Outer Arcs */ 
   var g = wrapper.selectAll("g.group")
@@ -921,13 +851,6 @@ d3.text("Consumption/1993.csv", "text/csv", function(err,data) {
     .attr("d", arc)
     .on("mouseover", fade(.1))
     .on("mouseout", fade(.7));
-
-
-  /* Append Names */ 
-  // g.append("text")
-  //   .append("textPath")
-  //   .attr("xlink:href", function(d) { return "path.group"})
-  //   .text("Hover");
 
   g.append("text")
       .each(function(d) { d.angle = ((d.startAngle + d.endAngle) / 2) + offset;})
@@ -1011,7 +934,7 @@ function loadChords(input, type) {
       .endAngle(endAngle);
     var fill = d3.scale.ordinal()
       .domain(d3.range(labels.length))
-      .range(["#C4C4C4","#C4C4C4","#C4C4C4", "#C4C4C4","#E0E0E0","#EDC951","#CC333F","#00A0B0", "#7D1D3F", "#E0E0E0"])
+      .range(["#C4C4C4","#C4C4C4","#C4C4C4", "#C4C4C4","#E0E0E0","#E6AE17","#E64917","#10A157", "#166492", "#E0E0E0"])
 
     /* Outer Arcs */ 
     g = wrapper.selectAll("g.group")
@@ -1059,21 +982,17 @@ function loadChords(input, type) {
 }
 
 function changeBreakDescription(rval) {
-  if (parseInt(rval) == 1993) {
+  if (parseInt(rval) >= 1993 && parseInt(rval) < 1999) {
     $("#chordChangeDescript").html("");
-    $("#chordChangeDescript").html("The chord diagram shows the energy breakdown of the top 3 countries ordered in descending ratios. Play the slider to see the changes over the years. Hover over the country name or energy source to see the highlighted categories.");
-  }
-  if (parseInt(rval) >= 1994 && parseInt(rval) < 1999) {
-    $("#chordChangeDescript").html("");
-    $("#chordChangeDescript").html("In 1993, the United States was the largest energy producer and consumer, dominating nearly a third of the world in every energy category.");
+    $("#chordChangeDescript").html("In 1993, the United States was the largest energy producer and consumer, dominating nearly a third of the world in every energy category. Russia and China follow as the second and third leading countries.");
   }
   if (parseInt(rval) == 1999) {
     $("#chordChangeDescript").html("");
-    $("#chordChangeDescript").html("In 1999, China's energy consumption overtakes production. Russia's end it's decline in energy consumption and production from 1994, and begins to grow again. ");
+    $("#chordChangeDescript").html("In 1999, China's energy consumption overtakes production. Russia ends it's decline in energy consumption and production from 1994, and begins to grow again. ");
   }
   if (parseInt(rval) >= 2000 && parseInt(rval) < 2012) {
     $("#chordChangeDescript").html("");
-    $("#chordChangeDescript").html("In 2000, the Chinese economic boom takes off, and by 2005, China becomes the leading coal producer and consumer of the world.");
+    $("#chordChangeDescript").html("In 2000, the Chinese economic boom takes off, and by 2005, China becomes the leading coal producer and consumer of the world. The U.S's growth in energy consumption and production begins to slow down.");
   }
   if (parseInt(rval) == 2012) {
     $("#chordChangeDescript").html("");
@@ -1081,7 +1000,7 @@ function changeBreakDescription(rval) {
   }
   if (parseInt(rval) == 2013) {
     $("#chordChangeDescript").html("");
-    $("#chordChangeDescript").html("While the U.S and Russia have become relatively stagnant in energy consumption and production, China's coal consumption and production are predicted to continue to skyrocket over the next decade. The area of focus in the coming years will be on developing countries.");
+    $("#chordChangeDescript").html("By 2013, the U.S and Russia have become relatively stagnant in energy consumption and production, while China's coal consumption and production are predicted to continue to skyrocket over the next decade. ");
   }
 }
 

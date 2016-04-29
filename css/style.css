@@ -1,5 +1,5 @@
 html {
-  padding-bottom: 50px;
+  padding-bottom: 20px;
 
 }
 body {
@@ -129,6 +129,9 @@ rect {
 /*  vertical-align: top;
   padding-right: 35px;
   padding-bottom: 50px;*/
+  float:right;
+    padding-right: 50px;
+
 }
 
 path.chord:hover {
@@ -137,14 +140,14 @@ path.chord:hover {
 
 text.titles {
   cursor: pointer;
-  font-size: 15px;
+  font-size: 12px;
 }
 #chordTitle {
   /*color: #005689;*/
   color: black;
   text-align: center;
   padding: 0 10px;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: bold;
 }
 #chordDate {
@@ -156,8 +159,11 @@ text.titles {
   font-size: 18px;
   border-left: thick solid #005689;
   padding-left: 15px;
-  margin-top: 20px;
-  height: 170px;
+  margin-top: 40px;
+  height: 120px;
+  width:500px;
+  text-align: left;
+
 }
 
 /******************
@@ -191,6 +197,7 @@ text.titles {
   width: 60px;
   vertical-align: top;
   cursor: pointer;
+  margin-left: 15px;
 }
 
 #play:hover {
@@ -366,7 +373,7 @@ p {
   display: inline-block;
   float: right;
   padding-left: 30px;
-  width: 38%;
+  width: 50%;
 }
 
 #country3 {
@@ -407,7 +414,7 @@ text.label {
 }
 
 .row {
-  padding: 50px;
+  padding: 0px;
 }
 .secTitle {
   font-size: 18px;
@@ -439,6 +446,7 @@ text.label {
   float:right;
   font-size: 20px;
   padding-right:20px;
+  font-weight:bold;
 }
 
 /******************
@@ -479,3 +487,14 @@ hr {
   background: #CCC; 
 }
 
+#description {
+  font-size: 14px;
+  text-align: center;
+}
+
+h5 {
+  display: inline;
+  color: #005689;
+  font-weight: bold;
+
+}
