@@ -36,26 +36,43 @@
 </div>
 
 <div id = "rightSideTitle">
-  Consumption vs. Production Country Comparison<br><br>
+  Consumption vs. Production Country Comparison<br>
 </div>
 <div id="tooltip-container"></div>
-
+  <div id="dropdowns">
+    <h5>Click</h5> a country on the map or <h5>select</h5> to compare:
+    <select id="country3"></select>
+  </div>
 <div id = "viz">
   <!-- <div id="arrow">
     <img id="sepArrow" src="img/arrow.png">
   </div> -->
   <div id="canvas-svg">
-    <div id = "sliderNum">1993</div>
-  </div>
-  <div id="dropdowns">
-    Click a country on the map or select:
-    <select id="country3"></select>
-  </div>
+<!--     <div id = "sliderNum">1993</div>
+ -->  </div>
+
 
 </div>
-<div id="textInput">
+<!-- <div id="textInput">
    Over the past two decades, international energy consumption and production have grown drastically. The top three countries, China, U.S, and Russia, consume and produce nearly as much energy as the rest of the world. Below we show the energy breakdown by category.
-</div>
+</div> -->
+      <div id = "chordTitle">
+        Energy Breakdown of the Top 3 Countries
+      </div>      
+      <div id="description">
+          The diagram shows ratios in descending order.<br> <h5>Hover</h5> over the labels to see the highlighted categories.
+      </div>
+    <div class="text-center">
+        <div id="select-filter" class="btn-group" role="group" aria-label="...">
+          <button type="button" class="btn btn-default active chordB" id="Consumption">Consumption</button>
+          <button type="button" class="btn btn-default chordB" id="Production">Production</button>
+          <br>
+        </div>
+
+      </div>
+
+    <div id="chordG"></div>
+
 
 
 <div id = "sliderAxis">
@@ -72,6 +89,13 @@
     Energy Breakdown of the Top 3 Countries Ordered in Descending Ratios
   </div>
 </div> -->
+    <div class="col-md-2 text-center" id="chordDate">
+      <div id = "smallSliderNum">1993</div>
+    </div>
+
+    <div class="col-md-4">
+      <div id="chordChangeDescript">In 1993, the United States was the largest energy producer and consumer, dominating nearly a third of the world in every energy category.</div>
+<!--       
 <div class="secondViz">
   <hr width=40%/>
   <div class="descripChordContainer">
@@ -84,17 +108,9 @@
   </div>
   <div class="col-md-6 text-center">
     <div class="text-center">
-      <div id = "chordTitle">
-        Energy Breakdown of the Top 3 Countries Ordered in Descending Ratios
-      </div>
-    </div>
-    <div id="chordG"></div>
-    <div class="text-center">
-        <div id="select-filter" class="btn-group" role="group" aria-label="...">
-          <button type="button" class="btn btn-default active chordB" id="Consumption">Consumption</button>
-          <button type="button" class="btn btn-default chordB" id="Production">Production</button>
-        </div>
-      </div>
+
+    </div> -->
+
   </div>
 </div>
 
@@ -293,12 +309,12 @@ function ToggleMap(file, input) {
             
             if (d3.event.pageX < map_width / 2) {
               d3.select("#tooltip-container")
-                .style("top", (d3.event.layerY+30) + "px")
+                .style("top", (d3.event.layerY+60) + "px")
                 .style("left", (d3.event.layerX) + "px");
             } else {
               var tooltip_width = $("#tooltip-container").width();
               d3.select("#tooltip-container")
-                .style("top", (d3.event.layerY +35) + "px")
+                .style("top", (d3.event.layerY +65) + "px")
                 .style("left", (d3.event.layerX - tooltip_width - 30) + "px");
             }
           })
@@ -339,7 +355,7 @@ function ToggleMap(file, input) {
           var map = d3.select("svg").append("g");
           map.append("g")
           .attr("class", "legendLinear")
-          .attr("transform", "translate(545,25)");
+          .attr("transform", "translate(430,470)");
 
           var legendLinear = d3.legend.color()
           .shapeWidth(30)
@@ -351,30 +367,39 @@ function ToggleMap(file, input) {
           .attr("class", "noData")
           .attr("height", 15)
           .attr('width', 30)
-          .attr("transform", "translate(513,25)")
+          .attr("transform", "translate(398,470)")
           .style("fill", "#CCCCCC")
           map.append("text")
           .attr("class", "noData")
           .attr("x", 15)
           .attr('y', 30)
-          .attr("transform", "translate(513,27)")
+          .attr("transform", "translate(396,473)")
           .text("No Data")
           .style("font-size", 10)
           .style("text-anchor", "middle")
 
-      svg.append("text")
+        svg.append("text")
         .attr("class", "keyLabel")
         .attr("x", 0)
         .attr("y", 20)
-        .attr("transform", "translate(508,-10)")
+        .attr("transform", "translate(398,445)")
         .text("Energy Consumption in QBTU")
         .attr("font-size", "14px")
         .attr("font-weight", "bolder");
 
+/*        svg.append("text")
+        .attr("class", "keyLabel")
+        .attr("x", 0)
+        .attr("y", 20)
+        .attr("transform", "translate(0,0)")
+        .text("Hover to see details or click a country on the map to compare:")
+        .attr("font-size", "14px")
+        .attr("font-weight", "bolder");*/
+
         }); //end of json map function
           //-----------------------------------------------------------------
         function initBars() {
-          d3.select("#viz").append("svg").attr("id", "dataZoom").attr("width", "485").attr("height","380");
+          d3.select("#viz").append("svg").attr("id", "dataZoom").attr("width", "485").attr("height","370");
           var dataZoom = d3.select("#dataZoom");
           var dataZoomXScale = d3.scale.linear().domain([0,120]).range([0,440]);
           var xAxis = d3.svg.axis().scale(dataZoomXScale).orient("bottom").ticks(6);
@@ -852,8 +877,8 @@ function getTopThree(arrayToSort) {
 * Chord Graph
 ***********************/
 // Help from: http://www.visualcinnamon.com/2015/08/stretched-chord.html
-var cwidth = 500;
-var cheight = 416; // 5/6
+var cwidth = 400;
+var cheight = 333; // 5/6
 
 var csvg = d3.select('#chordG').append('svg')
   .attr("width", cwidth)
@@ -902,7 +927,9 @@ d3.text("Consumption/1993.csv", "text/csv", function(err,data) {
 
   var fill = d3.scale.ordinal()
     .domain(d3.range(labels.length))
-    .range(["#C4C4C4","#C4C4C4","#C4C4C4", "#C4C4C4","#E0E0E0","#EDC951","#CC333F","#00A0B0", "#7D1D3F", "#E0E0E0"]) //change later
+    //.range(["#C4C4C4","#C4C4C4","#C4C4C4", "#C4C4C4","#E0E0E0","#EDC951","#CC333F","#00A0B0", "#7D1D3F", "#E0E0E0"]) //change later
+    .range(["#C4C4C4","#C4C4C4","#C4C4C4", "#C4C4C4","#E0E0E0","#E6AE17","#E64917","#10A157", "#166492", "#E0E0E0"])
+
 
   /* Outer Arcs */ 
   var g = wrapper.selectAll("g.group")
@@ -1011,7 +1038,8 @@ function loadChords(input, type) {
       .endAngle(endAngle);
     var fill = d3.scale.ordinal()
       .domain(d3.range(labels.length))
-      .range(["#C4C4C4","#C4C4C4","#C4C4C4", "#C4C4C4","#E0E0E0","#EDC951","#CC333F","#00A0B0", "#7D1D3F", "#E0E0E0"])
+      //.range(["#C4C4C4","#C4C4C4","#C4C4C4", "#C4C4C4","#E0E0E0","#EDC951","#CC333F","#00A0B0", "#7D1D3F", "#E0E0E0"])
+      .range(["#C4C4C4","#C4C4C4","#C4C4C4", "#C4C4C4","#E0E0E0","#E6AE17","#E64917","#10A157", "#166492", "#E0E0E0"])
 
     /* Outer Arcs */ 
     g = wrapper.selectAll("g.group")
@@ -1059,21 +1087,21 @@ function loadChords(input, type) {
 }
 
 function changeBreakDescription(rval) {
-  if (parseInt(rval) == 1993) {
+/*  if (parseInt(rval) == 1993) {
     $("#chordChangeDescript").html("");
     $("#chordChangeDescript").html("The chord diagram shows the energy breakdown of the top 3 countries ordered in descending ratios. Play the slider to see the changes over the years. Hover over the country name or energy source to see the highlighted categories.");
-  }
-  if (parseInt(rval) >= 1994 && parseInt(rval) < 1999) {
+  }*/
+  if (parseInt(rval) >= 1993 && parseInt(rval) < 1999) {
     $("#chordChangeDescript").html("");
-    $("#chordChangeDescript").html("In 1993, the United States was the largest energy producer and consumer, dominating nearly a third of the world in every energy category.");
+    $("#chordChangeDescript").html("In 1993, the United States was the largest energy producer and consumer, dominating nearly a third of the world in every energy category. Russia and China follow as the second and third leading countries.");
   }
   if (parseInt(rval) == 1999) {
     $("#chordChangeDescript").html("");
-    $("#chordChangeDescript").html("In 1999, China's energy consumption overtakes production. Russia's end it's decline in energy consumption and production from 1994, and begins to grow again. ");
+    $("#chordChangeDescript").html("In 1999, China's energy consumption overtakes production. Russia ends it's decline in energy consumption and production from 1994, and begins to grow again. ");
   }
   if (parseInt(rval) >= 2000 && parseInt(rval) < 2012) {
     $("#chordChangeDescript").html("");
-    $("#chordChangeDescript").html("In 2000, the Chinese economic boom takes off, and by 2005, China becomes the leading coal producer and consumer of the world.");
+    $("#chordChangeDescript").html("In 2000, the Chinese economic boom takes off, and by 2005, China becomes the leading coal producer and consumer of the world. The U.S's growth in energy consumption and production begins to slow down.");
   }
   if (parseInt(rval) == 2012) {
     $("#chordChangeDescript").html("");
@@ -1081,7 +1109,7 @@ function changeBreakDescription(rval) {
   }
   if (parseInt(rval) == 2013) {
     $("#chordChangeDescript").html("");
-    $("#chordChangeDescript").html("While the U.S and Russia have become relatively stagnant in energy consumption and production, China's coal consumption and production are predicted to continue to skyrocket over the next decade. The area of focus in the coming years will be on developing countries.");
+    $("#chordChangeDescript").html("By 2013, the U.S and Russia have become relatively stagnant in energy consumption and production, while China's coal consumption and production are predicted to continue to skyrocket over the next decade. ");
   }
 }
 
