@@ -6,8 +6,6 @@ body {
   padding: 10px;
   height: 100%;
   font-family: 'Raleway', sans-serif; 
-/*  font-family: 'Georgia', sans-serif; 
-*/  /*font-family: 'Open Sans', sans-serif;  */
   background-color: #fff;
 }
 svg {
@@ -21,6 +19,14 @@ h2 {
   margin-bottom: 20px;
   font-weight: bold;
 }
+
+h5 {
+  display: inline;
+  color: #005689;
+  font-weight: bold;
+
+}
+
 .fixed {
   position: fixed;
   top: 0;
@@ -125,11 +131,8 @@ rect {
 
 #chordG {
   display: inline-block;
-/*  vertical-align: top;
-  padding-right: 35px;
-  padding-bottom: 50px;*/
   float:right;
-    padding-right: 50px;
+  padding-right: 50px;
 
 }
 
@@ -142,7 +145,6 @@ text.titles {
   font-size: 15px;
 }
 #chordTitle {
-  /*color: #005689;*/
   color: black;
   text-align: center;
   padding: 0 10px;
@@ -152,7 +154,6 @@ text.titles {
 #chordDate {
   margin-top: 20px;
   font-size: 75px;
-  /*border-right: thick solid #005689*/
 }
 #chordChangeDescript {
   font-size: 18px;
@@ -171,26 +172,14 @@ text.titles {
 .btn-group {
   padding-top: 15px;
 }
-/*button {
-  border: none;
-  color: #000;
-  width: 367.5px;
-  height: 20px;
-  background-color: #fff;
-  padding: 10px;
-  border: solid #8AA1B1;
-}*/
+
 #buttons {
   text-align: center;
   width: 740px;
   margin: 10px;
   margin-left: 0px;
 }
-/*button:hover {
-  color: #fff;
-  cursor: pointer;
-  background-color: #8AA1B1;
-}*/
+
 #play {
   display: inline-block;
   width: 60px;
@@ -428,10 +417,6 @@ text.label {
   float:right;
   padding-right: 140px;
 }
-/*
-#select-filter {
-  padding-right: 70px;
-}*/
 
 
 #textInput {
@@ -451,9 +436,7 @@ text.label {
 /******************
 * MISC
 ******************/
-.secondViz {
-  /*padding-top: 35px;*/
-}
+
 hr {
   float: right;
   padding-bottom: 15px;
@@ -465,11 +448,4 @@ hr {
 #description {
   font-size: 14px;
   text-align: center;
-}
-
-h5 {
-  display: inline;
-  color: #005689;
-  font-weight: bold;
-
 }
