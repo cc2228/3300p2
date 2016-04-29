@@ -386,19 +386,17 @@ function ToggleMap(file, input) {
             var barWidth = topThree[i]["value"];
             var barTitle = topThree[i]["countryName"];
 
-            console.log(sliderClick);
-
             if(!allowBarGraphToChange || sliderClick) {
               if (barTitle == "United States") {
                 dataZoom.select(".usaBarC")
                 .transition(250)
                 .attr("y", i*40+10+25+6.5)
-                .attr("width", dataZoomXScale(barWidth)+1);
+                .attr("width", dataZoomXScale(barWidth));
 
                 dataZoom.select(".usaBarP")
                 .transition(250)
                 .attr("y", i*40+24+25-15)
-                .attr("width", dataZoomXScale(productionValueHash[barTitle])+1);
+                .attr("width", dataZoomXScale(productionValueHash[barTitle]));
 
                 dataZoom.select(".usaBarText")
                 .transition(250)
@@ -408,12 +406,12 @@ function ToggleMap(file, input) {
                 dataZoom.select(".russBarC")
                 .transition(250)
                 .attr("y", i*40+10+25+6.5)
-                .attr("width", dataZoomXScale(barWidth)+1);
+                .attr("width", dataZoomXScale(barWidth));
 
                 dataZoom.select(".russBarP")
                 .transition(250)
                 .attr("y", i*40+24+25-15)
-                .attr("width", dataZoomXScale(productionValueHash[barTitle])+1);
+                .attr("width", dataZoomXScale(productionValueHash[barTitle]));
 
                 dataZoom.select(".russBarText")
                 .transition(250)
@@ -423,12 +421,12 @@ function ToggleMap(file, input) {
                 dataZoom.select(".chinaBarC")
                 .transition(250)
                 .attr("y", i*40+10+25+6.5)
-                .attr("width", dataZoomXScale(barWidth)+1);
+                .attr("width", dataZoomXScale(barWidth));
 
                 dataZoom.select(".chinaBarP")
                 .transition(250)
                 .attr("y", i*40+24+25-15)
-                .attr("width", dataZoomXScale(productionValueHash[barTitle])+1);
+                .attr("width", dataZoomXScale(productionValueHash[barTitle]));
 
                 dataZoom.select(".chinaBarText")
                 .transition(250)
@@ -451,7 +449,7 @@ function ToggleMap(file, input) {
               .attr("fill", "#589CC4")
               .attr("z-fill", "1")
               .transition(transitionDuration)
-              .attr("width", dataZoomXScale(barWidth)+1);
+              .attr("width", dataZoomXScale(barWidth));
 
               dataZoom.append("rect")
               .attr("class", function() {
@@ -466,7 +464,7 @@ function ToggleMap(file, input) {
               .attr("fill", "#CCC")
               .attr("opacity", ".5")
               .transition(transitionDuration)
-              .attr("width", dataZoomXScale(productionValueHash[barTitle])+1);
+              .attr("width", dataZoomXScale(productionValueHash[barTitle]));
             
               dataZoom.append("text")
               .attr("x","200")
@@ -504,11 +502,11 @@ function ToggleMap(file, input) {
               if (x == 0) {
                 dataZoom.select(".firstBarC")
                 .transition(250)
-                .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
+                .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]));
 
                 dataZoom.select(".firstBarP")
                 .transition(250)
-                .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]+1));
+                .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]));
 
                 dataZoom.select(".userTextFirst")
                 .attr("y", x*40+190)
@@ -518,11 +516,11 @@ function ToggleMap(file, input) {
               if (x == 1) {
                 dataZoom.select(".secondBarC")
                 .transition(250)
-                .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
+                .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]));
 
                 dataZoom.select(".secondBarP")
                 .transition(250)
-                .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]+1));
+                .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]));
 
                 dataZoom.select(".userTextSecond")
                 .attr("y", x*40+190)
@@ -532,11 +530,11 @@ function ToggleMap(file, input) {
               if (x == 2) {
                 dataZoom.select(".thirdBarC")
                 .transition(250)
-                .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
+                .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]));
 
                 dataZoom.select(".thirdBarP")
                 .transition(250)
-                .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]+1));
+                .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]));
 
                 dataZoom.select(".userTextThird")
                 .attr("y", x*40+190)
@@ -558,7 +556,7 @@ function ToggleMap(file, input) {
               .attr("fill", "#589CC4")
               .attr("opacity", ".7")
               .transition(transitionDuration)
-              .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]+1));
+              .attr("width", dataZoomXScale(values[countriesSelected[x].properties.name]));
 
               dataZoom.append("rect")
               .attr("class", function() {
@@ -573,7 +571,7 @@ function ToggleMap(file, input) {
               .attr("fill", "#CCC")
               .attr("opacity", ".5")
               .transition(transitionDuration)
-              .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name]+1)); 
+              .attr("width", dataZoomXScale(productionValueHash[countriesSelected[x].properties.name])); 
 
               dataZoom.append("text")
               .attr("x","200")
@@ -601,8 +599,6 @@ function ToggleMap(file, input) {
 
         d3.select("#slider2").on("input", function() {
           sliderClick = true;
-          console.log('IN CLICK');
-          console.log(sliderClick);
           var rval = (this).value;
           $("#sliderNum").html(rval);
           $("#smallSliderNum").html(rval);
