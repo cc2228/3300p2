@@ -221,7 +221,7 @@ function ToggleMap(file, input) {
 
             for (var i =0; i<buttonCountries.length; i++) { 
               d3.selectAll('path').filter(function(d) {
-                if (d.id == buttonCountries[i]) {
+                if (d.id == buttonCountries[i] && valueHash[d.properties.name]) {
                     if(countriesSelected.length < 3) {
                       countriesSelected.push(d);
                     }
@@ -304,18 +304,18 @@ function ToggleMap(file, input) {
           })
 
           .on("click", function(d) {
+            if(valueHash[d.properties.name]) {
+              if(countriesSelected.length < 3) {
+                countriesSelected.push(d);
+              }
+              else {
+                countriesSelected[2] = countriesSelected[1];
+                countriesSelected[1] = countriesSelected[0];
+                countriesSelected[0] = d;
+              }
 
-            if(countriesSelected.length < 3) {
-              countriesSelected.push(d);
+              sliderD = drawUserSelected(d, valueHash, productionValueHash);
             }
-            else {
-              countriesSelected[2] = countriesSelected[1];
-              countriesSelected[1] = countriesSelected[0];
-              countriesSelected[0] = d;
-            }
-
-            sliderD = drawUserSelected(d, valueHash, productionValueHash);
-
           })
 
           .on("mouseout", function() {
@@ -329,6 +329,7 @@ function ToggleMap(file, input) {
               .attr("d", path);
           
           svg.attr("height", height * 2.2 / 3);
+
 
 
           /***********************
